@@ -77,6 +77,8 @@ export const api = {
       body: JSON.stringify({ matches }),
     }),
 
+  deleteList: (listId: string) => apiFetch<void>(`/lists/${listId}`, { method: "DELETE" }),
+
   getLeads: (entityType: EntityType, opts: { search?: string; limit?: number } = {}) => {
     const q = new URLSearchParams({ entityType });
     if (opts.search) q.set("search", opts.search);
