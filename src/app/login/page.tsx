@@ -1,16 +1,71 @@
-// Placeholder only — the real sign-in form lands in B1. This page exists so the proxy
-// auth gate has a concrete redirect target from day one.
+"use client";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { createClient } from "@/lib/supabase/client";
+
 export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
+
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setPending(true);
+    const supabase = createClient();
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+    if (signInError) {
+      setError("Email or password is incorrect.");
+      setPending(false);
+      return;
+    }
+    // Full page load on purpose: the just-written session cookies ride the next document
+    // request, so the server-side proxy gate admits without any client/server race.
+    window.location.assign("/lead-discovery");
+  }
+
   return (
     <main className="flex h-dvh items-center justify-center bg-background">
       <div className="w-full max-w-sm rounded-md border border-border bg-card p-8">
         <div className="font-heading text-xl font-semibold text-foreground">Velora</div>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Sign in to review grounded outreach. The sign-in form arrives in the next slice.
-        </p>
-        <div className="mt-6 rounded-md bg-secondary px-3 py-2 font-mono text-xs text-muted-foreground">
-          auth gate active — unauthenticated traffic lands here
+        <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+          Sign in · grounded outreach
         </div>
+        <form onSubmit={onSubmit} className="mt-6 space-y-4">
+          <div className="space-y-1.5">
+            <label htmlFor="email" className="text-sm font-medium text-foreground">
+              Email
+            </label>
+            <Input
+              id="email"
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <label htmlFor="password" className="text-sm font-medium text-foreground">
+              Password
+            </label>
+            <Input
+              id="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          {error && <p className="font-mono text-xs text-destructive">{error}</p>}
+          <Button type="submit" className="w-full" disabled={pending}>
+            {pending ? "Signing in…" : "Sign in"}
+          </Button>
+        </form>
       </div>
     </main>
   );

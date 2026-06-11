@@ -3,6 +3,8 @@
 import { Inbox, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useTaskCounts } from "@/lib/hooks/use-task-counts";
 import { cn } from "@/lib/utils";
 
 // IA per CLAUDE.md: Manage / Engage / Lead discovery / Lead management. Only the two
@@ -20,6 +22,19 @@ const GROUPS: {
     items: [{ href: "/engage", label: "Tasks", icon: Inbox }],
   },
 ];
+
+// The Tasks queue count — real data from the backend, set in mono (the evidence layer).
+// A rendered 0 is meaningful: it proves the JWT→Bearer→RLS round-trip returned.
+function TasksBadge() {
+  const counts = useTaskCounts();
+  if (counts.isPending) return <Skeleton className="ml-auto h-4 w-6 rounded" />;
+  if (counts.isError) return null;
+  return (
+    <span className="ml-auto rounded border border-border bg-card px-1.5 font-mono text-[11px] tabular-nums text-muted-foreground">
+      {counts.data.pending.outbound_approval}
+    </span>
+  );
+}
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -53,6 +68,7 @@ export function Sidebar() {
                     >
                       <item.icon className="size-4" />
                       {item.label}
+                      {item.href === "/engage" && <TasksBadge />}
                     </Link>
                   </li>
                 );

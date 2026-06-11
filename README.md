@@ -1,4 +1,8 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Velora dashboard — Next.js App Router, talks to velora_backend over HTTP (`NEXT_PUBLIC_API_URL`).
+
+> **Local dev on machines with TLS interception (corporate CA):** run Node with the system
+> trust store or the auth gate's `getClaims()` JWKS fetch fails and every signed-in request
+> bounces to /login: `NODE_OPTIONS=--use-system-ca pnpm dev`. (Vercel does not need this.)
 
 ## Getting Started
 
