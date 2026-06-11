@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { TaskQueue } from "@/components/tasks/task-queue";
 import { Topbar } from "@/components/shell/topbar";
 
 export default function EngagePage() {
@@ -5,10 +7,11 @@ export default function EngagePage() {
     <>
       <Topbar title="Tasks" />
       <main className="flex-1 overflow-auto p-6">
-        <div className="flex h-64 items-center justify-center rounded-md border border-dashed border-border bg-card">
-          <p className="text-sm text-muted-foreground">
-            Drafts to review land here — each one grounded in verified facts.
-          </p>
+        <div className="mx-auto max-w-3xl">
+          {/* Suspense: TaskQueue reads ?new= via useSearchParams */}
+          <Suspense fallback={null}>
+            <TaskQueue />
+          </Suspense>
         </div>
       </main>
     </>

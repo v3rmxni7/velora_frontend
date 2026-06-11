@@ -130,3 +130,36 @@
     @apply font-sans;
   }
 }
+
+/* The one orchestrated reveal: a just-created draft card fades up while its evidence
+   rail draws in. One-shot, CSS-only; disabled under reduced motion. */
+@keyframes draft-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes rail-draw {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+.animate-draft-reveal {
+  animation: draft-reveal 0.5s ease-out both;
+}
+.animate-rail-draw {
+  animation: rail-draw 0.7s 0.2s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-draft-reveal,
+  .animate-rail-draw {
+    animation: none;
+  }
+}
