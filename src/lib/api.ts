@@ -9,6 +9,10 @@ import type {
   PersonMatch,
   SearchLeadsRequest,
   SearchLeadsResponse,
+  DomainRow,
+  MailboxRow,
+  SenderRow,
+  SyncMailboxesResponse,
   Task,
   TaskCounts,
   ThreadRow,
@@ -123,4 +127,23 @@ export const api = {
     apiFetch<{ data: ThreadRow[] }>(`/inbox${status ? `?status=${status}` : ""}`),
 
   getThread: (id: string) => apiFetch<{ data: ThreadWithMessages }>(`/threads/${id}`),
+
+  // ---- Senders / Mailboxes / Domains (Phase 2 Slice 2.1) ----
+  getSenders: () => apiFetch<{ data: SenderRow[] }>("/senders"),
+  createSender: (displayName: string) =>
+    apiFetch<{ data: SenderRow }>("/senders", {
+      method: "POST",
+      body: JSON.stringify({ displayName }),
+    }),
+
+  getMailboxes: () => apiFetch<{ data: MailboxRow[] }>("/mailboxes"),
+  /** Pulls Smartlead accounts into mailboxes. 503 (smartlead_unconfigured) until go-live. */
+  syncMailboxes: () => apiFetch<SyncMailboxesResponse>("/mailboxes/sync", { method: "POST" }),
+
+  getDomains: () => apiFetch<{ data: DomainRow[] }>("/domains"),
+  createDomain: (domain: string) =>
+    apiFetch<{ data: DomainRow }>("/domains", {
+      method: "POST",
+      body: JSON.stringify({ domain }),
+    }),
 };

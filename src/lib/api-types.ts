@@ -201,3 +201,59 @@ export interface MessageRow {
 export interface ThreadWithMessages extends ThreadRow {
   messages: MessageRow[];
 }
+
+// ---- Senders / Mailboxes / Domains (GET/POST /senders, /mailboxes, /domains) — Phase 2 Slice 2.1 ----
+
+export type SenderStatus = "setup" | "active" | "paused";
+export interface SenderRow {
+  id: string;
+  organization_id: string;
+  user_id: string | null;
+  display_name: string | null;
+  status: SenderStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export type MailboxProvider = "gmail" | "microsoft" | "smtp" | "unknown";
+/** classifyWarmth states (backend agents/sending/mailbox-sync). Only 'warm' may send (Slice 2.8). */
+export type MailboxStatus = "pending" | "connected" | "warming" | "warm" | "paused";
+/** mailboxes.reputation jsonb (backend mapWarmupStatsToReputation) — the warmup track record. */
+export interface MailboxReputation {
+  sent?: number;
+  inbox?: number;
+  spam?: number;
+}
+export interface MailboxRow {
+  id: string;
+  organization_id: string;
+  sender_id: string | null;
+  smartlead_email_account_id: string | null;
+  email: string;
+  provider: MailboxProvider;
+  is_primary: boolean;
+  status: MailboxStatus;
+  daily_cap: number | null;
+  reputation: MailboxReputation | null;
+  last_synced_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export type DomainAuthStatus = "unknown" | "pass" | "fail";
+export interface DomainRow {
+  id: string;
+  organization_id: string;
+  domain: string;
+  spf_status: DomainAuthStatus;
+  dkim_status: DomainAuthStatus;
+  dmarc_status: DomainAuthStatus;
+  tracking_status: DomainAuthStatus;
+  verified_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SyncMailboxesResponse {
+  data: { synced: number; mailboxIds: string[] };
+}
