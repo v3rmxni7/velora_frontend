@@ -18,6 +18,7 @@ import type {
   EnrollmentRow,
   EnrollmentStatus,
   LaunchResult,
+  ListMemberRow,
   MailboxRow,
   SenderRow,
   SyncMailboxesResponse,
@@ -26,6 +27,7 @@ import type {
   ThreadRow,
   ThreadStatus,
   ThreadWithMessages,
+  UpdateListRequest,
 } from "@/lib/api-types";
 
 // The single bridge to the backend: every call attaches the Supabase access token as a
@@ -96,6 +98,16 @@ export const api = {
     }),
 
   deleteList: (listId: string) => apiFetch<void>(`/lists/${listId}`, { method: "DELETE" }),
+
+  updateList: (listId: string, body: UpdateListRequest) =>
+    apiFetch<{ data: ListRow }>(`/lists/${listId}`, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    }),
+
+  // Raw membership rows (entity_type/entity_id/added_at) — NOT hydrated with lead names.
+  getListMembers: (listId: string) =>
+    apiFetch<{ data: ListMemberRow[] }>(`/lists/${listId}/members`),
 
   // Generic over the entity so getLeads('person') stays PersonRow[] (the existing SavedLeads path)
   // while getLeads('company'|'local_business') type as CompanyRow[]/LocalBusinessRow[].

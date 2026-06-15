@@ -60,6 +60,21 @@ export interface AddListMembersResponse {
   added: number;
 }
 
+/** A list_members row (polymorphic membership — entity_type tells which table). */
+export interface ListMemberRow {
+  id: string;
+  organization_id: string;
+  list_id: string;
+  entity_type: EntityType;
+  entity_id: string;
+  added_at: string;
+}
+
+export interface UpdateListRequest {
+  name?: string;
+  description?: string | null;
+}
+
 // ---- Saved leads (GET /leads) ----
 
 /** A saved person row (people table). */
