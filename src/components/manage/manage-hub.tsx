@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { ManageKnowledge } from "./manage-knowledge";
 import { ManageOverview } from "./manage-overview";
 
 type TabKey = "overview" | "knowledge" | "replies" | "guardrails";
 const TABS: { key: TabKey; label: string; soon?: string }[] = [
   { key: "overview", label: "Overview" },
-  { key: "knowledge", label: "Knowledge", soon: "coming next" },
+  { key: "knowledge", label: "Knowledge" },
   { key: "replies", label: "Autonomous replies", soon: "coming with autonomy" },
   { key: "guardrails", label: "Guardrails", soon: "coming with autonomy" },
 ];
@@ -45,7 +46,13 @@ export function ManageHub() {
         ))}
       </div>
 
-      {tab === "overview" ? <ManageOverview /> : <Coming label={active.soon ?? "coming soon"} />}
+      {tab === "overview" ? (
+        <ManageOverview />
+      ) : tab === "knowledge" ? (
+        <ManageKnowledge />
+      ) : (
+        <Coming label={active.soon ?? "coming soon"} />
+      )}
     </div>
   );
 }

@@ -13,6 +13,7 @@ import type {
   CampaignWithSteps,
   CoachingPointRow,
   CreateCampaignRequest,
+  CreateProofItemRequest,
   CreditsData,
   DeliverabilityData,
   DomainRow,
@@ -207,4 +208,40 @@ export const api = {
   getProofItems: (category?: ProofCategory) =>
     apiFetch<{ data: ProofItemRow[] }>(`/proof-items${category ? `?category=${category}` : ""}`),
   getKbDocuments: () => apiFetch<{ data: KbDocumentRow[] }>("/kb/documents"),
+
+  // ---- Manage Ava: knowledge CRUD (existing endpoints) ----
+  createCoachingPoint: (content: string) =>
+    apiFetch<{ data: CoachingPointRow }>("/coaching-points", {
+      method: "POST",
+      body: JSON.stringify({ content }),
+    }),
+  updateCoachingPoint: (id: string, content: string) =>
+    apiFetch<{ data: CoachingPointRow }>(`/coaching-points/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ content }),
+    }),
+  deleteCoachingPoint: (id: string) =>
+    apiFetch<void>(`/coaching-points/${id}`, { method: "DELETE" }),
+
+  createProofItem: (body: CreateProofItemRequest) =>
+    apiFetch<{ data: ProofItemRow }>("/proof-items", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+  updateProofItem: (
+    id: string,
+    body: { category?: ProofCategory; title?: string; body?: string | null; url?: string | null },
+  ) =>
+    apiFetch<{ data: ProofItemRow }>(`/proof-items/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(body),
+    }),
+  deleteProofItem: (id: string) => apiFetch<void>(`/proof-items/${id}`, { method: "DELETE" }),
+
+  // KB ingest is async (Inngest) → 202 queued; 503 until the Firecrawl key is set.
+  ingestKb: (sourceUrl: string) =>
+    apiFetch<{ status: string; dedupeKey: string }>("/kb/ingest", {
+      method: "POST",
+      body: JSON.stringify({ sourceUrl }),
+    }),
 };
