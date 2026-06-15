@@ -1,6 +1,6 @@
 "use client";
 
-import { AtSign, Inbox, Megaphone, MessageSquare, Search } from "lucide-react";
+import { Activity, AtSign, Inbox, Megaphone, MessageSquare, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -27,7 +27,10 @@ const GROUPS: {
   },
   {
     eyebrow: "Manage",
-    items: [{ href: "/senders", label: "Senders", icon: AtSign }],
+    items: [
+      { href: "/senders", label: "Senders", icon: AtSign },
+      { href: "/deliverability", label: "Deliverability", icon: Activity },
+    ],
   },
 ];
 

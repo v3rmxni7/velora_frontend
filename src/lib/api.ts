@@ -12,6 +12,7 @@ import type {
   CampaignRow,
   CampaignWithSteps,
   CreateCampaignRequest,
+  DeliverabilityData,
   DomainRow,
   EnrollmentRow,
   EnrollmentStatus,
@@ -170,4 +171,7 @@ export const api = {
     apiFetch<{ data: EnrollmentRow[] }>(
       `/campaigns/${id}/enrollments${status ? `?status=${status}` : ""}`,
     ),
+
+  // ---- Deliverability (org-scoped metrics) ----
+  getDeliverability: () => apiFetch<{ data: DeliverabilityData }>("/deliverability"),
 };

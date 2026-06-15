@@ -336,3 +336,14 @@ export interface CreateCampaignRequest {
 export interface LaunchResult {
   enrolled: number;
 }
+
+// ---- Deliverability (GET /deliverability) — org-scoped metrics ----
+// Note: the backend deliberately omits the GLOBAL send cap/count (no cross-tenant leak) and rich
+// open/reply time-series (only meaningful after real sends — honest empty state below).
+export interface DeliverabilityData {
+  sends: { today: number; dailyCap: number; remaining: number };
+  bounces: { total: number };
+  suppression: { total: number; byReason: Record<string, number> };
+  credits: { balance: number };
+  mailboxes: { total: number; byStatus: Record<string, number> };
+}
