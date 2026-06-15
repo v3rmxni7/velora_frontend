@@ -9,6 +9,7 @@ import {
   Megaphone,
   MessageSquare,
   Search,
+  Sparkles,
   Users,
 } from "lucide-react";
 import Link from "next/link";
@@ -134,6 +135,22 @@ export function Sidebar() {
           </div>
         ))}
       </nav>
+      {/* Chat with Ava — the copilot trigger. C2 turns this into a slide-out drawer; for now it
+          links to the full-screen /copilot. */}
+      <div className="border-t border-border px-3 py-3">
+        <Link
+          href="/copilot"
+          className={cn(
+            "flex items-center gap-2.5 rounded-md border px-2.5 py-2 text-sm transition-colors",
+            pathname.startsWith("/copilot")
+              ? "border-primary/40 bg-accent text-accent-foreground"
+              : "border-border bg-card text-foreground hover:border-primary/40 hover:bg-accent",
+          )}
+        >
+          <Sparkles className="size-4 text-primary" />
+          Chat with Ava
+        </Link>
+      </div>
       <CreditsIndicator />
     </aside>
   );

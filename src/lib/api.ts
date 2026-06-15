@@ -12,6 +12,8 @@ import type {
   CampaignRow,
   CampaignWithSteps,
   CoachingPointRow,
+  CopilotMessage,
+  CopilotThread,
   CreateCampaignRequest,
   CreateProofItemRequest,
   CreditsData,
@@ -21,6 +23,8 @@ import type {
   ProofCategory,
   ProofItemRow,
   SendingModeData,
+  SendMessageResponse,
+  SuggestedAction,
   EnrollmentRow,
   EnrollmentStatus,
   LaunchResult,
@@ -244,4 +248,22 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ sourceUrl }),
     }),
+
+  // ---- Copilot (the tool-calling chat assistant) ----
+  getCopilotThreads: () => apiFetch<{ data: CopilotThread[] }>("/copilot/threads"),
+  createCopilotThread: (title?: string) =>
+    apiFetch<{ data: CopilotThread }>("/copilot/threads", {
+      method: "POST",
+      body: JSON.stringify(title ? { title } : {}),
+    }),
+  getCopilotMessages: (threadId: string) =>
+    apiFetch<{ data: CopilotMessage[] }>(`/copilot/threads/${threadId}/messages`),
+  // One turn: planner → optional read-only tool → responder. Slow (no streaming) — the UI shows
+  // a real "thinking…" state and resolves with the persisted assistant row + its tool call.
+  sendCopilotMessage: (threadId: string, content: string) =>
+    apiFetch<SendMessageResponse>(`/copilot/threads/${threadId}/messages`, {
+      method: "POST",
+      body: JSON.stringify({ content }),
+    }),
+  getSuggestedActions: () => apiFetch<{ actions: SuggestedAction[] }>("/copilot/suggested-actions"),
 };

@@ -472,6 +472,51 @@ export interface CreditsData {
   used: number;
 }
 
+// ---- Copilot (/copilot*) — the tool-calling chat assistant (Slice 4) ----
+// Threads are per-user; messages are append-only turns. The assistant turn may carry a single
+// read-only tool_call ({name,args,result}) — the "receipt" the UI renders so the user sees
+// exactly what the agent looked up. null tool_calls = a plain conversational reply.
+
+/** copilot_threads row (per-user within an org). title is null until the first message titles it. */
+export interface CopilotThread {
+  id: string;
+  organization_id: string;
+  user_id: string;
+  title: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** The stored receipt of one read-only tool the planner ran (args/result are tool-specific). */
+export interface CopilotToolCall {
+  name: string;
+  args: unknown;
+  result: unknown;
+}
+
+/** copilot_messages row (append-only; no updated_at by design). */
+export interface CopilotMessage {
+  id: string;
+  organization_id: string;
+  thread_id: string;
+  role: "user" | "assistant";
+  content: string;
+  tool_calls: CopilotToolCall | null;
+  created_at: string;
+}
+
+/** A deterministic next-action nudge (GET /copilot/suggested-actions). Click sends the prompt. */
+export interface SuggestedAction {
+  label: string;
+  prompt: string;
+}
+
+/** POST /copilot/threads/:id/messages → the persisted assistant row + its tool call (if any). */
+export interface SendMessageResponse {
+  message: CopilotMessage;
+  toolCall: CopilotToolCall | null;
+}
+
 // ---- Deliverability (GET /deliverability) — org-scoped metrics ----
 // Note: the backend deliberately omits the GLOBAL send cap/count (no cross-tenant leak) and rich
 // open/reply time-series (only meaningful after real sends — honest empty state below).
