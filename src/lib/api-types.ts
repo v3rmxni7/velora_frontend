@@ -337,6 +337,13 @@ export interface LaunchResult {
   enrolled: number;
 }
 
+// ---- Credits (GET /credits) — org-scoped ledger balance ----
+export interface CreditsData {
+  balance: number;
+  granted: number;
+  used: number;
+}
+
 // ---- Deliverability (GET /deliverability) — org-scoped metrics ----
 // Note: the backend deliberately omits the GLOBAL send cap/count (no cross-tenant leak) and rich
 // open/reply time-series (only meaningful after real sends — honest empty state below).

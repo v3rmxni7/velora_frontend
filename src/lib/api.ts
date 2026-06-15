@@ -12,6 +12,7 @@ import type {
   CampaignRow,
   CampaignWithSteps,
   CreateCampaignRequest,
+  CreditsData,
   DeliverabilityData,
   DomainRow,
   EnrollmentRow,
@@ -174,4 +175,7 @@ export const api = {
 
   // ---- Deliverability (org-scoped metrics) ----
   getDeliverability: () => apiFetch<{ data: DeliverabilityData }>("/deliverability"),
+
+  // ---- Credits (org-scoped ledger balance) ----
+  getCredits: () => apiFetch<{ data: CreditsData }>("/credits"),
 };
