@@ -11,10 +11,15 @@ import type {
   SearchLeadsResponse,
   CampaignRow,
   CampaignWithSteps,
+  CoachingPointRow,
   CreateCampaignRequest,
   CreditsData,
   DeliverabilityData,
   DomainRow,
+  KbDocumentRow,
+  ProofCategory,
+  ProofItemRow,
+  SendingModeData,
   EnrollmentRow,
   EnrollmentStatus,
   LaunchResult,
@@ -195,4 +200,11 @@ export const api = {
 
   // ---- Credits (org-scoped ledger balance) ----
   getCredits: () => apiFetch<{ data: CreditsData }>("/credits"),
+
+  // ---- Manage Ava: agent status + knowledge (existing endpoints) ----
+  getSendingMode: () => apiFetch<{ data: SendingModeData }>("/sending/mode"),
+  getCoachingPoints: () => apiFetch<{ data: CoachingPointRow[] }>("/coaching-points"),
+  getProofItems: (category?: ProofCategory) =>
+    apiFetch<{ data: ProofItemRow[] }>(`/proof-items${category ? `?category=${category}` : ""}`),
+  getKbDocuments: () => apiFetch<{ data: KbDocumentRow[] }>("/kb/documents"),
 };

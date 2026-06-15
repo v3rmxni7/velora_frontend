@@ -415,6 +415,56 @@ export interface LaunchResult {
   enrolled: number;
 }
 
+// ---- Manage Ava: knowledge + agent status ----
+
+export interface SendingModeData {
+  sendingEnabled: boolean;
+  dryRun: boolean;
+}
+
+export interface CoachingPointRow {
+  id: string;
+  organization_id: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export type ProofCategory = "highlight" | "customer" | "case_study";
+export interface ProofItemRow {
+  id: string;
+  organization_id: string;
+  category: ProofCategory;
+  title: string;
+  body: string | null;
+  url: string | null;
+  created_at: string;
+  updated_at: string;
+}
+export interface CreateProofItemRequest {
+  category: ProofCategory;
+  title: string;
+  body?: string;
+  url?: string;
+}
+
+export type KbDocumentStatus =
+  | "pending"
+  | "scraping"
+  | "chunking"
+  | "embedding"
+  | "ready"
+  | "failed";
+export interface KbDocumentRow {
+  id: string;
+  kind: string;
+  source_url: string | null;
+  title: string | null;
+  status: KbDocumentStatus;
+  created_at: string;
+  updated_at: string;
+}
+
 // ---- Credits (GET /credits) — org-scoped ledger balance ----
 export interface CreditsData {
   balance: number;

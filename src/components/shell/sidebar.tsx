@@ -1,6 +1,16 @@
 "use client";
 
-import { Activity, AtSign, Inbox, List, Megaphone, MessageSquare, Search, Users } from "lucide-react";
+import {
+  Activity,
+  AtSign,
+  Bot,
+  Inbox,
+  List,
+  Megaphone,
+  MessageSquare,
+  Search,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CreditsIndicator } from "@/components/shell/credits-indicator";
@@ -21,6 +31,7 @@ const GROUPS: { eyebrow: string; items: NavItem[] }[] = [
   {
     eyebrow: "Manage",
     items: [
+      { href: "/manage", label: "Manage Ava", icon: Bot },
       { href: "/campaigns", label: "Campaigns", icon: Megaphone },
       { href: "/senders", label: "Senders", icon: AtSign },
       { href: "/deliverability", label: "Deliverability", icon: Activity },
