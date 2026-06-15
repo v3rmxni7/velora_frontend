@@ -9,7 +9,13 @@ import type {
   PersonMatch,
   SearchLeadsRequest,
   SearchLeadsResponse,
+  CampaignRow,
+  CampaignWithSteps,
+  CreateCampaignRequest,
   DomainRow,
+  EnrollmentRow,
+  EnrollmentStatus,
+  LaunchResult,
   MailboxRow,
   SenderRow,
   SyncMailboxesResponse,
@@ -146,4 +152,22 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ domain }),
     }),
+
+  // ---- Campaigns (Phase 2 Slice 2.2) ----
+  getLists: () => apiFetch<{ data: ListRow[] }>("/lists"),
+  getCampaigns: () => apiFetch<{ data: CampaignRow[] }>("/campaigns"),
+  createCampaign: (body: CreateCampaignRequest) =>
+    apiFetch<{ data: CampaignRow }>("/campaigns", {
+      method: "POST",
+      body: JSON.stringify(body),
+    }),
+  getCampaign: (id: string) => apiFetch<{ data: CampaignWithSteps }>(`/campaigns/${id}`),
+  launchCampaign: (id: string) =>
+    apiFetch<{ data: LaunchResult }>(`/campaigns/${id}/launch`, { method: "POST" }),
+  pauseCampaign: (id: string) =>
+    apiFetch<{ data: { id: string } }>(`/campaigns/${id}/pause`, { method: "POST" }),
+  getEnrollments: (id: string, status?: EnrollmentStatus) =>
+    apiFetch<{ data: EnrollmentRow[] }>(
+      `/campaigns/${id}/enrollments${status ? `?status=${status}` : ""}`,
+    ),
 };

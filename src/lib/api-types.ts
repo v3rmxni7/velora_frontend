@@ -257,3 +257,82 @@ export interface DomainRow {
 export interface SyncMailboxesResponse {
   data: { synced: number; mailboxIds: string[] };
 }
+
+// ---- Campaigns / steps / enrollments (/campaigns*) — Phase 2 Slice 2.2 ----
+
+export type CampaignType =
+  | "cold_outbound"
+  | "warm_outbound"
+  | "cross_sell"
+  | "website_visitor"
+  | "intent_signals";
+/** Only cold_outbound ships in Phase 2's pilot; the rest 422 at the backend. */
+export const SUPPORTED_CAMPAIGN_TYPES: CampaignType[] = ["cold_outbound"];
+export type CampaignStatus = "draft" | "active" | "paused" | "completed" | "archived";
+
+export interface CampaignRow {
+  id: string;
+  organization_id: string;
+  sender_id: string | null;
+  name: string;
+  campaign_type: CampaignType;
+  status: CampaignStatus;
+  list_id: string | null;
+  smartlead_campaign_id: string | null;
+  settings: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CampaignStepRow {
+  id: string;
+  organization_id: string;
+  campaign_id: string;
+  step_number: number;
+  channel: string;
+  delay_days: number;
+  subject_template: string | null;
+  body_mode: "ai_grounded" | "template";
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CampaignWithSteps extends CampaignRow {
+  steps: CampaignStepRow[];
+}
+
+export type EnrollmentStatus =
+  | "pending"
+  | "queued"
+  | "awaiting_approval"
+  | "sent"
+  | "replied"
+  | "bounced"
+  | "unsubscribed"
+  | "completed"
+  | "failed";
+
+export interface EnrollmentRow {
+  id: string;
+  organization_id: string;
+  campaign_id: string;
+  lead_type: EntityType;
+  lead_id: string;
+  status: EnrollmentStatus;
+  current_step: number;
+  verified_email: string | null;
+  error: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateCampaignRequest {
+  name: string;
+  listId: string;
+  senderId?: string;
+  campaignType?: CampaignType;
+}
+
+export interface LaunchResult {
+  enrolled: number;
+}
