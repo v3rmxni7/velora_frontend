@@ -11,6 +11,9 @@ import type {
   SearchLeadsResponse,
   Task,
   TaskCounts,
+  ThreadRow,
+  ThreadStatus,
+  ThreadWithMessages,
 } from "@/lib/api-types";
 
 // The single bridge to the backend: every call attaches the Supabase access token as a
@@ -114,4 +117,10 @@ export const api = {
       method: "POST",
       body: JSON.stringify(reason ? { reason } : {}),
     }),
+
+  // ---- Inbox (Phase 2 Slice 2.6) — read-only triage of replies/bounces/unsubscribes ----
+  getInbox: (status?: ThreadStatus) =>
+    apiFetch<{ data: ThreadRow[] }>(`/inbox${status ? `?status=${status}` : ""}`),
+
+  getThread: (id: string) => apiFetch<{ data: ThreadWithMessages }>(`/threads/${id}`),
 };

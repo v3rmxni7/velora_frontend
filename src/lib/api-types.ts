@@ -140,3 +140,64 @@ export interface GenerateDraftRequest {
 export interface TaskCounts {
   pending: { outbound_approval: number; manual: number; platform: number };
 }
+
+// ---- Inbox (GET /inbox, GET /threads/:id) — Phase 2 Slice 2.6 ----
+
+export type ThreadStatus = "active" | "needs_action" | "handled" | "auto_handled";
+export type MessageDirection = "outbound" | "inbound";
+export type MessageStatus =
+  | "dry_run"
+  | "queued"
+  | "sent"
+  | "delivered"
+  | "opened"
+  | "clicked"
+  | "replied"
+  | "bounced"
+  | "complained"
+  | "failed";
+/** The reply classifier's coarse category (backend agents/reply/classify.ts), free text on the row. */
+export type ReplyCategory =
+  | "interested"
+  | "not_interested"
+  | "objection"
+  | "out_of_office"
+  | "unsubscribe"
+  | "other";
+
+/** threads row (backend supabase/migrations threads_messages). */
+export interface ThreadRow {
+  id: string;
+  organization_id: string;
+  sender_id: string | null;
+  campaign_id: string | null;
+  lead_type: EntityType;
+  lead_id: string;
+  subject: string | null;
+  status: ThreadStatus;
+  last_message_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** messages row (the inbox view subset — grounding/gates jsonb omitted). */
+export interface MessageRow {
+  id: string;
+  organization_id: string;
+  thread_id: string;
+  enrollment_id: string | null;
+  direction: MessageDirection;
+  channel: string;
+  smartlead_message_id: string | null;
+  subject: string | null;
+  body: string | null;
+  status: MessageStatus;
+  category: string | null;
+  sent_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ThreadWithMessages extends ThreadRow {
+  messages: MessageRow[];
+}

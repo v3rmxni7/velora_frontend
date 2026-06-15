@@ -1,6 +1,6 @@
 "use client";
 
-import { Inbox, Search } from "lucide-react";
+import { Inbox, MessageSquare, Search } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,7 +19,10 @@ const GROUPS: {
   },
   {
     eyebrow: "Engage",
-    items: [{ href: "/engage", label: "Tasks", icon: Inbox }],
+    items: [
+      { href: "/engage", label: "Tasks", icon: Inbox },
+      { href: "/inbox", label: "Inbox", icon: MessageSquare },
+    ],
   },
 ];
 
