@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useCopilotDrawer } from "@/components/copilot/copilot-drawer-context";
 import { CreditsIndicator } from "@/components/shell/credits-indicator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTaskCounts } from "@/lib/hooks/use-task-counts";
@@ -105,6 +106,7 @@ function NavRow({ item, active }: { item: NavItem; active: boolean }) {
 
 export function Sidebar() {
   const pathname = usePathname();
+  const { openDrawer } = useCopilotDrawer();
 
   return (
     <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-sidebar">
@@ -135,13 +137,14 @@ export function Sidebar() {
           </div>
         ))}
       </nav>
-      {/* Chat with Ava — the copilot trigger. C2 turns this into a slide-out drawer; for now it
-          links to the full-screen /copilot. */}
+      {/* Chat with Ava — opens the slide-out copilot drawer (the drawer itself has a "Full screen ↗"
+          link to /copilot). */}
       <div className="border-t border-border px-3 py-3">
-        <Link
-          href="/copilot"
+        <button
+          type="button"
+          onClick={openDrawer}
           className={cn(
-            "flex items-center gap-2.5 rounded-md border px-2.5 py-2 text-sm transition-colors",
+            "flex w-full items-center gap-2.5 rounded-md border px-2.5 py-2 text-sm transition-colors",
             pathname.startsWith("/copilot")
               ? "border-primary/40 bg-accent text-accent-foreground"
               : "border-border bg-card text-foreground hover:border-primary/40 hover:bg-accent",
@@ -149,7 +152,7 @@ export function Sidebar() {
         >
           <Sparkles className="size-4 text-primary" />
           Chat with Ava
-        </Link>
+        </button>
       </div>
       <CreditsIndicator />
     </aside>

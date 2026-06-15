@@ -1,9 +1,10 @@
 "use client";
 
-import { ArrowUp, Sparkles } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { ArrowUp, CornerDownLeft, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { SuggestedAction } from "@/lib/api-types";
 import {
   useCopilotMessages,
   useCreateThread,
@@ -13,6 +14,15 @@ import {
 import { CopilotMessageRow } from "./copilot-message";
 
 const EYEBROW = "font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground";
+
+// The four real read-only tools the planner can route to — surfaced as honest "/" quick-inserts
+// (typing "/" inserts a prompt the planner then routes; it is NOT a fabricated command system).
+const TOOL_PROMPTS: SuggestedAction[] = [
+  { label: "Suggest ICP personas from my knowledge base", prompt: "Suggest ICP personas from my knowledge base" },
+  { label: "Summarize my knowledge base", prompt: "Summarize my knowledge base" },
+  { label: "List my leads", prompt: "List my leads" },
+  { label: "List my lists", prompt: "List my lists" },
+];
 
 /** A thread title derived from the first message — gives real titles without a rename route. */
 function titleFrom(content: string): string {
@@ -49,11 +59,29 @@ export function CopilotChat({
   const send = useSendMessage();
   const createThread = useCreateThread();
   const [input, setInput] = useState("");
+  const [slashDismissed, setSlashDismissed] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const busy = send.isPending || createThread.isPending;
   const rows = messages.data?.data ?? [];
   const isEmpty = !threadId || (messages.isSuccess && rows.length === 0);
+
+  // Slash quick-inserts: when the composer starts with "/", surface the account-state suggested
+  // actions + the four tool prompts (deduped), filtered by the text after the slash.
+  const slashQuery = input.startsWith("/") ? input.slice(1).toLowerCase() : null;
+  const slashItems = useMemo(() => {
+    if (slashQuery === null) return [];
+    const merged = [...(suggested.data?.actions ?? []), ...TOOL_PROMPTS];
+    const seen = new Set<string>();
+    return merged.filter((a) => {
+      const key = a.prompt.toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return a.label.toLowerCase().includes(slashQuery) || key.includes(slashQuery);
+    });
+  }, [slashQuery, suggested.data]);
+  const slashOpen = slashQuery !== null && !slashDismissed && slashItems.length > 0;
 
   // Keep the latest turn in view as messages land and while Ava is thinking.
   useEffect(() => {
@@ -74,9 +102,30 @@ export function CopilotChat({
     send.mutate({ threadId: id, content });
   }
 
+  function applySlash(prompt: string) {
+    setSlashDismissed(true);
+    setInput(prompt);
+    textareaRef.current?.focus();
+  }
+
+  function onChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    setSlashDismissed(false);
+    setInput(e.target.value);
+  }
+
   function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (slashOpen && e.key === "Escape") {
+      e.preventDefault();
+      setSlashDismissed(true);
+      return;
+    }
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
+      // With the slash menu open, Enter picks the top quick-insert instead of sending "/…" literally.
+      if (slashOpen && slashItems[0]) {
+        applySlash(slashItems[0].prompt);
+        return;
+      }
       void submit(input);
     }
   }
@@ -133,14 +182,39 @@ export function CopilotChat({
       </div>
 
       {/* Composer */}
-      <div className="border-t border-border bg-background p-3">
+      <div className="relative border-t border-border bg-background p-3">
+        {/* Slash quick-inserts — real suggested actions + tool prompts; clicking fills the composer */}
+        {slashOpen && (
+          <div className="absolute bottom-full left-3 right-3 mb-2 overflow-hidden rounded-md border border-border bg-popover shadow-md">
+            <div className="border-b border-border/60 px-2.5 py-1.5">
+              <span className={EYEBROW}>Quick prompts</span>
+            </div>
+            <ul className="max-h-56 overflow-auto py-1">
+              {slashItems.map((a, i) => (
+                <li key={a.prompt}>
+                  <button
+                    type="button"
+                    onClick={() => applySlash(a.prompt)}
+                    className="flex w-full items-center justify-between gap-2 px-2.5 py-1.5 text-left text-sm text-foreground transition-colors hover:bg-accent"
+                  >
+                    <span className="truncate">{a.label}</span>
+                    {i === 0 && (
+                      <CornerDownLeft className="size-3 shrink-0 text-muted-foreground" />
+                    )}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
         <div className="flex items-end gap-2 rounded-md border border-border bg-card px-2.5 py-2 focus-within:border-ring">
           <textarea
+            ref={textareaRef}
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={onChange}
             onKeyDown={onKeyDown}
             rows={1}
-            placeholder="Message Ava…"
+            placeholder="Message Ava…  (type / for quick prompts)"
             disabled={busy}
             className="max-h-40 min-h-[1.5rem] flex-1 resize-none bg-transparent text-sm outline-none placeholder:text-muted-foreground disabled:opacity-50"
           />
