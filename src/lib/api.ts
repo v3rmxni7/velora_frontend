@@ -4,7 +4,7 @@ import type {
   CreateListRequest,
   EntityType,
   GenerateDraftRequest,
-  GetLeadsResponse,
+  LeadRowFor,
   ListRow,
   PersonMatch,
   SearchLeadsRequest,
@@ -97,12 +97,17 @@ export const api = {
 
   deleteList: (listId: string) => apiFetch<void>(`/lists/${listId}`, { method: "DELETE" }),
 
-  getLeads: (entityType: EntityType, opts: { search?: string; limit?: number } = {}) => {
+  // Generic over the entity so getLeads('person') stays PersonRow[] (the existing SavedLeads path)
+  // while getLeads('company'|'local_business') type as CompanyRow[]/LocalBusinessRow[].
+  getLeads: <T extends EntityType>(entityType: T, opts: { search?: string; limit?: number } = {}) => {
     const q = new URLSearchParams({ entityType });
     if (opts.search) q.set("search", opts.search);
     if (opts.limit) q.set("limit", String(opts.limit));
-    return apiFetch<GetLeadsResponse>(`/leads?${q}`);
+    return apiFetch<{ entityType: T; data: LeadRowFor<T>[] }>(`/leads?${q}`);
   },
+
+  getLead: <T extends EntityType>(entityType: T, id: string) =>
+    apiFetch<{ entityType: T; data: LeadRowFor<T> }>(`/leads/${entityType}/${id}`),
 
   /** Synchronous draft generation (BE-1) — runs the pipeline inline, returns the task. */
   generateDraftSync: (body: GenerateDraftRequest) =>

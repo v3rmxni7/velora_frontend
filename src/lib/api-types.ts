@@ -76,12 +76,63 @@ export interface PersonRow {
   seniority: string | null;
   department: string | null;
   company_name: string | null;
+  company_id: string | null;
   location: string | null;
   country: string | null;
   linkedin_url: string | null;
+  source: string;
+  enriched_at: string | null;
   created_at: string;
   updated_at: string;
 }
+
+/** A saved company row (companies table). */
+export interface CompanyRow {
+  id: string;
+  organization_id: string;
+  provider: string;
+  external_id: string | null;
+  name: string;
+  domain: string | null;
+  industry: string | null;
+  size_band: string | null;
+  employee_count: number | null;
+  location: string | null;
+  country: string | null;
+  linkedin_url: string | null;
+  source: string;
+  enriched_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** A saved local-business row (local_businesses table). */
+export interface LocalBusinessRow {
+  id: string;
+  organization_id: string;
+  provider: string;
+  external_id: string | null;
+  name: string;
+  category: string | null;
+  phone: string | null;
+  address: string | null;
+  city: string | null;
+  country: string | null;
+  website: string | null;
+  google_maps_url: string | null;
+  rating: number | null;
+  source: string;
+  enriched_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+/** The saved-lead row type for a given entity (lets getLeads('person') stay PersonRow[]). */
+export type LeadRowFor<T extends EntityType> = T extends "person"
+  ? PersonRow
+  : T extends "company"
+    ? CompanyRow
+    : LocalBusinessRow;
 
 export interface GetLeadsResponse {
   entityType: EntityType;

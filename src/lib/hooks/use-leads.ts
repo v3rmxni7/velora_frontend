@@ -3,7 +3,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { api, ApiError } from "@/lib/api";
-import type { PersonMatch } from "@/lib/api-types";
+import type { EntityType, PersonMatch } from "@/lib/api-types";
+
+const noAuthRetry = (count: number, err: unknown) =>
+  !(err instanceof ApiError && err.status === 401) && count < 1;
 
 // Search is a MUTATION on purpose: it's a POST that runs a real LLM (slow, costs money).
 // A query would silently re-spend on mount/focus/stale refetches; a mutation fires only
@@ -44,6 +47,25 @@ export function useLeads() {
   return useQuery({
     queryKey: ["leads", "person"],
     queryFn: () => api.getLeads("person"),
-    retry: (count, err) => !(err instanceof ApiError && err.status === 401) && count < 1,
+    retry: noAuthRetry,
+  });
+}
+
+// The dedicated lead-management browser: saved leads of a given type, server name-search.
+export function useLeadsByType<T extends EntityType>(entityType: T, search: string) {
+  return useQuery({
+    queryKey: ["leads", entityType, search],
+    queryFn: () => api.getLeads(entityType, search ? { search } : {}),
+    retry: noAuthRetry,
+  });
+}
+
+// Single saved lead (the detail dialog). Disabled until a row is opened.
+export function useLeadDetail<T extends EntityType>(entityType: T, id: string | null) {
+  return useQuery({
+    queryKey: ["lead", entityType, id],
+    queryFn: () => api.getLead(entityType, id as string),
+    enabled: !!id,
+    retry: noAuthRetry,
   });
 }

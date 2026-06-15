@@ -41,7 +41,7 @@ const GROUPS: { eyebrow: string; items: NavItem[] }[] = [
     eyebrow: "Lead management",
     items: [
       { href: "/lists", label: "Lists", icon: List, soon: true },
-      { href: "/leads", label: "Leads", icon: Users, soon: true },
+      { href: "/leads", label: "Leads", icon: Users },
     ],
   },
 ];
