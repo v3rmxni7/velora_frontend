@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowUp, CornerDownLeft, Sparkles } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { SuggestedAction } from "@/lib/api-types";
@@ -11,6 +11,7 @@ import {
   useSendMessage,
   useSuggestedActions,
 } from "@/lib/hooks/use-copilot";
+import { cn } from "@/lib/utils";
 import { CopilotMessageRow } from "./copilot-message";
 
 const EYEBROW = "font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground";
@@ -32,7 +33,7 @@ function titleFrom(content: string): string {
 
 function ThinkingBubble() {
   return (
-    <div className="flex justify-start">
+    <div className="flex justify-start" role="status" aria-live="polite">
       <div className="flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-2.5">
         {[0, 150, 300].map((d) => (
           <span
@@ -60,8 +61,14 @@ export function CopilotChat({
   const createThread = useCreateThread();
   const [input, setInput] = useState("");
   const [slashDismissed, setSlashDismissed] = useState(false);
+  const [activeIdx, setActiveIdx] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const composerRef = useRef<HTMLDivElement>(null);
+  // Synchronous in-flight latch — guards against a second send landing before React re-renders
+  // `busy` to true (e.g. two fast Enter presses creating two threads).
+  const submittingRef = useRef(false);
+  const listboxId = useId();
 
   const busy = send.isPending || createThread.isPending;
   const rows = messages.data?.data ?? [];
@@ -82,24 +89,54 @@ export function CopilotChat({
     });
   }, [slashQuery, suggested.data]);
   const slashOpen = slashQuery !== null && !slashDismissed && slashItems.length > 0;
+  // Clamp the highlighted index to the (re-filtered) list so it can never point out of bounds.
+  const activeOption = slashItems.length ? Math.min(activeIdx, slashItems.length - 1) : 0;
 
-  // Keep the latest turn in view as messages land and while Ava is thinking.
+  // Keep the latest turn in view as messages land, while Ava is thinking, and on thread switch.
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [rows.length, busy]);
+  }, [threadId, rows.length, busy]);
+
+  // Auto-grow the composer up to max-h-40 (160px); shrinks back when cleared after a send.
+  useLayoutEffect(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+  }, [input]);
+
+  // Dismiss the slash menu on any pointer-down outside the composer (the menu lives inside it).
+  useEffect(() => {
+    if (!slashOpen) return;
+    function onPointerDown(e: PointerEvent) {
+      if (composerRef.current && !composerRef.current.contains(e.target as Node)) {
+        setSlashDismissed(true);
+      }
+    }
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, [slashOpen]);
 
   async function submit(text: string) {
     const content = text.trim();
-    if (!content || busy) return;
+    if (!content || busy || submittingRef.current) return;
+    submittingRef.current = true;
     setInput("");
-    let id = threadId;
-    if (!id) {
-      // Lazy thread creation, titled by the first message (no rename route exists).
-      const created = await createThread.mutateAsync(titleFrom(content));
-      id = created.data.id;
-      onSelectThread(id);
+    try {
+      let id = threadId;
+      if (!id) {
+        // Lazy thread creation, titled by the first message (no rename route exists).
+        const created = await createThread.mutateAsync(titleFrom(content));
+        id = created.data.id;
+        onSelectThread(id);
+      }
+      await send.mutateAsync({ threadId: id, content });
+    } catch {
+      // Create/send failed (the hooks already toast). Restore the text so it isn't lost.
+      setInput(content);
+    } finally {
+      submittingRef.current = false;
     }
-    send.mutate({ threadId: id, content });
   }
 
   function applySlash(prompt: string) {
@@ -110,20 +147,34 @@ export function CopilotChat({
 
   function onChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
     setSlashDismissed(false);
+    setActiveIdx(0);
     setInput(e.target.value);
   }
 
   function onKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-    if (slashOpen && e.key === "Escape") {
-      e.preventDefault();
-      setSlashDismissed(true);
-      return;
+    if (slashOpen) {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setSlashDismissed(true);
+        return;
+      }
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        setActiveIdx(Math.min(activeOption + 1, slashItems.length - 1));
+        return;
+      }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        setActiveIdx(Math.max(activeOption - 1, 0));
+        return;
+      }
     }
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      // With the slash menu open, Enter picks the top quick-insert instead of sending "/…" literally.
-      if (slashOpen && slashItems[0]) {
-        applySlash(slashItems[0].prompt);
+      // With the slash menu open, Enter picks the highlighted quick-insert (not "/…" sent literally).
+      if (slashOpen) {
+        const pick = slashItems[activeOption];
+        if (pick) applySlash(pick.prompt);
         return;
       }
       void submit(input);
@@ -147,7 +198,7 @@ export function CopilotChat({
         {isEmpty && !busy && (
           <div className="flex h-full flex-col items-center justify-center gap-5 px-4 text-center">
             <div className="flex flex-col items-center gap-2">
-              <span className="flex size-9 items-center justify-center rounded-md bg-accent text-primary">
+              <span className="flex size-9 items-center justify-center rounded-md bg-accent text-accent-foreground">
                 <Sparkles className="size-4" />
               </span>
               <p className="text-sm font-medium text-foreground">Ask Ava</p>
@@ -182,28 +233,38 @@ export function CopilotChat({
       </div>
 
       {/* Composer */}
-      <div className="relative border-t border-border bg-background p-3">
+      <div ref={composerRef} className="relative border-t border-border bg-background p-3">
         {/* Slash quick-inserts — real suggested actions + tool prompts; clicking fills the composer */}
         {slashOpen && (
-          <div className="absolute bottom-full left-3 right-3 mb-2 overflow-hidden rounded-md border border-border bg-popover shadow-md">
+          <div className="absolute bottom-full left-3 right-3 mb-2 overflow-hidden rounded-md border border-border bg-popover ring-1 ring-foreground/10">
             <div className="border-b border-border/60 px-2.5 py-1.5">
               <span className={EYEBROW}>Quick prompts</span>
             </div>
-            <ul className="max-h-56 overflow-auto py-1">
-              {slashItems.map((a, i) => (
-                <li key={a.prompt}>
-                  <button
-                    type="button"
-                    onClick={() => applySlash(a.prompt)}
-                    className="flex w-full items-center justify-between gap-2 px-2.5 py-1.5 text-left text-sm text-foreground transition-colors hover:bg-accent"
-                  >
-                    <span className="truncate">{a.label}</span>
-                    {i === 0 && (
-                      <CornerDownLeft className="size-3 shrink-0 text-muted-foreground" />
-                    )}
-                  </button>
-                </li>
-              ))}
+            <ul id={listboxId} role="listbox" className="max-h-56 overflow-auto py-1">
+              {slashItems.map((a, i) => {
+                const active = i === activeOption;
+                return (
+                  <li key={a.prompt}>
+                    <button
+                      type="button"
+                      id={`${listboxId}-${i}`}
+                      role="option"
+                      aria-selected={active}
+                      onClick={() => applySlash(a.prompt)}
+                      onMouseEnter={() => setActiveIdx(i)}
+                      className={cn(
+                        "flex w-full items-center justify-between gap-2 px-2.5 py-1.5 text-left text-sm text-foreground transition-colors",
+                        active ? "bg-accent" : "hover:bg-accent",
+                      )}
+                    >
+                      <span className="truncate">{a.label}</span>
+                      {active && (
+                        <CornerDownLeft className="size-3 shrink-0 text-muted-foreground" />
+                      )}
+                    </button>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}
@@ -216,6 +277,11 @@ export function CopilotChat({
             rows={1}
             placeholder="Message Ava…  (type / for quick prompts)"
             disabled={busy}
+            role="combobox"
+            aria-autocomplete="list"
+            aria-expanded={slashOpen}
+            aria-controls={slashOpen ? listboxId : undefined}
+            aria-activedescendant={slashOpen ? `${listboxId}-${activeOption}` : undefined}
             className="max-h-40 min-h-[1.5rem] flex-1 resize-none bg-transparent text-sm outline-none placeholder:text-muted-foreground disabled:opacity-50"
           />
           <Button

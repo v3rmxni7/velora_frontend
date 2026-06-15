@@ -23,10 +23,10 @@ export function CopilotDrawer() {
     <DialogPrimitive.Root open={open} onOpenChange={setOpen}>
       <DialogPrimitive.Portal>
         <DialogPrimitive.Backdrop className="fixed inset-0 z-50 bg-black/10 duration-150 supports-backdrop-filter:backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
-        <DialogPrimitive.Popup className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col border-l border-border bg-background shadow-xl duration-150 outline-none data-open:animate-in data-open:slide-in-from-right data-closed:animate-out data-closed:slide-out-to-right">
+        <DialogPrimitive.Popup className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col border-l border-border bg-background ring-1 ring-foreground/10 duration-150 outline-none data-open:animate-in data-open:slide-in-from-right data-closed:animate-out data-closed:slide-out-to-right">
           {/* Header */}
           <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border px-4">
-            <span className="flex size-6 items-center justify-center rounded-md bg-accent text-primary">
+            <span className="flex size-6 items-center justify-center rounded-md bg-accent text-accent-foreground">
               <Sparkles className="size-3.5" />
             </span>
             <DialogPrimitive.Title className="font-heading text-base font-semibold text-foreground">

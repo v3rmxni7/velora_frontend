@@ -12,6 +12,11 @@ export const threadsKey = ["copilot-threads"] as const;
 export const messagesKey = (threadId: string) => ["copilot-messages", threadId] as const;
 export const suggestedActionsKey = ["copilot-suggested-actions"] as const;
 
+// Monotonic local counter for optimistic message ids. A React key only needs to be unique among
+// the rows present at once; this stand-in is replaced by the persisted row (with its real id) on
+// the settle-refetch, so any collision-free value works — just don't derive it from the content.
+let optimisticSeq = 0;
+
 export function useCopilotThreads() {
   return useQuery({ queryKey: threadsKey, queryFn: api.getCopilotThreads, retry: noAuthRetry });
 }
@@ -47,7 +52,9 @@ export function useCreateThread() {
  * Send a message and run the turn. Optimistically appends the user bubble so it shows instantly;
  * the component renders a real "thinking…" state off `isPending` (no streaming backend). On settle
  * we invalidate the message cache → the persisted user + assistant rows (incl. tool_calls) replace
- * the optimistic stand-in, and the thread list (title/updated_at) + suggested actions refresh.
+ * the optimistic stand-in. We also refresh suggested actions and the thread list — the latter
+ * matters mainly on the FIRST send (the new thread + its title appear); the backend lists threads
+ * by created_at and doesn't bump updated_at on a send, so existing threads don't reorder/retitle.
  */
 export function useSendMessage() {
   const qc = useQueryClient();
@@ -59,7 +66,7 @@ export function useSendMessage() {
       await qc.cancelQueries({ queryKey: key });
       const previous = qc.getQueryData<{ data: CopilotMessage[] }>(key);
       const optimistic: CopilotMessage = {
-        id: `optimistic-${threadId}-${content.length}`,
+        id: `optimistic-${threadId}-${++optimisticSeq}`,
         organization_id: "",
         thread_id: threadId,
         role: "user",
@@ -72,8 +79,11 @@ export function useSendMessage() {
       }));
       return { previous, threadId };
     },
-    onError: (err, _vars, ctx) => {
-      if (ctx?.previous) qc.setQueryData(messagesKey(ctx.threadId), ctx.previous);
+    onError: (err, vars, ctx) => {
+      // Roll back unconditionally: a brand-new (lazy-created) thread has no prior snapshot, so a
+      // truthy guard would leave its optimistic bubble in the cache — a user message the backend
+      // never stored. Reset to the snapshot, or to empty for a fresh thread.
+      qc.setQueryData(messagesKey(ctx?.threadId ?? vars.threadId), ctx?.previous ?? { data: [] });
       toast.error(err instanceof ApiError ? err.message : "Couldn’t send — try again.");
     },
     onSettled: (_data, _err, { threadId }) => {
