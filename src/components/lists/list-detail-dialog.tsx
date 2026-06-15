@@ -1,5 +1,6 @@
 "use client";
 
+import { Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -12,14 +13,33 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { EntityType, ListRow } from "@/lib/api-types";
+import type { EntityType, HydratedMember, ListRow } from "@/lib/api-types";
 import { useDeleteList, useListMembers, useUpdateList } from "@/lib/hooks/use-lists";
+import { useGenerateDraft, useTasks } from "@/lib/hooks/use-tasks";
+import { cn } from "@/lib/utils";
 
 const TYPE_LABEL: Record<EntityType, string> = {
   person: "person",
   company: "company",
   local_business: "local business",
 };
+
+function leadPrimary(m: HydratedMember): string {
+  if (!m.lead) return "(lead removed)";
+  const r = m.lead as unknown as Record<string, unknown>;
+  return String((m.entity_type === "person" ? r.full_name : r.name) ?? "—");
+}
+function leadSecondary(m: HydratedMember): string {
+  if (!m.lead) return `${TYPE_LABEL[m.entity_type]} · added ${new Date(m.added_at).toLocaleDateString()}`;
+  const r = m.lead as unknown as Record<string, unknown>;
+  const parts =
+    m.entity_type === "person"
+      ? [r.title, r.company_name]
+      : m.entity_type === "company"
+        ? [r.industry, r.location]
+        : [r.category, r.city];
+  return parts.filter((x) => x != null && x !== "").map(String).join(" · ") || "—";
+}
 
 export function ListDetailDialog({
   list,
@@ -33,6 +53,9 @@ export function ListDetailDialog({
   const members = useListMembers(open && list ? list.id : null);
   const rename = useUpdateList();
   const del = useDeleteList();
+  const tasks = useTasks();
+  const generate = useGenerateDraft();
+
   // Seed/reset the rename field when a different list is opened — adjusted during render (the
   // "you might not need an effect" pattern), not in an effect.
   const [name, setName] = useState("");
@@ -43,7 +66,12 @@ export function ListDetailDialog({
   }
 
   if (!list) return null;
-  const count = members.data?.data.length ?? 0;
+
+  const data = members.data?.data;
+  const count = data?.count ?? 0;
+  const taskByLead = new Map(
+    (tasks.data?.data ?? []).filter((t) => t.lead_id).map((t) => [t.lead_id as string, t]),
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -77,34 +105,70 @@ export function ListDetailDialog({
           {members.isError && (
             <p className="mt-2 font-mono text-xs text-destructive">Couldn’t load members.</p>
           )}
-          {members.isSuccess &&
+          {data &&
             (count === 0 ? (
               <p className="mt-2 text-sm text-muted-foreground">No members yet.</p>
             ) : (
-              <ul className="mt-2 max-h-40 space-y-1 overflow-auto">
-                {members.data.data.map((m) => (
-                  <li
-                    key={m.id}
-                    className="flex items-center justify-between rounded border border-border bg-card px-2 py-1"
-                  >
-                    <span className="font-mono text-[11px] text-muted-foreground">
-                      {TYPE_LABEL[m.entity_type]}
-                    </span>
-                    <span className="font-mono text-[10px] text-muted-foreground">
-                      added {new Date(m.added_at).toLocaleDateString()}
-                    </span>
-                  </li>
-                ))}
+              <ul className="mt-2 max-h-48 space-y-1 overflow-auto">
+                {data.members.map((m) => {
+                  const orphan = m.lead === null;
+                  const existing = taskByLead.get(m.entity_id);
+                  const generatingThis = generate.isPending && generate.variables === m.entity_id;
+                  const canDraft = list.entity_type === "person" && !orphan;
+                  return (
+                    <li
+                      key={m.id}
+                      className="flex items-center justify-between gap-2 rounded border border-border bg-card px-2.5 py-1.5"
+                    >
+                      <div className="min-w-0">
+                        <p
+                          className={cn(
+                            "truncate text-sm",
+                            orphan ? "italic text-muted-foreground/60" : "font-medium text-foreground",
+                          )}
+                        >
+                          {leadPrimary(m)}
+                        </p>
+                        <p className="truncate font-mono text-[10px] text-muted-foreground">
+                          {leadSecondary(m)}
+                        </p>
+                      </div>
+                      {canDraft && (
+                        <div className="shrink-0">
+                          {existing ? (
+                            <Link
+                              href={`/engage?new=${existing.id}`}
+                              className="text-xs font-medium text-primary hover:underline"
+                            >
+                              View draft →
+                            </Link>
+                          ) : generatingThis ? (
+                            <span className="font-mono text-[10px] text-muted-foreground">
+                              generating…
+                            </span>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => generate.mutate(m.entity_id)}
+                              disabled={generate.isPending}
+                            >
+                              <Sparkles className="size-3.5" />
+                              Draft
+                            </Button>
+                          )}
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             ))}
-          <p className="mt-2 font-mono text-[11px] text-muted-foreground">
-            member names & per-lead actions arrive with the list-members hydrate endpoint — browse
-            named leads in{" "}
-            <Link href="/leads" className="text-primary hover:underline">
-              Leads
-            </Link>
-            .
-          </p>
+          {data && data.members.length < count && (
+            <p className="mt-2 font-mono text-[11px] text-muted-foreground">
+              showing first {data.members.length} of {count}
+            </p>
+          )}
         </div>
 
         <DialogFooter showCloseButton>

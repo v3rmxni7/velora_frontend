@@ -75,6 +75,18 @@ export interface UpdateListRequest {
   description?: string | null;
 }
 
+/** A list member hydrated with its lead record (GET /lists/:id/members). null lead = orphaned. */
+export type HydratedMember = ListMemberRow & {
+  lead: PersonRow | CompanyRow | LocalBusinessRow | null;
+};
+
+export interface ListMembersResponse {
+  count: number;
+  limit: number;
+  offset: number;
+  members: HydratedMember[];
+}
+
 // ---- Saved leads (GET /leads) ----
 
 /** A saved person row (people table). */

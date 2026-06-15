@@ -18,7 +18,7 @@ import type {
   EnrollmentRow,
   EnrollmentStatus,
   LaunchResult,
-  ListMemberRow,
+  ListMembersResponse,
   MailboxRow,
   SenderRow,
   SyncMailboxesResponse,
@@ -105,9 +105,9 @@ export const api = {
       body: JSON.stringify(body),
     }),
 
-  // Raw membership rows (entity_type/entity_id/added_at) — NOT hydrated with lead names.
+  // Hydrated membership: { count, limit, offset, members[] } with each member's lead joined.
   getListMembers: (listId: string) =>
-    apiFetch<{ data: ListMemberRow[] }>(`/lists/${listId}/members`),
+    apiFetch<{ data: ListMembersResponse }>(`/lists/${listId}/members`),
 
   // Generic over the entity so getLeads('person') stays PersonRow[] (the existing SavedLeads path)
   // while getLeads('company'|'local_business') type as CompanyRow[]/LocalBusinessRow[].
