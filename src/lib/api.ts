@@ -9,6 +9,8 @@ import type {
   PersonMatch,
   SearchLeadsRequest,
   SearchLeadsResponse,
+  AutonomyData,
+  AutonomyEventsData,
   CampaignRow,
   CampaignWithSteps,
   CoachingPointRow,
@@ -18,6 +20,7 @@ import type {
   CreateProofItemRequest,
   CreditsData,
   DeliverabilityData,
+  PauseAutonomyResponse,
   DomainRow,
   KbDocumentRow,
   ProofCategory,
@@ -205,6 +208,18 @@ export const api = {
 
   // ---- Credits (org-scoped ledger balance) ----
   getCredits: () => apiFetch<{ data: CreditsData }>("/credits"),
+
+  // ---- Autonomy (Phase 3): read the posture + audit; pause is the only write (off-direction). ----
+  getAutonomy: () => apiFetch<{ data: AutonomyData }>("/autonomy"),
+  getAutonomyEvents: (opts: { limit?: number; offset?: number } = {}) => {
+    const q = new URLSearchParams();
+    if (opts.limit) q.set("limit", String(opts.limit));
+    if (opts.offset) q.set("offset", String(opts.offset));
+    const qs = q.toString();
+    return apiFetch<{ data: AutonomyEventsData }>(`/autonomy/events${qs ? `?${qs}` : ""}`);
+  },
+  pauseAutonomy: () =>
+    apiFetch<{ data: PauseAutonomyResponse }>("/autonomy/pause", { method: "POST" }),
 
   // ---- Manage Ava: agent status + knowledge (existing endpoints) ----
   getSendingMode: () => apiFetch<{ data: SendingModeData }>("/sending/mode"),

@@ -192,11 +192,12 @@ export interface Grounding {
 export interface Task {
   id: string;
   organization_id: string;
-  type: "outbound_approval" | "manual" | "platform";
+  type: "outbound_approval" | "manual" | "platform" | "reply_approval";
   status: TaskStatus;
   lead_type: EntityType | null;
   lead_id: string | null;
   campaign_id: string | null;
+  thread_id: string | null;
   subject: string | null;
   body: string | null;
   draft_mode: DraftMode | null;
@@ -470,6 +471,47 @@ export interface CreditsData {
   balance: number;
   granted: number;
   used: number;
+}
+
+// ---- Autonomy (Phase 3, GET /autonomy, GET /autonomy/events, POST /autonomy/pause) ----
+// The org's autonomy posture + the audit log + the one-click kill switch. Read + pause only — the
+// flags are flipped ON via a deliberate runbook act, never a UI toggle (mirrors the sending flags).
+export interface AutonomyData {
+  autonomyEnabled: boolean;
+  autoSendMinConfidence: number;
+  autoReplyMode: "off" | "draft" | "send";
+  /** The 3.5 circuit-breaker thresholds (env config, read-only display). */
+  guardrails: {
+    bounceRate: number;
+    minSends: number;
+    maxComplaints: number;
+    windowHours: number;
+  };
+}
+
+/** One autonomy_events audit row (a logged autonomous decision or a pause). */
+export interface AutonomyEventRow {
+  id: string;
+  kind: "cold_send" | "reply" | "auto_pause";
+  decision: "auto_send" | "escalate" | "suppress" | "engage" | "snooze" | "auto_pause";
+  reason: string;
+  confidence: number | null;
+  enrollment_id: string | null;
+  task_id: string | null;
+  created_at: string;
+}
+
+export interface AutonomyEventsData {
+  events: AutonomyEventRow[];
+  count: number;
+  limit: number;
+  offset: number;
+}
+
+export interface PauseAutonomyResponse {
+  autonomyEnabled: false;
+  /** true if this call flipped it off; false if it was already off (idempotent). */
+  paused: boolean;
 }
 
 // ---- Copilot (/copilot*) — the tool-calling chat assistant (Slice 4) ----
