@@ -473,6 +473,43 @@ export interface CreditsData {
   used: number;
 }
 
+// ---- Analytics hub (Phase 4 Slice 4.2, GET /analytics/overview|messaging|credits) ----
+// HONEST BY CONSTRUCTION: the backend returns only genuinely-computable COUNTS + a `realSends`
+// switch — never a rate or a synthesized series. The UI derives rates only when realSends > 0 and
+// renders an honest-empty state otherwise. A genuine 0 count is real data; "not measurable yet" is
+// a distinct empty state.
+export interface AnalyticsRange {
+  from: string;
+  to: string;
+  days: number;
+}
+export interface AnalyticsOverview {
+  range: AnalyticsRange;
+  realSends: number;
+  kpis: {
+    leadsEnrolled: number;
+    draftsGenerated: number;
+    realSends: number;
+    replies: number;
+    positiveReplies: number;
+  };
+  series: { date: string; enrolled: number; drafts: number; sent: number }[];
+}
+export interface AnalyticsMessaging {
+  range: AnalyticsRange;
+  realSends: number;
+  byStatus: Record<string, number>;
+  byCampaign: { campaignId: string; name: string; drafts: number; sent: number; replies: number }[];
+}
+export interface AnalyticsCreditsData {
+  range: AnalyticsRange;
+  balance: number;
+  granted: number;
+  used: number;
+  byReason: Record<string, number>;
+  series: { date: string; granted: number; used: number }[];
+}
+
 // ---- Autonomy (Phase 3, GET /autonomy, GET /autonomy/events, POST /autonomy/pause) ----
 // The org's autonomy posture + the audit log + the one-click kill switch. Read + pause only — the
 // flags are flipped ON via a deliberate runbook act, never a UI toggle (mirrors the sending flags).

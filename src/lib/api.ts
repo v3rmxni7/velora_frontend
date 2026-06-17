@@ -9,6 +9,9 @@ import type {
   PersonMatch,
   SearchLeadsRequest,
   SearchLeadsResponse,
+  AnalyticsCreditsData,
+  AnalyticsMessaging,
+  AnalyticsOverview,
   AutonomyData,
   AutonomyEventsData,
   CampaignRow,
@@ -93,6 +96,16 @@ export async function apiFetch<T>(path: string, init: RequestInit = {}): Promise
 }
 
 // ---- Typed endpoint wrappers (the thin vertical's surface) ----
+
+/** A [from,to] analytics window (ISO dates); both optional → backend defaults to the last 30 days. */
+export type AnalyticsRangeArg = { from?: string; to?: string };
+function rangeQuery(r: AnalyticsRangeArg): string {
+  const q = new URLSearchParams();
+  if (r.from) q.set("from", r.from);
+  if (r.to) q.set("to", r.to);
+  const s = q.toString();
+  return s ? `?${s}` : "";
+}
 
 export const api = {
   searchLeads: (body: SearchLeadsRequest) =>
@@ -208,6 +221,14 @@ export const api = {
 
   // ---- Credits (org-scoped ledger balance) ----
   getCredits: () => apiFetch<{ data: CreditsData }>("/credits"),
+
+  // ---- Analytics hub (Phase 4 Slice 4.2) — org-scoped aggregations over a [from,to] window ----
+  getAnalyticsOverview: (r: AnalyticsRangeArg = {}) =>
+    apiFetch<{ data: AnalyticsOverview }>(`/analytics/overview${rangeQuery(r)}`),
+  getAnalyticsMessaging: (r: AnalyticsRangeArg = {}) =>
+    apiFetch<{ data: AnalyticsMessaging }>(`/analytics/messaging${rangeQuery(r)}`),
+  getAnalyticsCredits: (r: AnalyticsRangeArg = {}) =>
+    apiFetch<{ data: AnalyticsCreditsData }>(`/analytics/credits${rangeQuery(r)}`),
 
   // ---- Autonomy (Phase 3): read the posture + audit; pause is the only write (off-direction). ----
   getAutonomy: () => apiFetch<{ data: AutonomyData }>("/autonomy"),

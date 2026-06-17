@@ -3,6 +3,7 @@
 import {
   Activity,
   AtSign,
+  BarChart3,
   Bot,
   Inbox,
   List,
@@ -35,6 +36,7 @@ const GROUPS: { eyebrow: string; items: NavItem[] }[] = [
     items: [
       { href: "/manage", label: "Manage Ava", icon: Bot },
       { href: "/campaigns", label: "Campaigns", icon: Megaphone },
+      { href: "/analytics", label: "Analytics", icon: BarChart3 },
       { href: "/senders", label: "Senders", icon: AtSign },
       { href: "/deliverability", label: "Deliverability", icon: Activity },
     ],
