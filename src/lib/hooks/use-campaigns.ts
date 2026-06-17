@@ -3,10 +3,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { api, ApiError } from "@/lib/api";
-import type { CreateCampaignRequest, EnrollmentStatus } from "@/lib/api-types";
+import type { CampaignStepInput, CreateCampaignRequest, EnrollmentStatus } from "@/lib/api-types";
 
 const noAuthRetry = (count: number, err: unknown) =>
   !(err instanceof ApiError && err.status === 401) && count < 1;
+
+/** Human label for an audience source (used when a non-cold launch reports source-not-connected). */
+const SOURCE_LABEL: Record<string, string> = {
+  list: "a list",
+  crm: "a CRM (HubSpot or Salesforce)",
+  website_visitors: "website-visitor tracking",
+  signals: "an intent signal",
+};
 
 export function useCampaigns() {
   return useQuery({ queryKey: ["campaigns"], queryFn: api.getCampaigns, retry: noAuthRetry });
@@ -47,6 +55,13 @@ export function useLaunchCampaign(id: string) {
       qc.invalidateQueries({ queryKey: ["campaign", id] });
       qc.invalidateQueries({ queryKey: ["enrollments", id] });
       qc.invalidateQueries({ queryKey: ["campaigns"] });
+      // Honest: a non-cold type whose source isn't connected enrolled nothing — say so, don't fake success.
+      if (!data.sourceConnected) {
+        toast("Source not connected", {
+          description: `Connect ${SOURCE_LABEL[data.source] ?? "the source"} to launch this campaign type.`,
+        });
+        return;
+      }
       toast.success(`Enrolled ${data.enrolled} lead${data.enrolled === 1 ? "" : "s"}`, {
         description: "Drafts will appear in Tasks for approval.",
         action: { label: "Open Tasks", onClick: () => window.location.assign("/engage") },
@@ -54,6 +69,19 @@ export function useLaunchCampaign(id: string) {
     },
     onError: (err) =>
       toast.error(err instanceof ApiError ? err.message : "Launch failed — try again."),
+  });
+}
+
+export function useUpdateCampaignSteps(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (steps: CampaignStepInput[]) => api.updateCampaignSteps(id, steps),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["campaign", id] });
+      toast.success("Sequence saved.");
+    },
+    onError: (err) =>
+      toast.error(err instanceof ApiError ? err.message : "Couldn’t save the sequence — try again."),
   });
 }
 

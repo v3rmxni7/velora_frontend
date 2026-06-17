@@ -12,6 +12,7 @@ import {
 } from "@/lib/hooks/use-campaigns";
 import type { EnrollmentStatus } from "@/lib/api-types";
 import { CampaignStatusChip, EnrollmentCount, ENROLLMENT_ORDER } from "./campaigns-ui";
+import { SequenceBuilder } from "./sequence-builder";
 
 const EYEBROW = "font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground";
 const CHIP = "rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground";
@@ -80,27 +81,10 @@ export function CampaignDetail({ id }: { id: string }) {
         </div>
       </div>
 
-      {/* Steps */}
+      {/* Sequence — editable while draft, locked once launched (4.3) */}
       <section>
         <h2 className={`${EYEBROW} mb-3`}>Sequence</h2>
-        <ul className="space-y-2">
-          {[...c.steps]
-            .sort((a, b) => a.step_number - b.step_number)
-            .map((s) => (
-              <li
-                key={s.id}
-                className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-2.5"
-              >
-                <span className="text-sm text-foreground">Step {s.step_number}</span>
-                <span className="font-mono text-[11px] text-muted-foreground">
-                  {s.channel} · {s.body_mode.replace(/_/g, " ")} · delay {s.delay_days}d
-                </span>
-              </li>
-            ))}
-        </ul>
-        <p className="mt-2 font-mono text-[11px] text-muted-foreground">
-          single step in this phase — multi-step sequences arrive later
-        </p>
+        <SequenceBuilder campaignId={id} steps={c.steps} editable={c.status === "draft"} />
       </section>
 
       {/* Enrollment breakdown */}
@@ -123,7 +107,7 @@ export function CampaignDetail({ id }: { id: string }) {
             </div>
           ))}
         <p className="mt-3 font-mono text-[11px] text-muted-foreground">
-          launching enrolls the list and generates drafts in Tasks — sending happens after warmup +
+          launching enrolls the audience and generates drafts in Tasks — sending is dry-run until
           go-live
         </p>
         <Link

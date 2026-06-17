@@ -6,7 +6,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { type CampaignType, SUPPORTED_CAMPAIGN_TYPES } from "@/lib/api-types";
 import { useCampaigns, useCreateCampaign, useLists } from "@/lib/hooks/use-campaigns";
+import { cn } from "@/lib/utils";
 import { CampaignStatusChip } from "./campaigns-ui";
 
 const EYEBROW = "font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground";
@@ -14,62 +16,116 @@ const FOOTNOTE = "font-mono text-[11px] text-muted-foreground";
 const SELECT_CLASS =
   "h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50";
 
-function CreateCampaignForm() {
+// The 5 campaign types (SPEC §3.2). `source` is the honest "connect X" copy for types whose audience
+// source isn't connected yet (everything but cold). One engine; the lead source differs.
+const TYPE_META: { type: CampaignType; label: string; desc: string; source: string }[] = [
+  { type: "cold_outbound", label: "Cold outbound", desc: "Net-new prospects from a saved list.", source: "" },
+  { type: "warm_outbound", label: "Warm outbound", desc: "Existing contacts in your CRM.", source: "a CRM (HubSpot or Salesforce)" },
+  { type: "cross_sell", label: "Cross-sell / upsell", desc: "Existing customers — expansion.", source: "a CRM (HubSpot or Salesforce)" },
+  { type: "website_visitor", label: "Website visitor", desc: "De-anonymized site visitors.", source: "website-visitor tracking" },
+  { type: "intent_signals", label: "Intent signals", desc: "Prospects surfaced by a signal.", source: "an intent signal" },
+];
+
+function NewCampaign() {
   const router = useRouter();
   const lists = useLists();
   const create = useCreateCampaign();
+  const [type, setType] = useState<CampaignType>("cold_outbound");
   const [name, setName] = useState("");
   const [listId, setListId] = useState("");
 
+  const supported = SUPPORTED_CAMPAIGN_TYPES.includes(type);
+  const meta = TYPE_META.find((m) => m.type === type) ?? TYPE_META[0];
+  const noLists = lists.isSuccess && lists.data.data.length === 0;
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !listId) return;
+    if (!supported || !name.trim() || !listId) return;
     create.mutate(
-      { name: name.trim(), listId, campaignType: "cold_outbound" },
+      { name: name.trim(), listId, campaignType: type },
       { onSuccess: ({ data }) => router.push(`/campaigns/${data.id}`) },
     );
   };
 
-  const noLists = lists.isSuccess && lists.data.data.length === 0;
-
   return (
-    <form onSubmit={submit} className="space-y-3 rounded-md border border-border bg-card p-4">
-      <Input
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-        placeholder="Campaign name"
-        disabled={create.isPending}
-      />
-      {lists.isPending ? (
-        <Skeleton className="h-8 w-full rounded-lg" />
-      ) : noLists ? (
-        <p className="text-sm text-muted-foreground">
-          No lists yet —{" "}
-          <Link href="/lead-discovery" className="font-medium text-primary hover:underline">
-            find leads and save a list first →
-          </Link>
-        </p>
-      ) : (
-        <select
-          value={listId}
-          onChange={(e) => setListId(e.target.value)}
-          disabled={create.isPending}
-          className={SELECT_CLASS}
-        >
-          <option value="">Select an audience list…</option>
-          {lists.data?.data.map((l) => (
-            <option key={l.id} value={l.id}>
-              {l.name} · {l.entity_type}
-            </option>
-          ))}
-        </select>
-      )}
-      <div className="flex items-center justify-between gap-3">
-        <p className={FOOTNOTE}>only cold outbound ships in this phase</p>
-        <Button type="submit" size="sm" disabled={create.isPending || !name.trim() || !listId}>
-          Create campaign
-        </Button>
+    <form onSubmit={submit} className="space-y-4 rounded-md border border-border bg-card p-4">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {TYPE_META.map((m) => {
+          const active = m.type === type;
+          const ready = SUPPORTED_CAMPAIGN_TYPES.includes(m.type);
+          return (
+            <button
+              type="button"
+              key={m.type}
+              onClick={() => setType(m.type)}
+              className={cn(
+                "rounded-md border p-2.5 text-left transition-colors",
+                active ? "border-primary/40 bg-accent" : "border-border hover:bg-secondary/60",
+              )}
+            >
+              <div className="flex items-center justify-between gap-1">
+                <span className="text-sm font-medium text-foreground">{m.label}</span>
+                {!ready && (
+                  <span className="rounded border border-border px-1 font-mono text-[9px] uppercase tracking-[0.1em] text-muted-foreground/70">
+                    soon
+                  </span>
+                )}
+              </div>
+              <p className="mt-0.5 text-[11px] text-muted-foreground">{m.desc}</p>
+            </button>
+          );
+        })}
       </div>
+
+      {supported ? (
+        <>
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Campaign name"
+            disabled={create.isPending}
+          />
+          {lists.isPending ? (
+            <Skeleton className="h-8 w-full rounded-lg" />
+          ) : noLists ? (
+            <p className="text-sm text-muted-foreground">
+              No lists yet —{" "}
+              <Link href="/lead-discovery" className="font-medium text-primary hover:underline">
+                find leads and save a list first →
+              </Link>
+            </p>
+          ) : (
+            <select
+              value={listId}
+              onChange={(e) => setListId(e.target.value)}
+              disabled={create.isPending}
+              className={SELECT_CLASS}
+            >
+              <option value="">Select an audience list…</option>
+              {lists.data?.data.map((l) => (
+                <option key={l.id} value={l.id}>
+                  {l.name} · {l.entity_type}
+                </option>
+              ))}
+            </select>
+          )}
+          <div className="flex items-center justify-between gap-3">
+            <p className={FOOTNOTE}>launching enrolls the list + drafts in Tasks — dry-run until go-live</p>
+            <Button type="submit" size="sm" disabled={create.isPending || !name.trim() || !listId}>
+              Create campaign
+            </Button>
+          </div>
+        </>
+      ) : (
+        <div className="rounded-md border border-dashed border-border bg-card p-4 text-center">
+          <p className="text-sm text-muted-foreground">
+            Connect {meta.source} to source this campaign type.
+          </p>
+          <p className={`${FOOTNOTE} mt-1`}>
+            the {meta.label.toLowerCase()} engine is ready — it lights up when its source is connected
+          </p>
+        </div>
+      )}
     </form>
   );
 }
@@ -80,7 +136,7 @@ export function CampaignList() {
     <div className="mx-auto max-w-3xl space-y-8">
       <section>
         <h2 className={`${EYEBROW} mb-3`}>New campaign</h2>
-        <CreateCampaignForm />
+        <NewCampaign />
       </section>
 
       <section>

@@ -15,6 +15,8 @@ import type {
   AutonomyData,
   AutonomyEventsData,
   CampaignRow,
+  CampaignStepInput,
+  CampaignStepRow,
   CampaignWithSteps,
   CoachingPointRow,
   CopilotMessage,
@@ -207,6 +209,11 @@ export const api = {
       body: JSON.stringify(body),
     }),
   getCampaign: (id: string) => apiFetch<{ data: CampaignWithSteps }>(`/campaigns/${id}`),
+  updateCampaignSteps: (id: string, steps: CampaignStepInput[]) =>
+    apiFetch<{ data: CampaignStepRow[] }>(`/campaigns/${id}/steps`, {
+      method: "PUT",
+      body: JSON.stringify({ steps }),
+    }),
   launchCampaign: (id: string) =>
     apiFetch<{ data: LaunchResult }>(`/campaigns/${id}/launch`, { method: "POST" }),
   pauseCampaign: (id: string) =>

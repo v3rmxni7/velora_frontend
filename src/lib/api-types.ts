@@ -345,7 +345,12 @@ export type CampaignType =
   | "cross_sell"
   | "website_visitor"
   | "intent_signals";
-/** Only cold_outbound ships in Phase 2's pilot; the rest 422 at the backend. */
+/**
+ * Types whose audience SOURCE is connected today (creatable + launchable now). The other 4 types
+ * are valid product types the backend accepts, but their sources (CRM / website-visitor feed /
+ * intent signals) aren't connected yet — the UI shows an honest "connect [source]" state for them
+ * (4.5–4.7) rather than a fake-ready campaign.
+ */
 export const SUPPORTED_CAMPAIGN_TYPES: CampaignType[] = ["cold_outbound"];
 export type CampaignStatus = "draft" | "active" | "paused" | "completed" | "archived";
 
@@ -407,13 +412,24 @@ export interface EnrollmentRow {
 
 export interface CreateCampaignRequest {
   name: string;
-  listId: string;
+  /** Required for cold_outbound (the audience list); omitted for non-cold types (sourced elsewhere). */
+  listId?: string;
   senderId?: string;
   campaignType?: CampaignType;
 }
 
+/** One step in the authored sequence (4.3) — the PUT /campaigns/:id/steps body item. */
+export interface CampaignStepInput {
+  delayDays: number;
+  bodyMode: "ai_grounded" | "template";
+  subjectTemplate?: string | null;
+}
+
 export interface LaunchResult {
   enrolled: number;
+  /** false when a non-cold type's audience source isn't connected yet (then enrolled is 0). */
+  sourceConnected: boolean;
+  source: string;
 }
 
 // ---- Manage Ava: knowledge + agent status ----
