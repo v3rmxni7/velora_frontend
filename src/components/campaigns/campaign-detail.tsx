@@ -13,6 +13,7 @@ import {
 import type { EnrollmentStatus } from "@/lib/api-types";
 import { CampaignStatusChip, EnrollmentCount, ENROLLMENT_ORDER } from "./campaigns-ui";
 import { SequenceBuilder } from "./sequence-builder";
+import { VariantEditor } from "./variant-editor";
 
 const EYEBROW = "font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground";
 const CHIP = "rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground";
@@ -85,6 +86,12 @@ export function CampaignDetail({ id }: { id: string }) {
       <section>
         <h2 className={`${EYEBROW} mb-3`}>Sequence</h2>
         <SequenceBuilder campaignId={id} steps={c.steps} editable={c.status === "draft"} />
+      </section>
+
+      {/* A/Z variants — editable while draft, locked once launched (4.4) */}
+      <section>
+        <h2 className={`${EYEBROW} mb-3`}>A/Z variants</h2>
+        <VariantEditor campaignId={id} variants={c.variants ?? []} editable={c.status === "draft"} />
       </section>
 
       {/* Enrollment breakdown */}

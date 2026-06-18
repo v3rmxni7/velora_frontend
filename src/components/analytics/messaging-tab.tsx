@@ -65,6 +65,9 @@ export function MessagingTab({ range }: { range: AnalyticsRangeArg }) {
                   <th className="px-3 py-2 text-right font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground">
                     Replies
                   </th>
+                  <th className="px-3 py-2 text-right font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground">
+                    Positive
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -74,6 +77,7 @@ export function MessagingTab({ range }: { range: AnalyticsRangeArg }) {
                     <td className="px-3 py-2 text-right font-mono tabular-nums text-foreground">{c.drafts}</td>
                     <td className="px-3 py-2 text-right font-mono tabular-nums text-foreground">{c.sent}</td>
                     <td className="px-3 py-2 text-right font-mono tabular-nums text-foreground">{c.replies}</td>
+                    <td className="px-3 py-2 text-right font-mono tabular-nums text-foreground">{c.positive}</td>
                   </tr>
                 ))}
               </tbody>
@@ -81,6 +85,53 @@ export function MessagingTab({ range }: { range: AnalyticsRangeArg }) {
           </div>
         )}
       </Card>
+
+      {/* A/Z by variant (4.4). Rendered only when variants exist + have activity. Real counts only —
+          no rate/winner column; the comparison is honest-empty until real sends accrue. */}
+      {d.byVariant.length > 0 && (
+        <Card>
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div className={EYEBROW}>By variant / personalization</div>
+            <ExportButton filename="analytics-by-variant.csv" rows={d.byVariant} />
+          </div>
+          <div className="overflow-hidden rounded-md border border-border">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-border bg-secondary/40 text-left">
+                  <th className="px-3 py-2 font-medium text-muted-foreground">Variant</th>
+                  <th className="px-3 py-2 font-medium text-muted-foreground">Campaign</th>
+                  {(["Drafts", "Sent", "Replies", "Positive"] as const).map((h) => (
+                    <th
+                      key={h}
+                      className="px-3 py-2 text-right font-mono text-[11px] uppercase tracking-[0.1em] text-muted-foreground"
+                    >
+                      {h}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {d.byVariant.map((v) => (
+                  <tr key={v.variantId} className="border-b border-border/60 last:border-b-0">
+                    <td className="px-3 py-2 font-mono text-foreground">{v.label}</td>
+                    <td className="px-3 py-2 text-muted-foreground">{v.campaignName}</td>
+                    <td className="px-3 py-2 text-right font-mono tabular-nums text-foreground">{v.drafts}</td>
+                    <td className="px-3 py-2 text-right font-mono tabular-nums text-foreground">{v.sent}</td>
+                    <td className="px-3 py-2 text-right font-mono tabular-nums text-foreground">{v.replies}</td>
+                    <td className="px-3 py-2 text-right font-mono tabular-nums text-foreground">{v.positive}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className={`${FOOTNOTE} mt-3`}>
+            {d.realSends === 0
+              ? "dry-run draft split — reply-rate comparison + winner populate after your first real sends"
+              : "leads split evenly; no winner is picked until real replies accrue"}{" "}
+            · variant rows count only messages still linked to an enrollment
+          </p>
+        </Card>
+      )}
     </div>
   );
 }

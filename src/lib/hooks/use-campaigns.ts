@@ -3,7 +3,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { api, ApiError } from "@/lib/api";
-import type { CampaignStepInput, CreateCampaignRequest, EnrollmentStatus } from "@/lib/api-types";
+import type {
+  CampaignStepInput,
+  CampaignVariantInput,
+  CreateCampaignRequest,
+  EnrollmentStatus,
+} from "@/lib/api-types";
 
 const noAuthRetry = (count: number, err: unknown) =>
   !(err instanceof ApiError && err.status === 401) && count < 1;
@@ -82,6 +87,19 @@ export function useUpdateCampaignSteps(id: string) {
     },
     onError: (err) =>
       toast.error(err instanceof ApiError ? err.message : "Couldn’t save the sequence — try again."),
+  });
+}
+
+export function useUpdateCampaignVariants(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (variants: CampaignVariantInput[]) => api.updateCampaignVariants(id, variants),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["campaign", id] });
+      toast.success("Variants saved.");
+    },
+    onError: (err) =>
+      toast.error(err instanceof ApiError ? err.message : "Couldn’t save variants — try again."),
   });
 }
 

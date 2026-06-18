@@ -381,8 +381,25 @@ export interface CampaignStepRow {
   updated_at: string;
 }
 
+/** An A/Z message variant (4.4) — `angle` steers the grounded Writer, never sent verbatim. */
+export interface CampaignVariantRow {
+  id: string;
+  organization_id: string;
+  campaign_id: string;
+  label: string;
+  angle: string;
+  created_at: string;
+  updated_at: string;
+}
+/** One variant in the PUT /campaigns/:id/variants body. */
+export interface CampaignVariantInput {
+  label: string;
+  angle: string;
+}
+
 export interface CampaignWithSteps extends CampaignRow {
   steps: CampaignStepRow[];
+  variants?: CampaignVariantRow[];
 }
 
 export type EnrollmentStatus =
@@ -515,7 +532,26 @@ export interface AnalyticsMessaging {
   range: AnalyticsRange;
   realSends: number;
   byStatus: Record<string, number>;
-  byCampaign: { campaignId: string; name: string; drafts: number; sent: number; replies: number }[];
+  byCampaign: {
+    campaignId: string;
+    name: string;
+    drafts: number;
+    sent: number;
+    replies: number;
+    positive: number;
+  }[];
+  // A/Z (4.4) — per-variant rollup. Empty until a campaign has variants + activity. Honest-empty
+  // (every variant 0/0/0) until real sends; never a fabricated winner.
+  byVariant: {
+    variantId: string;
+    label: string;
+    campaignId: string;
+    campaignName: string;
+    drafts: number;
+    sent: number;
+    replies: number;
+    positive: number;
+  }[];
 }
 export interface AnalyticsCreditsData {
   range: AnalyticsRange;

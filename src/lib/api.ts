@@ -17,6 +17,8 @@ import type {
   CampaignRow,
   CampaignStepInput,
   CampaignStepRow,
+  CampaignVariantInput,
+  CampaignVariantRow,
   CampaignWithSteps,
   CoachingPointRow,
   CopilotMessage,
@@ -213,6 +215,11 @@ export const api = {
     apiFetch<{ data: CampaignStepRow[] }>(`/campaigns/${id}/steps`, {
       method: "PUT",
       body: JSON.stringify({ steps }),
+    }),
+  updateCampaignVariants: (id: string, variants: CampaignVariantInput[]) =>
+    apiFetch<{ data: CampaignVariantRow[] }>(`/campaigns/${id}/variants`, {
+      method: "PUT",
+      body: JSON.stringify({ variants }),
     }),
   launchCampaign: (id: string) =>
     apiFetch<{ data: LaunchResult }>(`/campaigns/${id}/launch`, { method: "POST" }),
