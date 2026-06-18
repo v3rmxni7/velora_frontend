@@ -13,6 +13,7 @@ import {
   Plug,
   Search,
   Sparkles,
+  UserCog,
   Users,
   Zap,
 } from "lucide-react";
@@ -43,6 +44,7 @@ const GROUPS: { eyebrow: string; items: NavItem[] }[] = [
       { href: "/senders", label: "Senders", icon: AtSign },
       { href: "/deliverability", label: "Deliverability", icon: Activity },
       { href: "/connections", label: "Connections", icon: Plug },
+      { href: "/team", label: "Team", icon: UserCog },
     ],
   },
   {

@@ -534,6 +534,38 @@ export interface IntegrationsSummary {
   configurableProviders: string[];
 }
 
+// ---- Team management (Slice 4.8) ----
+
+export type OrgRole = "owner" | "admin" | "member";
+
+export interface TeamMemberRow {
+  id: string;
+  email: string;
+  role: OrgRole;
+  created_at: string;
+}
+export interface TeamInvitationRow {
+  id: string;
+  email: string;
+  role: "admin" | "member";
+  status: string;
+  expires_at: string;
+  created_at: string;
+}
+export interface TeamMe {
+  user: { id: string; email: string; role: OrgRole };
+  organization: { id: string; name: string };
+  /** false until invite email delivery (SMTP) is configured → invites surface a copyable link. */
+  inviteEmailConfigured: boolean;
+}
+/** The one-time invite result — `token` lets the FE compose a copyable accept link (NEVER emailed). */
+export interface InviteResult {
+  token: string;
+  email: string;
+  role: string;
+  expiresAt: string;
+}
+
 // ---- Manage Ava: knowledge + agent status ----
 
 export interface SendingModeData {

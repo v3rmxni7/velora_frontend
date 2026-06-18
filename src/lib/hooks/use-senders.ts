@@ -37,6 +37,44 @@ export function useCreateDomain() {
   });
 }
 
+// 4.8 — full sender config. Each invalidates senders + mailboxes (a primary/assignment change
+// touches both). The send path honors sender.status (a real gate) + assignment is real DB state.
+export function useUpdateSender() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      patch,
+    }: {
+      id: string;
+      patch: { displayName?: string; status?: "setup" | "active" | "paused"; userId?: string | null };
+    }) => api.updateSender(id, patch),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["senders"] }),
+    onError: (err) =>
+      toast.error(err instanceof ApiError ? err.message : "Couldn’t update the sender — try again."),
+  });
+}
+export function useAssignMailbox() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ mailboxId, senderId }: { mailboxId: string; senderId: string | null }) =>
+      api.assignMailbox(mailboxId, senderId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["mailboxes"] }),
+    onError: (err) =>
+      toast.error(err instanceof ApiError ? err.message : "Couldn’t assign the mailbox — try again."),
+  });
+}
+export function useSetPrimaryMailbox() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ senderId, mailboxId }: { senderId: string; mailboxId: string | null }) =>
+      api.setPrimaryMailbox(senderId, mailboxId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["mailboxes"] }),
+    onError: (err) =>
+      toast.error(err instanceof ApiError ? err.message : "Couldn’t set the primary — try again."),
+  });
+}
+
 // Sync pulls Smartlead accounts into mailboxes. Until SMARTLEAD_API_KEY lands in Railway at
 // go-live the backend returns 503 (smartlead_unconfigured) — surface that HONESTLY, not as a
 // failure: the feature simply isn't live yet.

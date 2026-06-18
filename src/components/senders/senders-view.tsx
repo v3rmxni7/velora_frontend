@@ -5,18 +5,24 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import type { MailboxRow, SenderRow } from "@/lib/api-types";
 import {
+  useAssignMailbox,
   useCreateDomain,
   useCreateSender,
   useDomains,
   useMailboxes,
   useSenders,
+  useSetPrimaryMailbox,
   useSyncMailboxes,
+  useUpdateSender,
 } from "@/lib/hooks/use-senders";
 import { AuthChip, Reputation, WarmthChip } from "./senders-ui";
 
 const EYEBROW = "font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground";
 const FOOTNOTE = "font-mono text-[11px] text-muted-foreground";
+const SELECT_CLASS =
+  "h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50";
 
 function SectionError({ what }: { what: string }) {
   return <p className="font-mono text-xs text-destructive">Couldn’t load {what}.</p>;
@@ -77,6 +83,7 @@ function Mailboxes() {
 
 function Senders() {
   const senders = useSenders();
+  const mailboxes = useMailboxes();
   const create = useCreateSender();
   const [name, setName] = useState("");
   const submit = (e: React.FormEvent) => {
@@ -107,19 +114,116 @@ function Senders() {
       {senders.isSuccess && senders.data.data.length > 0 && (
         <ul className="space-y-2">
           {senders.data.data.map((s) => (
-            <li
-              key={s.id}
-              className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-2.5"
-            >
-              <span className="text-sm text-foreground">{s.display_name ?? "(unnamed)"}</span>
-              <span className="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">
-                {s.status}
-              </span>
+            <li key={s.id}>
+              <SenderConfig sender={s} mailboxes={mailboxes.data?.data ?? []} />
             </li>
           ))}
         </ul>
       )}
+      <p className={`${FOOTNOTE} mt-2`}>
+        pausing a sender stops its campaigns’ sends; an active sender still needs a warm, assigned
+        mailbox to send. the primary is your default — sending rotates eligible warm mailboxes
+      </p>
     </section>
+  );
+}
+
+// 4.8 — per-sender config (REAL DB state): status (a real send gate), assigned mailboxes + the
+// primary, and an honest "no mailboxes yet" state. Assignment uses the org's mailboxes (one query).
+function SenderConfig({ sender, mailboxes }: { sender: SenderRow; mailboxes: MailboxRow[] }) {
+  const updateSender = useUpdateSender();
+  const assign = useAssignMailbox();
+  const setPrimary = useSetPrimaryMailbox();
+  const [toAssign, setToAssign] = useState("");
+
+  const mine = mailboxes.filter((m) => m.sender_id === sender.id);
+  const unassigned = mailboxes.filter((m) => m.sender_id === null);
+
+  return (
+    <div className="space-y-3 rounded-md border border-border bg-card p-4">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="text-sm font-medium text-foreground">{sender.display_name ?? "(unnamed)"}</span>
+        <select
+          value={sender.status}
+          onChange={(e) =>
+            updateSender.mutate({
+              id: sender.id,
+              patch: { status: e.target.value as "setup" | "active" | "paused" },
+            })
+          }
+          disabled={updateSender.isPending}
+          className={SELECT_CLASS}
+        >
+          <option value="setup">Setup</option>
+          <option value="active">Active</option>
+          <option value="paused">Paused</option>
+        </select>
+      </div>
+
+      <div className="border-t border-border/60 pt-3">
+        {mine.length === 0 ? (
+          <p className={FOOTNOTE}>no mailboxes assigned yet</p>
+        ) : (
+          <ul className="space-y-1.5">
+            {mine.map((m) => (
+              <li key={m.id} className="flex items-center justify-between gap-2">
+                <span className="flex min-w-0 items-center gap-2">
+                  <input
+                    type="radio"
+                    name={`primary-${sender.id}`}
+                    checked={m.is_primary}
+                    onChange={() => setPrimary.mutate({ senderId: sender.id, mailboxId: m.id })}
+                    disabled={setPrimary.isPending}
+                    aria-label="Set as primary mailbox"
+                  />
+                  <span className="truncate font-mono text-[12px] text-foreground">{m.email}</span>
+                  <WarmthChip status={m.status} />
+                </span>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  disabled={assign.isPending}
+                  onClick={() => assign.mutate({ mailboxId: m.id, senderId: null })}
+                >
+                  Unassign
+                </Button>
+              </li>
+            ))}
+          </ul>
+        )}
+        {unassigned.length > 0 && (
+          <div className="mt-2 flex items-center gap-2">
+            <select
+              value={toAssign}
+              onChange={(e) => setToAssign(e.target.value)}
+              disabled={assign.isPending}
+              className={SELECT_CLASS}
+            >
+              <option value="">Assign a mailbox…</option>
+              {unassigned.map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.email}
+                </option>
+              ))}
+            </select>
+            <Button
+              type="button"
+              size="sm"
+              disabled={assign.isPending || !toAssign}
+              onClick={() =>
+                assign.mutate(
+                  { mailboxId: toAssign, senderId: sender.id },
+                  { onSuccess: () => setToAssign("") },
+                )
+              }
+            >
+              Assign
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
 

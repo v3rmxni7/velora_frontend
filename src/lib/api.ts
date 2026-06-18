@@ -35,8 +35,13 @@ import type {
   SendingModeData,
   SendMessageResponse,
   IntegrationsSummary,
+  InviteResult,
+  OrgRole,
   SignalCatalogRow,
   SuggestedAction,
+  TeamInvitationRow,
+  TeamMe,
+  TeamMemberRow,
   TrackedDomainRow,
   WebsiteVisitorSummary,
   EnrollmentRow,
@@ -274,6 +279,46 @@ export const api = {
       `/integrations/crm/${provider}/link`,
       { method: "POST", body: JSON.stringify({ campaignId }) },
     ),
+
+  // ---- Team management (Slice 4.8) ----
+  getTeamMe: () => apiFetch<{ data: TeamMe }>("/team/me"),
+  getTeamMembers: () => apiFetch<{ data: { members: TeamMemberRow[] } }>("/team/members"),
+  getTeamInvitations: () =>
+    apiFetch<{ data: { invitations: TeamInvitationRow[] } }>("/team/invitations"),
+  inviteTeamMember: (email: string, role: "admin" | "member") =>
+    apiFetch<{ data: InviteResult }>("/team/invitations", {
+      method: "POST",
+      body: JSON.stringify({ email, role }),
+    }),
+  revokeInvitation: (id: string) =>
+    apiFetch<{ data: { id: string; status: string } }>(`/team/invitations/${id}/revoke`, {
+      method: "POST",
+    }),
+  updateMemberRole: (id: string, role: OrgRole) =>
+    apiFetch<{ data: TeamMemberRow }>(`/team/members/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ role }),
+    }),
+  removeMember: (id: string) =>
+    apiFetch<{ data: { id: string; removed: boolean } }>(`/team/members/${id}`, {
+      method: "DELETE",
+    }),
+
+  // ---- Sender config (Slice 4.8) ----
+  updateSender: (
+    id: string,
+    patch: { displayName?: string; status?: "setup" | "active" | "paused"; userId?: string | null },
+  ) => apiFetch<{ data: SenderRow }>(`/senders/${id}`, { method: "PATCH", body: JSON.stringify(patch) }),
+  setPrimaryMailbox: (senderId: string, mailboxId: string | null) =>
+    apiFetch<{ data: MailboxRow[] }>(`/senders/${senderId}/primary-mailbox`, {
+      method: "PATCH",
+      body: JSON.stringify({ mailboxId }),
+    }),
+  assignMailbox: (mailboxId: string, senderId: string | null) =>
+    apiFetch<{ data: MailboxRow }>(`/mailboxes/${mailboxId}`, {
+      method: "PATCH",
+      body: JSON.stringify({ senderId }),
+    }),
 
   // ---- Deliverability (org-scoped metrics) ----
   getDeliverability: () => apiFetch<{ data: DeliverabilityData }>("/deliverability"),
