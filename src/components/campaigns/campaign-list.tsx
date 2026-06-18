@@ -37,12 +37,16 @@ function NewCampaign() {
   const supported = SUPPORTED_CAMPAIGN_TYPES.includes(type);
   const meta = TYPE_META.find((m) => m.type === type) ?? TYPE_META[0];
   const noLists = lists.isSuccess && lists.data.data.length === 0;
+  // Only cold_outbound takes a list; intent_signals sources its audience from a signal subscription
+  // (set up later on the Signals page), so it's creatable with no list.
+  const requiresList = type === "cold_outbound";
+  const canSubmit = supported && !!name.trim() && (!requiresList || !!listId);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supported || !name.trim() || !listId) return;
+    if (!canSubmit) return;
     create.mutate(
-      { name: name.trim(), listId, campaignType: type },
+      { name: name.trim(), ...(requiresList ? { listId } : {}), campaignType: type },
       { onSuccess: ({ data }) => router.push(`/campaigns/${data.id}`) },
     );
   };
@@ -85,33 +89,46 @@ function NewCampaign() {
             placeholder="Campaign name"
             disabled={create.isPending}
           />
-          {lists.isPending ? (
-            <Skeleton className="h-8 w-full rounded-lg" />
-          ) : noLists ? (
+          {requiresList ? (
+            lists.isPending ? (
+              <Skeleton className="h-8 w-full rounded-lg" />
+            ) : noLists ? (
+              <p className="text-sm text-muted-foreground">
+                No lists yet —{" "}
+                <Link href="/lead-discovery" className="font-medium text-primary hover:underline">
+                  find leads and save a list first →
+                </Link>
+              </p>
+            ) : (
+              <select
+                value={listId}
+                onChange={(e) => setListId(e.target.value)}
+                disabled={create.isPending}
+                className={SELECT_CLASS}
+              >
+                <option value="">Select an audience list…</option>
+                {lists.data?.data.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.name} · {l.entity_type}
+                  </option>
+                ))}
+              </select>
+            )
+          ) : (
             <p className="text-sm text-muted-foreground">
-              No lists yet —{" "}
-              <Link href="/lead-discovery" className="font-medium text-primary hover:underline">
-                find leads and save a list first →
+              No list needed — the audience comes from your signal subscriptions.{" "}
+              <Link href="/signals" className="font-medium text-primary hover:underline">
+                subscribe live signals →
               </Link>
             </p>
-          ) : (
-            <select
-              value={listId}
-              onChange={(e) => setListId(e.target.value)}
-              disabled={create.isPending}
-              className={SELECT_CLASS}
-            >
-              <option value="">Select an audience list…</option>
-              {lists.data?.data.map((l) => (
-                <option key={l.id} value={l.id}>
-                  {l.name} · {l.entity_type}
-                </option>
-              ))}
-            </select>
           )}
           <div className="flex items-center justify-between gap-3">
-            <p className={FOOTNOTE}>launching enrolls the list + drafts in Tasks — dry-run until go-live</p>
-            <Button type="submit" size="sm" disabled={create.isPending || !name.trim() || !listId}>
+            <p className={FOOTNOTE}>
+              {requiresList
+                ? "launching enrolls the list + drafts in Tasks — dry-run until go-live"
+                : "create, then subscribe signals — leads enroll as they fire (dry-run until go-live)"}
+            </p>
+            <Button type="submit" size="sm" disabled={create.isPending || !canSubmit}>
               Create campaign
             </Button>
           </div>

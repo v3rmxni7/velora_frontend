@@ -67,6 +67,14 @@ export function useLaunchCampaign(id: string) {
         });
         return;
       }
+      // Signals (4.5): a subscribed intent campaign launches active but enrolls 0 now — leads arrive
+      // as events fire. Don't claim "drafts coming" or route to an empty Tasks queue; say what's true.
+      if (data.source === "signals" && data.enrolled === 0) {
+        toast("Subscribed — leads enroll as signals fire", {
+          description: "New matches are drafted automatically as your subscribed signals trigger.",
+        });
+        return;
+      }
       toast.success(`Enrolled ${data.enrolled} lead${data.enrolled === 1 ? "" : "s"}`, {
         description: "Drafts will appear in Tasks for approval.",
         action: { label: "Open Tasks", onClick: () => window.location.assign("/engage") },

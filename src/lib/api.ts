@@ -34,6 +34,7 @@ import type {
   ProofItemRow,
   SendingModeData,
   SendMessageResponse,
+  SignalCatalogRow,
   SuggestedAction,
   EnrollmentRow,
   EnrollmentStatus,
@@ -229,6 +230,16 @@ export const api = {
     apiFetch<{ data: EnrollmentRow[] }>(
       `/campaigns/${id}/enrollments${status ? `?status=${status}` : ""}`,
     ),
+
+  // ---- Signals (intent-signal catalog, Slice 4.5) — subscribe a LIVE signal to an intent campaign ----
+  getSignals: () => apiFetch<{ data: SignalCatalogRow[] }>("/signals"),
+  subscribeToSignal: (id: string, campaignId: string) =>
+    apiFetch<{ data: { subscribed: boolean } }>(`/signals/${id}/subscribe`, {
+      method: "POST",
+      body: JSON.stringify({ campaignId }),
+    }),
+  unsubscribeFromSignal: (id: string) =>
+    apiFetch<{ data: { subscribed: boolean } }>(`/signals/${id}/unsubscribe`, { method: "POST" }),
 
   // ---- Deliverability (org-scoped metrics) ----
   getDeliverability: () => apiFetch<{ data: DeliverabilityData }>("/deliverability"),

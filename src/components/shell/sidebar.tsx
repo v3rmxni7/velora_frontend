@@ -12,6 +12,7 @@ import {
   Search,
   Sparkles,
   Users,
+  Zap,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -50,7 +51,10 @@ const GROUPS: { eyebrow: string; items: NavItem[] }[] = [
   },
   {
     eyebrow: "Lead discovery",
-    items: [{ href: "/lead-discovery", label: "Find leads", icon: Search }],
+    items: [
+      { href: "/lead-discovery", label: "Find leads", icon: Search },
+      { href: "/signals", label: "Signals", icon: Zap },
+    ],
   },
   {
     eyebrow: "Lead management",

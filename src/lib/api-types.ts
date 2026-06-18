@@ -346,12 +346,13 @@ export type CampaignType =
   | "website_visitor"
   | "intent_signals";
 /**
- * Types whose audience SOURCE is connected today (creatable + launchable now). The other 4 types
- * are valid product types the backend accepts, but their sources (CRM / website-visitor feed /
- * intent signals) aren't connected yet — the UI shows an honest "connect [source]" state for them
- * (4.5–4.7) rather than a fake-ready campaign.
+ * Types whose audience SOURCE is connected today (creatable + launchable now). cold_outbound sources
+ * a saved list; intent_signals sources a live signal SUBSCRIPTION (4.5) — creatable now, enrolling
+ * leads as subscribed signals fire. The remaining 3 types' sources (CRM / website-visitor feed)
+ * aren't connected yet — the UI shows an honest "connect [source]" state (4.6–4.7), never a
+ * fake-ready campaign.
  */
-export const SUPPORTED_CAMPAIGN_TYPES: CampaignType[] = ["cold_outbound"];
+export const SUPPORTED_CAMPAIGN_TYPES: CampaignType[] = ["cold_outbound", "intent_signals"];
 export type CampaignStatus = "draft" | "active" | "paused" | "completed" | "archived";
 
 export interface CampaignRow {
@@ -447,6 +448,29 @@ export interface LaunchResult {
   /** false when a non-cold type's audience source isn't connected yet (then enrolled is 0). */
   sourceConnected: boolean;
   source: string;
+}
+
+// ---- Signals (intent-signal catalog, SPEC §3.9 / Slice 4.5) ----
+
+export type SignalCategory = "funding" | "hiring" | "other";
+/** Catalog availability — only `live` signals are subscribable; `coming_soon` is gated honestly. */
+export type SignalStatus = "live" | "coming_soon";
+
+/**
+ * One catalog row from GET /signals — the shared SPEC §3.9 definition merged with this org's
+ * subscription state. `subscribed`/`campaignId` reflect the caller's org only (the catalog itself is
+ * shared). Real signal feeds are external/deferred; the catalog's live-vs-coming-soon split is real.
+ */
+export interface SignalCatalogRow {
+  id: string;
+  key: string;
+  category: SignalCategory;
+  name: string;
+  description: string | null;
+  status: SignalStatus;
+  subscribed: boolean;
+  /** The intent_signals campaign this signal feeds when subscribed, else null. */
+  campaignId: string | null;
 }
 
 // ---- Manage Ava: knowledge + agent status ----
