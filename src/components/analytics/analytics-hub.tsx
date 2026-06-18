@@ -3,8 +3,8 @@
 import { useMemo, useState } from "react";
 import { DeliverabilityView } from "@/components/deliverability/deliverability-view";
 import { cn } from "@/lib/utils";
-import { NotYet } from "./analytics-ui";
 import { CreditsTab } from "./credits-tab";
+import { DialerTab } from "./dialer-tab";
 import { MessagingTab } from "./messaging-tab";
 import { OverviewTab } from "./overview-tab";
 
@@ -17,7 +17,7 @@ const TABS: { key: TabKey; label: string }[] = [
   { key: "credits", label: "Credits" },
 ];
 const PRESETS = [7, 30, 90];
-const WINDOWED: TabKey[] = ["overview", "messaging", "credits"];
+const WINDOWED: TabKey[] = ["overview", "messaging", "credits", "dialer"];
 
 const PILL = "rounded-md px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors";
 
@@ -83,9 +83,7 @@ export function AnalyticsHub() {
       ) : tab === "credits" ? (
         <CreditsTab range={range} />
       ) : (
-        <div className="mx-auto max-w-md">
-          <NotYet label="Dialer analytics" reason="dialer" />
-        </div>
+        <DialerTab range={range} />
       )}
     </div>
   );

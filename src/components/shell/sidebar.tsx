@@ -10,6 +10,7 @@ import {
   List,
   Megaphone,
   MessageSquare,
+  Phone,
   Plug,
   Search,
   Sparkles,
@@ -52,6 +53,7 @@ const GROUPS: { eyebrow: string; items: NavItem[] }[] = [
     items: [
       { href: "/engage", label: "Tasks", icon: Inbox },
       { href: "/inbox", label: "Inbox", icon: MessageSquare },
+      { href: "/dialer", label: "Dialer", icon: Phone },
     ],
   },
   {

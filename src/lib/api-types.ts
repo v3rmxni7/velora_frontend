@@ -566,6 +566,66 @@ export interface InviteResult {
   expiresAt: string;
 }
 
+// ---- Dialer (Slice 4.9) ----
+
+export type CallStatus = "queued" | "scheduled" | "skipped" | "logged";
+export type CallOutcome =
+  | "connected"
+  | "voicemail"
+  | "no_answer"
+  | "meeting_booked"
+  | "bad_number"
+  | "other";
+
+export interface CallRow {
+  id: string;
+  lead_type: "person" | "company" | "local_business";
+  lead_id: string;
+  thread_id: string | null;
+  campaign_id: string | null;
+  phone: string | null;
+  status: CallStatus;
+  outcome: CallOutcome | null;
+  notes: string | null;
+  scheduled_at: string | null;
+  logged_by: string | null;
+  called_at: string | null;
+  created_at: string;
+  leadName: string | null;
+}
+
+export interface CallBriefMessage {
+  direction: string;
+  channel: string;
+  subject: string | null;
+  status: string;
+  category: string | null;
+  at: string;
+  snippet: string;
+}
+export interface CallBrief {
+  call: { id: string; status: string; outcome: string | null; phone: string | null; scheduledAt: string | null; calledAt: string | null };
+  lead: { leadType: string; leadId: string; name: string | null; title: string | null; company: string | null; industry: string | null; location: string | null; phone: string | null };
+  pastInteractions: { threadCount: number; lastMessageAt: string | null; summary: CallBriefMessage[] };
+  grounding: {
+    coachingPoints: string[];
+    proofItems: { id: string; text: string }[];
+    icp: { id: string; name: string }[];
+    kbChunks: { id: string; content: string }[];
+    campaignAngle: string | null;
+  };
+  /** LLM synthesis is deferred — 'unavailable' today (the structured grounding above is the real brief). */
+  talkingPoints: { status: "generated" | "unavailable"; items: string[] };
+}
+
+export interface AnalyticsDialer {
+  range: { from: string; to: string; days: number };
+  loggedCalls: number;
+  byOutcome: Record<string, number>;
+  connectRate?: number;
+  series: { date: string; calls: number; connected: number }[];
+}
+
 // ---- Manage Ava: knowledge + agent status ----
 
 export interface SendingModeData {

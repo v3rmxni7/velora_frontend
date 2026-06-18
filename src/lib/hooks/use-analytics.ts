@@ -33,3 +33,11 @@ export function useAnalyticsCredits(range: AnalyticsRangeArg) {
     retry: noAuthRetry,
   });
 }
+
+export function useAnalyticsDialer(range: AnalyticsRangeArg) {
+  return useQuery({
+    queryKey: ["analytics-dialer", ...key(range)],
+    queryFn: () => api.getAnalyticsDialer(range),
+    retry: noAuthRetry,
+  });
+}

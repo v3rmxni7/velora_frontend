@@ -34,6 +34,10 @@ import type {
   ProofItemRow,
   SendingModeData,
   SendMessageResponse,
+  AnalyticsDialer,
+  CallBrief,
+  CallOutcome,
+  CallRow,
   IntegrationsSummary,
   InviteResult,
   OrgRole,
@@ -333,6 +337,26 @@ export const api = {
     apiFetch<{ data: AnalyticsMessaging }>(`/analytics/messaging${rangeQuery(r)}`),
   getAnalyticsCredits: (r: AnalyticsRangeArg = {}) =>
     apiFetch<{ data: AnalyticsCreditsData }>(`/analytics/credits${rangeQuery(r)}`),
+  getAnalyticsDialer: (r: AnalyticsRangeArg = {}) =>
+    apiFetch<{ data: AnalyticsDialer }>(`/analytics/dialer${rangeQuery(r)}`),
+
+  // ---- Dialer (Slice 4.9) — queue + brief + manual log; the agent never dials ----
+  getDialerQueue: (tab: "ready" | "upcoming" | "log") =>
+    apiFetch<{ data: CallRow[] }>(`/dialer/calls?tab=${tab}`),
+  addToQueue: (body: {
+    leadType: "person" | "company" | "local_business";
+    leadId: string;
+    phone?: string;
+    scheduledAt?: string;
+  }) => apiFetch<{ data: CallRow }>("/dialer/calls", { method: "POST", body: JSON.stringify(body) }),
+  skipCall: (id: string) =>
+    apiFetch<{ data: { id: string; status: string } }>(`/dialer/calls/${id}/skip`, { method: "POST" }),
+  logCall: (id: string, outcome: CallOutcome, notes?: string) =>
+    apiFetch<{ data: CallRow }>(`/dialer/calls/${id}/log`, {
+      method: "POST",
+      body: JSON.stringify({ outcome, notes }),
+    }),
+  getCallBrief: (id: string) => apiFetch<{ data: CallBrief }>(`/dialer/calls/${id}/brief`),
 
   // ---- Autonomy (Phase 3): read the posture + audit; pause is the only write (off-direction). ----
   getAutonomy: () => apiFetch<{ data: AutonomyData }>("/autonomy"),
