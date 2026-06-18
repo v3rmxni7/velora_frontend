@@ -5,6 +5,7 @@ import {
   AtSign,
   BarChart3,
   Bot,
+  Globe,
   Inbox,
   List,
   Megaphone,
@@ -54,6 +55,7 @@ const GROUPS: { eyebrow: string; items: NavItem[] }[] = [
     items: [
       { href: "/lead-discovery", label: "Find leads", icon: Search },
       { href: "/signals", label: "Signals", icon: Zap },
+      { href: "/website-visitors", label: "Website visitors", icon: Globe },
     ],
   },
   {

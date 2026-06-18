@@ -36,6 +36,8 @@ import type {
   SendMessageResponse,
   SignalCatalogRow,
   SuggestedAction,
+  TrackedDomainRow,
+  WebsiteVisitorSummary,
   EnrollmentRow,
   EnrollmentStatus,
   LaunchResult,
@@ -240,6 +242,20 @@ export const api = {
     }),
   unsubscribeFromSignal: (id: string) =>
     apiFetch<{ data: { subscribed: boolean } }>(`/signals/${id}/unsubscribe`, { method: "POST" }),
+
+  // ---- Website visitors (Slice 4.6) — tracking domains + the honest visit/identified summary ----
+  getWebsiteVisitorSummary: () =>
+    apiFetch<{ data: WebsiteVisitorSummary }>("/website-visitors/summary"),
+  createTrackedDomain: (domain: string) =>
+    apiFetch<{ data: TrackedDomainRow }>("/website-visitors/domains", {
+      method: "POST",
+      body: JSON.stringify({ domain }),
+    }),
+  linkDomainToCampaign: (id: string, campaignId: string) =>
+    apiFetch<{ data: TrackedDomainRow }>(`/website-visitors/domains/${id}/link`, {
+      method: "POST",
+      body: JSON.stringify({ campaignId }),
+    }),
 
   // ---- Deliverability (org-scoped metrics) ----
   getDeliverability: () => apiFetch<{ data: DeliverabilityData }>("/deliverability"),

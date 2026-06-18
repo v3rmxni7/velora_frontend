@@ -36,6 +36,7 @@ const NOT_YET_COPY: Record<string, string> = {
   meetings: "available once meeting booking is connected",
   connections: "available once a LinkedIn channel is connected",
   dialer: "available once the dialer is in use",
+  website_visitors: "activates when a resolution provider is connected",
 };
 
 /**

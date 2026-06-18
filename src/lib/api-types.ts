@@ -347,12 +347,16 @@ export type CampaignType =
   | "intent_signals";
 /**
  * Types whose audience SOURCE is connected today (creatable + launchable now). cold_outbound sources
- * a saved list; intent_signals sources a live signal SUBSCRIPTION (4.5) — creatable now, enrolling
- * leads as subscribed signals fire. The remaining 3 types' sources (CRM / website-visitor feed)
- * aren't connected yet — the UI shows an honest "connect [source]" state (4.6–4.7), never a
- * fake-ready campaign.
+ * a saved list; intent_signals sources a live signal SUBSCRIPTION (4.5); website_visitor sources an
+ * installed tracking pixel (4.6) — both creatable now, enrolling identified leads over time. The
+ * remaining 2 types (warm_outbound / cross_sell) source from a CRM that isn't connected yet — the UI
+ * shows an honest "connect [source]" state (4.7), never a fake-ready campaign.
  */
-export const SUPPORTED_CAMPAIGN_TYPES: CampaignType[] = ["cold_outbound", "intent_signals"];
+export const SUPPORTED_CAMPAIGN_TYPES: CampaignType[] = [
+  "cold_outbound",
+  "intent_signals",
+  "website_visitor",
+];
 export type CampaignStatus = "draft" | "active" | "paused" | "completed" | "archived";
 
 export interface CampaignRow {
@@ -471,6 +475,36 @@ export interface SignalCatalogRow {
   subscribed: boolean;
   /** The intent_signals campaign this signal feeds when subscribed, else null. */
   campaignId: string | null;
+}
+
+// ---- Website visitors (de-anon, SPEC §3.10 / Slice 4.6) ----
+
+/** A tracking domain (the org's marketing site). `site_key` is the public token the pixel embeds. */
+export interface TrackedDomainRow {
+  id: string;
+  domain: string;
+  site_key: string;
+  /** The website_visitor campaign identified people enroll into, else null. */
+  campaign_id: string | null;
+  verified_at: string | null;
+  created_at: string;
+}
+
+/** Windowed counts (today / last 7d / last 30d). */
+export interface VisitorWindowCounts {
+  today: number;
+  d7: number;
+  d30: number;
+}
+
+export interface WebsiteVisitorSummary {
+  domains: TrackedDomainRow[];
+  /** REAL anonymous page-view counts from the pixel. */
+  visitCounts: VisitorWindowCounts;
+  /** Identified-visitor counts — 0 until a resolver connects (then real). */
+  identifiedCounts: VisitorWindowCounts;
+  /** false until a de-anon resolution provider is connected — People/Companies stay honest-empty. */
+  resolverConnected: boolean;
 }
 
 // ---- Manage Ava: knowledge + agent status ----

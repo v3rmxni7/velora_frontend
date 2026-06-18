@@ -114,6 +114,13 @@ function NewCampaign() {
                 ))}
               </select>
             )
+          ) : type === "website_visitor" ? (
+            <p className="text-sm text-muted-foreground">
+              No list needed — the audience comes from your website-visitor pixel.{" "}
+              <Link href="/website-visitors" className="font-medium text-primary hover:underline">
+                install the pixel →
+              </Link>
+            </p>
           ) : (
             <p className="text-sm text-muted-foreground">
               No list needed — the audience comes from your signal subscriptions.{" "}
@@ -126,7 +133,9 @@ function NewCampaign() {
             <p className={FOOTNOTE}>
               {requiresList
                 ? "launching enrolls the list + drafts in Tasks — dry-run until go-live"
-                : "create, then subscribe signals — leads enroll as they fire (dry-run until go-live)"}
+                : type === "website_visitor"
+                  ? "create, then install the pixel — identified visitors enroll as they’re matched (dry-run until go-live)"
+                  : "create, then subscribe signals — leads enroll as they fire (dry-run until go-live)"}
             </p>
             <Button type="submit" size="sm" disabled={create.isPending || !canSubmit}>
               Create campaign

@@ -75,6 +75,14 @@ export function useLaunchCampaign(id: string) {
         });
         return;
       }
+      // Website visitors (4.6): the pixel collects real visits now, but enrollment needs an
+      // identified PERSON — which requires de-anon to be connected. Don't claim "drafts coming."
+      if (data.source === "website_visitors" && data.enrolled === 0) {
+        toast("Active — collecting visits", {
+          description: "0 enrolled yet; identified visitors enroll once de-anonymization is connected.",
+        });
+        return;
+      }
       toast.success(`Enrolled ${data.enrolled} lead${data.enrolled === 1 ? "" : "s"}`, {
         description: "Drafts will appear in Tasks for approval.",
         action: { label: "Open Tasks", onClick: () => window.location.assign("/engage") },
