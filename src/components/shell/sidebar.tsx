@@ -10,6 +10,7 @@ import {
   List,
   Megaphone,
   MessageSquare,
+  Plug,
   Search,
   Sparkles,
   Users,
@@ -41,6 +42,7 @@ const GROUPS: { eyebrow: string; items: NavItem[] }[] = [
       { href: "/analytics", label: "Analytics", icon: BarChart3 },
       { href: "/senders", label: "Senders", icon: AtSign },
       { href: "/deliverability", label: "Deliverability", icon: Activity },
+      { href: "/connections", label: "Connections", icon: Plug },
     ],
   },
   {

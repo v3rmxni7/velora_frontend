@@ -34,6 +34,7 @@ import type {
   ProofItemRow,
   SendingModeData,
   SendMessageResponse,
+  IntegrationsSummary,
   SignalCatalogRow,
   SuggestedAction,
   TrackedDomainRow,
@@ -256,6 +257,23 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ campaignId }),
     }),
+
+  // ---- CRM connections (Slice 4.7) — redacted metadata; tokens never reach the browser ----
+  getIntegrations: () => apiFetch<{ data: IntegrationsSummary }>("/integrations"),
+  connectCrm: (provider: string) =>
+    apiFetch<{ data: { authorizeUrl: string } }>(`/integrations/crm/${provider}/connect`, {
+      method: "POST",
+    }),
+  disconnectCrm: (provider: string) =>
+    apiFetch<{ data: { provider: string; status: string } }>(
+      `/integrations/crm/${provider}/disconnect`,
+      { method: "POST" },
+    ),
+  linkCrmToCampaign: (provider: string, campaignId: string) =>
+    apiFetch<{ data: { provider: string; campaignId: string } }>(
+      `/integrations/crm/${provider}/link`,
+      { method: "POST", body: JSON.stringify({ campaignId }) },
+    ),
 
   // ---- Deliverability (org-scoped metrics) ----
   getDeliverability: () => apiFetch<{ data: DeliverabilityData }>("/deliverability"),

@@ -121,6 +121,13 @@ function NewCampaign() {
                 install the pixel →
               </Link>
             </p>
+          ) : type === "warm_outbound" || type === "cross_sell" ? (
+            <p className="text-sm text-muted-foreground">
+              No list needed — the audience comes from your connected CRM.{" "}
+              <Link href="/connections" className="font-medium text-primary hover:underline">
+                connect a CRM →
+              </Link>
+            </p>
           ) : (
             <p className="text-sm text-muted-foreground">
               No list needed — the audience comes from your signal subscriptions.{" "}
@@ -135,7 +142,9 @@ function NewCampaign() {
                 ? "launching enrolls the list + drafts in Tasks — dry-run until go-live"
                 : type === "website_visitor"
                   ? "create, then install the pixel — identified visitors enroll as they’re matched (dry-run until go-live)"
-                  : "create, then subscribe signals — leads enroll as they fire (dry-run until go-live)"}
+                  : type === "warm_outbound" || type === "cross_sell"
+                    ? "create, then connect a CRM — synced contacts enroll as they import (dry-run until go-live)"
+                    : "create, then subscribe signals — leads enroll as they fire (dry-run until go-live)"}
             </p>
             <Button type="submit" size="sm" disabled={create.isPending || !canSubmit}>
               Create campaign

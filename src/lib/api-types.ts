@@ -346,16 +346,18 @@ export type CampaignType =
   | "website_visitor"
   | "intent_signals";
 /**
- * Types whose audience SOURCE is connected today (creatable + launchable now). cold_outbound sources
- * a saved list; intent_signals sources a live signal SUBSCRIPTION (4.5); website_visitor sources an
- * installed tracking pixel (4.6) — both creatable now, enrolling identified leads over time. The
- * remaining 2 types (warm_outbound / cross_sell) source from a CRM that isn't connected yet — the UI
- * shows an honest "connect [source]" state (4.7), never a fake-ready campaign.
+ * All 5 campaign types are creatable now; each shows an honest "connect [source]" state until its
+ * source is wired, never a fake-ready campaign. cold_outbound → a saved list; intent_signals → a live
+ * signal SUBSCRIPTION (4.5); website_visitor → an installed tracking pixel (4.6); warm_outbound +
+ * cross_sell → a connected CRM (4.7). Non-cold types enroll 0 at launch and enroll leads over time as
+ * their source produces them (or stay draft + "source not connected" until connected).
  */
 export const SUPPORTED_CAMPAIGN_TYPES: CampaignType[] = [
   "cold_outbound",
   "intent_signals",
   "website_visitor",
+  "warm_outbound",
+  "cross_sell",
 ];
 export type CampaignStatus = "draft" | "active" | "paused" | "completed" | "archived";
 
@@ -505,6 +507,31 @@ export interface WebsiteVisitorSummary {
   identifiedCounts: VisitorWindowCounts;
   /** false until a de-anon resolution provider is connected — People/Companies stay honest-empty. */
   resolverConnected: boolean;
+}
+
+// ---- CRM connections (Slice 4.7) ----
+
+export type CrmProvider = "hubspot" | "salesforce";
+export type CrmStatus = "disconnected" | "pending" | "connected" | "error";
+
+/**
+ * One CRM connection's REDACTED metadata from GET /integrations. There is deliberately NO oauth/token
+ * field — tokens live in a service-role-only vault and never reach the browser (the type enforces it).
+ */
+export interface CrmIntegration {
+  kind: "crm";
+  provider: string;
+  status: CrmStatus;
+  last_synced_at: string | null;
+  error: string | null;
+  /** The warm_outbound/cross_sell campaign synced contacts enroll into, else null. */
+  campaign_id: string | null;
+}
+
+export interface IntegrationsSummary {
+  integrations: CrmIntegration[];
+  /** Providers whose OAuth app credentials are configured (empty until go-live → honest not-configured). */
+  configurableProviders: string[];
 }
 
 // ---- Manage Ava: knowledge + agent status ----

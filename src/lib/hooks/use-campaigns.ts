@@ -83,6 +83,13 @@ export function useLaunchCampaign(id: string) {
         });
         return;
       }
+      // CRM (4.7): a connected CRM is linked, but contacts enroll as they sync. Don't claim drafts.
+      if (data.source === "crm" && data.enrolled === 0) {
+        toast("Active — syncing from your CRM", {
+          description: "0 enrolled yet; synced contacts enroll as they import.",
+        });
+        return;
+      }
       toast.success(`Enrolled ${data.enrolled} lead${data.enrolled === 1 ? "" : "s"}`, {
         description: "Drafts will appear in Tasks for approval.",
         action: { label: "Open Tasks", onClick: () => window.location.assign("/engage") },
