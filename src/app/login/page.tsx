@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { api } from "@/lib/api";
 import { createClient } from "@/lib/supabase/client";
 
 export default function LoginPage() {
@@ -21,6 +23,13 @@ export default function LoginPage() {
       setError("Email or password is incorrect.");
       setPending(false);
       return;
+    }
+    // Ensure a workspace exists. For a confirm-then-login signup this provisions the org now; for an
+    // existing user it's an idempotent no-op. Best-effort — never block sign-in on it.
+    try {
+      await api.provision();
+    } catch {
+      /* non-fatal — the app will surface a no-org state if provisioning truly failed */
     }
     // Full page load on purpose: the just-written session cookies ride the next document
     // request, so the server-side proxy gate admits without any client/server race.
@@ -66,6 +75,12 @@ export default function LoginPage() {
             {pending ? "Signing in…" : "Sign in"}
           </Button>
         </form>
+        <p className="mt-4 text-sm text-muted-foreground">
+          New to Velora?{" "}
+          <Link href="/signup" className="font-medium text-primary hover:underline">
+            Start free
+          </Link>
+        </p>
       </div>
     </main>
   );

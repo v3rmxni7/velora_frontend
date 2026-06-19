@@ -130,6 +130,21 @@ function rangeQuery(r: AnalyticsRangeArg): string {
 }
 
 export const api = {
+  // ---- Self-serve signup / onboarding (Slice 4.13) ----
+  // provision: turn an authenticated-but-orgless Supabase user into a new org+owner (idempotent).
+  // acceptInvite: join the inviter's org via a team-invite token. Both hit the orgless-tolerant
+  // /auth/* plugin with the bearer token apiFetch attaches.
+  provision: () =>
+    apiFetch<{ data: { organizationId: string; role: string; provisioned: boolean } }>(
+      "/auth/provision",
+      { method: "POST" },
+    ),
+  acceptInvite: (token: string) =>
+    apiFetch<{ data: { organizationId: string; role: string } }>("/auth/accept-invite", {
+      method: "POST",
+      body: JSON.stringify({ token }),
+    }),
+
   searchLeads: (body: SearchLeadsRequest) =>
     apiFetch<SearchLeadsResponse>("/find-leads/search", {
       method: "POST",

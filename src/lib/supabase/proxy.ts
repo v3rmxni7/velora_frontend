@@ -32,11 +32,17 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
-  if (
-    !user &&
-    request.nextUrl.pathname !== "/login" &&
-    !request.nextUrl.pathname.startsWith("/auth")
-  ) {
+  // Public routes: the marketing landing, sign-in, self-serve signup, and invite acceptance must be
+  // reachable WITHOUT a session (4.13). Everything else redirects an unauthenticated visitor to /login.
+  const { pathname } = request.nextUrl;
+  const isPublic =
+    pathname === "/" ||
+    pathname === "/login" ||
+    pathname === "/signup" ||
+    pathname === "/accept-invite" ||
+    pathname.startsWith("/auth");
+
+  if (!user && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
