@@ -1,40 +1,51 @@
-Velora dashboard — Next.js App Router, talks to velora_backend over HTTP (`NEXT_PUBLIC_API_URL`).
+# Velora dashboard
 
-> **Local dev on machines with TLS interception (corporate CA):** run Node with the system
-> trust store or the auth gate's `getClaims()` JWKS fetch fails and every signed-in request
-> bounces to /login: `NODE_OPTIONS=--use-system-ca pnpm dev`. (Vercel does not need this.)
+The Velora web app — a Next.js (App Router) dashboard for the autonomous AI BDR. It talks to
+`velora_backend` purely over HTTP (`NEXT_PUBLIC_API_URL`); the two are **separate repos** and never
+cross-import. Auth + data are Supabase (cookie sessions via `@supabase/ssr`, every row under RLS).
 
-## Getting Started
+> **Local dev behind a TLS-intercepting corporate proxy:** run Node with the system trust store, or
+> the auth gate's `getClaims()` JWKS fetch fails and every signed-in request bounces to `/login`:
+>
+> ```bash
+> NODE_OPTIONS=--use-system-ca pnpm dev
+> ```
+>
+> (Vercel does not need this.)
 
-First, run the development server:
+## Local development
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+cp .env.example .env.local   # then fill in the values (see below)
+pnpm install
+pnpm dev                     # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Point `NEXT_PUBLIC_API_URL` at your local backend (`pnpm dev` in `velora_backend` → `http://localhost:8080`).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+All three are `NEXT_PUBLIC_*` and therefore **inlined at build time** — on Vercel they must be set
+**before the first build**, and changing one requires a rebuild. See [`.env.example`](.env.example).
 
-## Learn More
+| Var | Purpose |
+|-----|---------|
+| `NEXT_PUBLIC_SUPABASE_URL` | Supabase project URL (same project as `velora_backend`). |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Browser-safe anon key (RLS authorizes every row). |
+| `NEXT_PUBLIC_API_URL` | The `velora_backend` origin. In prod this **must** be the deployed Railway origin — otherwise `http://localhost:8080` bakes into the bundle (broken API calls + a localhost pixel snippet shown to customers). |
 
-To learn more about Next.js, take a look at the following resources:
+The service-role key must **never** appear in this repo.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+`pnpm dev` · `pnpm build` · `pnpm start` · `pnpm typecheck` · `pnpm lint`
 
-## Deploy on Vercel
+## Deploy (Vercel)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Set the three env vars above in the Vercel project, then deploy. Standard Next.js build.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Going live
+
+The dashboard is **read + one-click PAUSE** only — it cannot turn real sending on. Enabling real
+sending is a deliberate, per-org service-role act that lives in the backend. See the full procedure,
+deploy checklist, QA playbook, and honesty contract in **`velora_backend/docs/RUNBOOK.md`**.
