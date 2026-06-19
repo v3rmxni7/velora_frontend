@@ -139,7 +139,7 @@ export function DraftCard({ task, reveal }: { task: Task; reveal?: boolean }) {
             </Button>
           </div>
           <p className="mt-2 font-mono text-[11px] text-muted-foreground">
-            approving marks the draft ready — sending arrives in a later phase
+            approving queues the send — dry-run until go-live, no real email before then
           </p>
         </div>
       )}

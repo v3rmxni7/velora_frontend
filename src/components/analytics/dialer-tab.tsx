@@ -34,11 +34,15 @@ export function DialerTab({ range }: { range: AnalyticsRangeArg }) {
       <Card>
         <div className={`${EYEBROW} mb-3`}>By outcome</div>
         <div className="flex flex-wrap gap-1.5">
-          {Object.entries(d.byOutcome).map(([o, n]) => (
-            <span key={o} className={CHIP}>
-              {o.replace(/_/g, " ")} {n}
-            </span>
-          ))}
+          {Object.entries(d.byOutcome).length === 0 ? (
+            <p className="text-sm text-muted-foreground">No outcomes logged yet.</p>
+          ) : (
+            Object.entries(d.byOutcome).map(([o, n]) => (
+              <span key={o} className={CHIP}>
+                {o.replace(/_/g, " ")} {n}
+              </span>
+            ))
+          )}
         </div>
         <p className={`${FOOTNOTE} mt-3`}>logged from real calls a rep placed (the agent never dials)</p>
       </Card>

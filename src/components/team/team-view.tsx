@@ -54,32 +54,45 @@ export function TeamView() {
   const me = useTeamMe();
   const members = useTeamMembers();
 
-  const role = me.data?.data.user.role;
+  // Every role decision (canManage / isOwner / isSelf) depends on `me`, so render the interactive
+  // view only once it has resolved — never gate on an undefined me (audit S7).
+  if (me.isPending) {
+    return (
+      <div className="mx-auto max-w-3xl">
+        <Skeleton className="h-40 w-full rounded-md" />
+      </div>
+    );
+  }
+  if (me.isError || !me.data) {
+    return (
+      <div className="mx-auto max-w-3xl">
+        <p className="font-mono text-xs text-destructive">
+          Couldn’t load your team — check that the backend is running.
+        </p>
+      </div>
+    );
+  }
+
+  const role = me.data.data.user.role;
+  const myId = me.data.data.user.id;
   const canManage = role === "owner" || role === "admin";
   const isOwner = role === "owner";
 
   return (
     <div className="mx-auto max-w-3xl space-y-8">
-      {me.isError && (
-        <p className="font-mono text-xs text-destructive">
-          Couldn’t load your team — check that the backend is running.
-        </p>
-      )}
-
       {canManage && <InviteSection />}
 
       <section>
         <h2 className={`${EYEBROW} mb-3`}>Members</h2>
         {members.isPending && <Skeleton className="h-16 w-full rounded-md" />}
+        {members.isError && (
+          <p className="font-mono text-xs text-destructive">Couldn’t load members — try again.</p>
+        )}
         {members.isSuccess && (
           <ul className="space-y-2">
             {members.data.data.members.map((m) => (
               <li key={m.id}>
-                <MemberRow
-                  member={m}
-                  isSelf={m.id === me.data?.data.user.id}
-                  canManage={isOwner}
-                />
+                <MemberRow member={m} isSelf={m.id === myId} canManage={isOwner} />
               </li>
             ))}
           </ul>

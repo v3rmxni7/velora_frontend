@@ -40,7 +40,7 @@ export async function updateSession(request: NextRequest) {
     pathname === "/login" ||
     pathname === "/signup" ||
     pathname === "/accept-invite" ||
-    pathname.startsWith("/auth");
+    pathname.startsWith("/auth/"); // trailing slash: covers the Supabase callback, never a top-level /auth* app page
 
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();

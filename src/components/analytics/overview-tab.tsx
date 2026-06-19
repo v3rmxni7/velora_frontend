@@ -36,8 +36,8 @@ export function OverviewTab({ range }: { range: AnalyticsRangeArg }) {
 
       {/* Rates: honest-empty until there are real sends. Meetings/Connections: feature-not-connected. */}
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <RateOrEmpty label="Reply rate" numerator={k.replies} denominator={d.realSends} />
-        <RateOrEmpty label="Positive rate" numerator={k.positiveReplies} denominator={d.realSends} />
+        <RateOrEmpty label="Reply rate" numerator={k.replies} denominator={k.realSends} />
+        <RateOrEmpty label="Positive rate" numerator={k.positiveReplies} denominator={k.realSends} />
         <NotYet label="Meetings booked" reason="meetings" />
         <NotYet label="Connections (LinkedIn)" reason="connections" />
       </div>
