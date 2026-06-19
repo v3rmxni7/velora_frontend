@@ -74,6 +74,25 @@ export function ConnectionsView() {
           ))}
         </div>
       )}
+
+      {/* Outreach channels — honest 🔌 placeholder (4.14). Email is live; LinkedIn automation is
+          deferred (SPEC §14) and NOT connected. No backend, no fake connection or activity counts. */}
+      <div className="rounded-md border border-border bg-card p-4">
+        <h2 className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+          Outreach channels
+        </h2>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <span className="rounded border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 font-mono text-[11px] text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300">
+            Email · live
+          </span>
+          <span className="rounded border border-dashed border-border px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">
+            LinkedIn · coming
+          </span>
+        </div>
+        <p className={`${FOOTNOTE} mt-2`}>
+          Email is your live channel. LinkedIn outreach is on the roadmap — not connected yet.
+        </p>
+      </div>
     </div>
   );
 }

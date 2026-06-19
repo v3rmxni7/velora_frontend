@@ -161,6 +161,20 @@ function SenderConfig({ sender, mailboxes }: { sender: SenderRow; mailboxes: Mai
         </select>
       </div>
 
+      {/* Outreach channels (4.14) — honest 🔌 placeholder. Email is the live channel; LinkedIn is
+          deferred (SPEC §14), shown as "coming" with no backend field and no fake connection. */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className={FOOTNOTE}>Channels</span>
+        {/* Channel availability (not the sender's send-state, which is the status select above):
+            email is the live channel; linkedin is coming. */}
+        <span className="rounded border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 font-mono text-[10px] text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300">
+          email
+        </span>
+        <span className="rounded border border-dashed border-border px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">
+          linkedin coming
+        </span>
+      </div>
+
       {/* Email signature (4.10) — real sending identity; completes the "email signature" quest. */}
       <div className="border-t border-border/60 pt-3">
         <span className={`${FOOTNOTE} mb-1 block`}>Email signature</span>

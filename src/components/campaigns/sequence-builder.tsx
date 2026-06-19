@@ -139,6 +139,20 @@ export function SequenceBuilder({
                 <option value="ai_grounded">AI-grounded</option>
                 <option value="template">Template</option>
               </select>
+              {/* Channel: email is the live channel; LinkedIn is deferred (SPEC §14). Disabled +
+                  never persisted (no channel in CampaignStepInput) — an honest 🔌 placeholder (4.14). */}
+              <select
+                value="email"
+                disabled
+                aria-label="Channel"
+                title="Steps send by email today; LinkedIn steps are coming"
+                className={cn(SELECT_CLASS, "opacity-60")}
+              >
+                <option value="email">Email</option>
+                <option value="linkedin" disabled>
+                  LinkedIn (coming)
+                </option>
+              </select>
             </div>
             <Input
               value={s.subjectTemplate ?? ""}
@@ -164,7 +178,8 @@ export function SequenceBuilder({
         </Button>
       </div>
       <p className={FOOTNOTE}>
-        step 1 sends on approval; follow-ups send automatically once autopilot is on
+        step 1 sends on approval; follow-ups send automatically once autopilot is on. Email is the
+        live channel; LinkedIn steps are coming.
       </p>
     </div>
   );
