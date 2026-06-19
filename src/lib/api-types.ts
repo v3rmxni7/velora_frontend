@@ -334,6 +334,41 @@ export interface DomainRow {
   updated_at: string;
 }
 
+// ---- Compliance (Slice 4.12, GET /compliance, /compliance/audit, POST /domains/:id/verify) ----
+// Domain auth statuses are REAL DNS results ('unknown' when not yet verified / can't be checked, never
+// a fabricated 'pass'). Retention is dry-run-first (dryRun=true → the purge only reports). The audit
+// log is immutable (service-role-written, org-read).
+export interface ComplianceData {
+  domains: DomainRow[];
+  retention: { websiteVisitsDays: number; signalEventsDays: number; dryRun: boolean };
+  suppression: { total: number; byReason: Record<string, number> };
+}
+
+export type AuditKind =
+  | "team_role_changed"
+  | "team_member_removed"
+  | "sender_status_changed"
+  | "suppression_added"
+  | "copilot_action_confirmed"
+  | "domain_verified"
+  | "retention_reported"
+  | "retention_purged";
+
+export interface AuditLogRow {
+  id: string;
+  kind: AuditKind;
+  user_id: string | null;
+  args: Record<string, unknown> | null;
+  reason: string | null;
+  source: "user" | "system" | "webhook" | "cron" | null;
+  created_at: string;
+}
+export interface AuditLogsData {
+  events: AuditLogRow[];
+  limit: number;
+  offset: number;
+}
+
 export interface SyncMailboxesResponse {
   data: { synced: number; mailboxIds: string[] };
 }

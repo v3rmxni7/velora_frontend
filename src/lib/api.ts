@@ -29,6 +29,8 @@ import type {
   BillingData,
   QuestProgress,
   CopilotAction,
+  ComplianceData,
+  AuditLogsData,
   DeliverabilityData,
   PauseAutonomyResponse,
   DomainRow,
@@ -334,6 +336,13 @@ export const api = {
 
   // ---- Deliverability (org-scoped metrics) ----
   getDeliverability: () => apiFetch<{ data: DeliverabilityData }>("/deliverability"),
+
+  // ---- Compliance (Slice 4.12) ----
+  getCompliance: () => apiFetch<{ data: ComplianceData }>("/compliance"),
+  getAuditLog: (limit = 50) =>
+    apiFetch<{ data: AuditLogsData }>(`/compliance/audit?limit=${limit}`),
+  verifyDomain: (domainId: string) =>
+    apiFetch<{ data: DomainRow }>(`/domains/${domainId}/verify`, { method: "POST" }),
 
   // ---- Credits (org-scoped ledger balance) ----
   getCredits: () => apiFetch<{ data: CreditsData }>("/credits"),
