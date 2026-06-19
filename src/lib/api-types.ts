@@ -870,6 +870,37 @@ export interface SendMessageResponse {
   toolCall: CopilotToolCall | null;
 }
 
+// ---- Copilot agentic actions (Slice 4.11) — propose → human confirm ----
+// The LLM only PROPOSES a write action (the assistant turn carries a CopilotProposedResult in its
+// tool_calls.result); a deterministic, role-gated confirm endpoint executes it. `awarded`-style
+// truth: the action row's status is the real state (proposed → confirmed/cancelled/failed).
+export type CopilotActionClass = "safe" | "spending" | "destructive";
+export type CopilotActionStatus = "proposed" | "confirmed" | "cancelled" | "failed";
+
+/** The shape carried in an assistant turn's tool_calls.result when it PROPOSED an action. */
+export interface CopilotProposedResult {
+  proposed: true;
+  action: { kind: string; actionClass: CopilotActionClass; title: string };
+}
+
+/** copilot_actions row (the propose→confirm ledger). */
+export interface CopilotAction {
+  id: string;
+  organization_id: string;
+  thread_id: string;
+  message_id: string | null;
+  user_id: string | null;
+  kind: string;
+  action_class: CopilotActionClass;
+  title: string;
+  args: unknown;
+  status: CopilotActionStatus;
+  result: unknown;
+  error: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 // ---- Deliverability (GET /deliverability) — org-scoped metrics ----
 // Note: the backend deliberately omits the GLOBAL send cap/count (no cross-tenant leak) and rich
 // open/reply time-series (only meaningful after real sends — honest empty state below).

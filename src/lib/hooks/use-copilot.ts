@@ -11,6 +11,7 @@ const noAuthRetry = (count: number, err: unknown) =>
 export const threadsKey = ["copilot-threads"] as const;
 export const messagesKey = (threadId: string) => ["copilot-messages", threadId] as const;
 export const suggestedActionsKey = ["copilot-suggested-actions"] as const;
+export const actionsKey = (threadId: string) => ["copilot-actions", threadId] as const;
 
 // Monotonic local counter for optimistic message ids. A React key only needs to be unique among
 // the rows present at once; this stand-in is replaced by the persisted row (with its real id) on
@@ -90,6 +91,50 @@ export function useSendMessage() {
       qc.invalidateQueries({ queryKey: messagesKey(threadId) });
       qc.invalidateQueries({ queryKey: threadsKey });
       qc.invalidateQueries({ queryKey: suggestedActionsKey });
+      // A turn may have proposed a write action → refresh the thread's action cards.
+      qc.invalidateQueries({ queryKey: actionsKey(threadId) });
     },
+  });
+}
+
+// 4.11 — the thread's agentic actions (drives the in-chat confirm/cancel cards + their live status).
+export function useThreadActions(threadId: string | null) {
+  return useQuery({
+    queryKey: actionsKey(threadId ?? "none"),
+    queryFn: () => api.getCopilotActions(threadId as string),
+    enabled: !!threadId,
+    retry: noAuthRetry,
+  });
+}
+
+// Confirm/cancel a proposed action. The confirm executor is role-gated server-side; a 403 surfaces as
+// an honest "needs an owner or admin" toast. Confirm refreshes the action cards AND the message
+// transcript (it appends a deterministic confirmation message); cancel refreshes only the cards.
+export function useConfirmAction(threadId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.confirmCopilotAction(id),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: actionsKey(threadId) });
+      qc.invalidateQueries({ queryKey: messagesKey(threadId) });
+    },
+    onError: (err) =>
+      toast.error(
+        err instanceof ApiError && err.status === 403
+          ? "That action needs an owner or admin."
+          : err instanceof ApiError
+            ? err.message
+            : "Couldn’t confirm — try again.",
+      ),
+  });
+}
+
+export function useCancelAction(threadId: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.cancelCopilotAction(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: actionsKey(threadId) }),
+    onError: (err) =>
+      toast.error(err instanceof ApiError ? err.message : "Couldn’t cancel — try again."),
   });
 }

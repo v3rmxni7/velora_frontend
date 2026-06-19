@@ -28,6 +28,7 @@ import type {
   CreditsData,
   BillingData,
   QuestProgress,
+  CopilotAction,
   DeliverabilityData,
   PauseAutonomyResponse,
   DomainRow,
@@ -441,4 +442,13 @@ export const api = {
       body: JSON.stringify({ content }),
     }),
   getSuggestedActions: () => apiFetch<{ actions: SuggestedAction[] }>("/copilot/suggested-actions"),
+
+  // ---- Copilot agentic actions (Slice 4.11): propose → confirm. The LLM never executes; these are
+  // the deterministic, role-gated confirm/cancel endpoints + the per-thread action list. ----
+  getCopilotActions: (threadId: string) =>
+    apiFetch<{ data: CopilotAction[] }>(`/copilot/threads/${threadId}/actions`),
+  confirmCopilotAction: (id: string) =>
+    apiFetch<{ data: CopilotAction }>(`/copilot/actions/${id}/confirm`, { method: "POST" }),
+  cancelCopilotAction: (id: string) =>
+    apiFetch<{ data: CopilotAction }>(`/copilot/actions/${id}/cancel`, { method: "POST" }),
 };

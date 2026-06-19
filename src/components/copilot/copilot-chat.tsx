@@ -227,7 +227,7 @@ export function CopilotChat({
         )}
 
         {rows.map((m) => (
-          <CopilotMessageRow key={m.id} message={m} />
+          <CopilotMessageRow key={m.id} message={m} threadId={threadId} />
         ))}
         {busy && <ThinkingBubble />}
       </div>
