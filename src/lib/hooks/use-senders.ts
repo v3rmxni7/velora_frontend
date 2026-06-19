@@ -47,7 +47,12 @@ export function useUpdateSender() {
       patch,
     }: {
       id: string;
-      patch: { displayName?: string; status?: "setup" | "active" | "paused"; userId?: string | null };
+      patch: {
+        displayName?: string;
+        status?: "setup" | "active" | "paused";
+        userId?: string | null;
+        signature?: string | null;
+      };
     }) => api.updateSender(id, patch),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["senders"] }),
     onError: (err) =>

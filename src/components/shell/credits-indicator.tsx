@@ -1,14 +1,18 @@
 "use client";
 
+import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCredits } from "@/lib/hooks/use-credits";
+import { cn } from "@/lib/utils";
 
 const EYEBROW = "font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground";
 
 // Persistent footer credits indicator — the REAL ledger balance, never a fabricated number.
-// An ungranted org honestly shows 0 + an empty bar + "credits granted at go-live".
+// An ungranted org honestly shows 0 + an empty bar + "credits granted at go-live". 4.10: when the
+// backend flags lowBalance (warn-only), the number turns amber and links to /billing.
 export function CreditsIndicator() {
   const q = useCredits();
+  const low = q.isSuccess && q.data.data.lowBalance;
 
   return (
     <div className="border-t border-border px-5 py-3">
@@ -19,7 +23,12 @@ export function CreditsIndicator() {
         ) : q.isError ? (
           <span className="font-mono text-sm text-muted-foreground">—</span>
         ) : (
-          <span className="font-mono text-sm tabular-nums text-foreground">
+          <span
+            className={cn(
+              "font-mono text-sm tabular-nums",
+              low ? "text-amber-700 dark:text-amber-400" : "text-foreground",
+            )}
+          >
             {q.data.data.balance.toLocaleString()}
           </span>
         )}
@@ -32,13 +41,26 @@ export function CreditsIndicator() {
           return (
             <>
               <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-secondary">
-                <div className="h-full bg-primary" style={{ width: `${pct}%` }} aria-hidden />
+                <div
+                  className={cn("h-full", low ? "bg-amber-500" : "bg-primary")}
+                  style={{ width: `${pct}%` }}
+                  aria-hidden
+                />
               </div>
-              <p className="mt-1.5 font-mono text-[11px] text-muted-foreground">
-                {granted > 0
-                  ? `${used.toLocaleString()} of ${granted.toLocaleString()} used`
-                  : "credits granted at go-live"}
-              </p>
+              {low ? (
+                <Link
+                  href="/billing"
+                  className="mt-1.5 block font-mono text-[11px] text-amber-700 hover:underline dark:text-amber-400"
+                >
+                  low balance — view billing
+                </Link>
+              ) : (
+                <p className="mt-1.5 font-mono text-[11px] text-muted-foreground">
+                  {granted > 0
+                    ? `${used.toLocaleString()} of ${granted.toLocaleString()} used`
+                    : "credits granted at go-live"}
+                </p>
+              )}
             </>
           );
         })()}

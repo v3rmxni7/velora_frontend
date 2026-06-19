@@ -135,6 +135,7 @@ function SenderConfig({ sender, mailboxes }: { sender: SenderRow; mailboxes: Mai
   const assign = useAssignMailbox();
   const setPrimary = useSetPrimaryMailbox();
   const [toAssign, setToAssign] = useState("");
+  const [sig, setSig] = useState(sender.signature ?? "");
 
   const mine = mailboxes.filter((m) => m.sender_id === sender.id);
   const unassigned = mailboxes.filter((m) => m.sender_id === null);
@@ -158,6 +159,31 @@ function SenderConfig({ sender, mailboxes }: { sender: SenderRow; mailboxes: Mai
           <option value="active">Active</option>
           <option value="paused">Paused</option>
         </select>
+      </div>
+
+      {/* Email signature (4.10) — real sending identity; completes the "email signature" quest. */}
+      <div className="border-t border-border/60 pt-3">
+        <span className={`${FOOTNOTE} mb-1 block`}>Email signature</span>
+        <textarea
+          value={sig}
+          onChange={(e) => setSig(e.target.value)}
+          rows={2}
+          placeholder="e.g. — Ava, Velora · ava@yourco.com"
+          className="w-full rounded-md border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        />
+        <div className="mt-1.5 flex justify-end">
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
+            disabled={updateSender.isPending || (sig.trim() || "") === (sender.signature ?? "")}
+            onClick={() =>
+              updateSender.mutate({ id: sender.id, patch: { signature: sig.trim() || null } })
+            }
+          >
+            Save signature
+          </Button>
+        </div>
       </div>
 
       <div className="border-t border-border/60 pt-3">

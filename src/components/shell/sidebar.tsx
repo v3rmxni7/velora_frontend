@@ -5,6 +5,7 @@ import {
   AtSign,
   BarChart3,
   Bot,
+  CreditCard,
   Globe,
   Inbox,
   List,
@@ -46,6 +47,7 @@ const GROUPS: { eyebrow: string; items: NavItem[] }[] = [
       { href: "/deliverability", label: "Deliverability", icon: Activity },
       { href: "/connections", label: "Connections", icon: Plug },
       { href: "/team", label: "Team", icon: UserCog },
+      { href: "/billing", label: "Billing", icon: CreditCard },
     ],
   },
   {

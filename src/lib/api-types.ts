@@ -289,6 +289,7 @@ export interface SenderRow {
   organization_id: string;
   user_id: string | null;
   display_name: string | null;
+  signature: string | null;
   status: SenderStatus;
   created_at: string;
   updated_at: string;
@@ -681,6 +682,50 @@ export interface CreditsData {
   balance: number;
   granted: number;
   used: number;
+  // 4.10 — warn-only low-balance signal (the hard cold-send gate lives backend-side in executeSend).
+  lowBalance: boolean;
+  lowBalanceThreshold: number;
+}
+
+// ---- Onboarding quests (Slice 4.10, GET /quests) ----
+// Completion is DERIVED from real org state and credits are awarded once (idempotent) by the backend.
+// `done` reflects current state; `awarded` reflects a real credit_ledger reward already posted.
+export type QuestGroup = "setup" | "grounding" | "activation";
+export interface QuestItem {
+  key: string;
+  label: string;
+  reward: number;
+  group: QuestGroup;
+  href: string;
+  done: boolean;
+  awarded: boolean;
+}
+export interface QuestProgress {
+  quests: QuestItem[];
+  completed: number;
+  total: number;
+  creditsEarned: number;
+}
+
+// ---- Billing (Slice 4.10, GET /billing) — HONEST SHELL ----
+// Plan + tiers + real balance. `topUpConfigured` is false until a payment provider is connected; the
+// UI must never imply a charge or fabricate a balance increase. Tiers are display data (SPEC §10).
+export type PlanTier = "starter" | "growth" | "scale";
+export interface PlanInfo {
+  tier: PlanTier;
+  name: string;
+  priceUsdMonthly: number;
+  includedCredits: number;
+  leadsPerMonth: number;
+  blurb: string;
+}
+export interface BillingData {
+  plan: PlanTier;
+  tiers: PlanInfo[];
+  balance: number;
+  lowBalance: boolean;
+  lowBalanceThreshold: number;
+  topUpConfigured: boolean;
 }
 
 // ---- Analytics hub (Phase 4 Slice 4.2, GET /analytics/overview|messaging|credits) ----

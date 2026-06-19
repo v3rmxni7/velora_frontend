@@ -26,6 +26,8 @@ import type {
   CreateCampaignRequest,
   CreateProofItemRequest,
   CreditsData,
+  BillingData,
+  QuestProgress,
   DeliverabilityData,
   PauseAutonomyResponse,
   DomainRow,
@@ -311,7 +313,12 @@ export const api = {
   // ---- Sender config (Slice 4.8) ----
   updateSender: (
     id: string,
-    patch: { displayName?: string; status?: "setup" | "active" | "paused"; userId?: string | null },
+    patch: {
+      displayName?: string;
+      status?: "setup" | "active" | "paused";
+      userId?: string | null;
+      signature?: string | null;
+    },
   ) => apiFetch<{ data: SenderRow }>(`/senders/${id}`, { method: "PATCH", body: JSON.stringify(patch) }),
   setPrimaryMailbox: (senderId: string, mailboxId: string | null) =>
     apiFetch<{ data: MailboxRow[] }>(`/senders/${senderId}/primary-mailbox`, {
@@ -329,6 +336,10 @@ export const api = {
 
   // ---- Credits (org-scoped ledger balance) ----
   getCredits: () => apiFetch<{ data: CreditsData }>("/credits"),
+
+  // ---- Onboarding quests + billing (Slice 4.10) ----
+  getQuests: () => apiFetch<{ data: QuestProgress }>("/quests"),
+  getBilling: () => apiFetch<{ data: BillingData }>("/billing"),
 
   // ---- Analytics hub (Phase 4 Slice 4.2) — org-scoped aggregations over a [from,to] window ----
   getAnalyticsOverview: (r: AnalyticsRangeArg = {}) =>

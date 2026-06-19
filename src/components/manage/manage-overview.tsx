@@ -2,11 +2,12 @@
 
 import { Check } from "lucide-react";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useCampaigns } from "@/lib/hooks/use-campaigns";
 import { useCredits } from "@/lib/hooks/use-credits";
-import { useCoachingPoints, useKbDocuments, useProofItems, useSendingMode } from "@/lib/hooks/use-knowledge";
-import { useLeads } from "@/lib/hooks/use-leads";
-import { useMailboxes, useDomains } from "@/lib/hooks/use-senders";
+import { useSendingMode } from "@/lib/hooks/use-knowledge";
+import { useQuests } from "@/lib/hooks/use-quests";
+import { useMailboxes } from "@/lib/hooks/use-senders";
 import { useTaskCounts } from "@/lib/hooks/use-task-counts";
 import { useTasks } from "@/lib/hooks/use-tasks";
 import { cn } from "@/lib/utils";
@@ -17,75 +18,85 @@ function Card({ children }: { children: React.ReactNode }) {
   return <div className="rounded-md border border-border bg-card p-5">{children}</div>;
 }
 
+// The 14-quest onboarding card (Slice 4.10). Completion + credit rewards are REAL: each quest is
+// derived from real org state and pays its credits exactly once (idempotent, backend-side). `awarded`
+// reflects credits actually posted to the ledger — never a fabricated number.
+function QuestsCard() {
+  const quests = useQuests();
+
+  if (quests.isPending) return <Skeleton className="h-72 w-full rounded-md" />;
+  if (quests.isError)
+    return (
+      <Card>
+        <h2 className={EYEBROW}>Onboarding</h2>
+        <p className="mt-2 font-mono text-xs text-destructive">Couldn’t load quests — check the backend.</p>
+      </Card>
+    );
+
+  const { quests: items, completed, total, creditsEarned } = quests.data.data;
+
+  return (
+    <Card>
+      <div className="flex items-baseline justify-between gap-2">
+        <h2 className={EYEBROW}>Onboarding quests</h2>
+        <span className="font-mono text-sm tabular-nums text-foreground">
+          {completed} of {total} complete
+        </span>
+      </div>
+      <p className="mt-1 font-mono text-[11px] text-muted-foreground">
+        {creditsEarned.toLocaleString()} credits earned — each quest pays real credits as you complete it
+      </p>
+      <ul className="mt-3 space-y-1">
+        {items.map((q) => (
+          <li key={q.key}>
+            <Link
+              href={q.href}
+              className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-secondary/60"
+            >
+              <span
+                className={cn(
+                  "flex size-4 shrink-0 items-center justify-center rounded-full border",
+                  q.done ? "border-primary bg-primary text-primary-foreground" : "border-border",
+                )}
+                aria-hidden
+              >
+                {q.done && <Check className="size-3" />}
+              </span>
+              <span className={cn("flex-1", q.done ? "text-muted-foreground line-through" : "text-foreground")}>
+                {q.label}
+              </span>
+              <span
+                className={cn(
+                  "shrink-0 font-mono text-[11px] tabular-nums",
+                  q.awarded ? "text-emerald-700" : "text-muted-foreground",
+                )}
+              >
+                {q.awarded ? `+${q.reward.toLocaleString()} earned` : `+${q.reward.toLocaleString()}`}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </Card>
+  );
+}
+
 export function ManageOverview() {
   const mailboxes = useMailboxes();
-  const domains = useDomains();
-  const coaching = useCoachingPoints();
-  const proof = useProofItems();
-  const leads = useLeads();
   const campaigns = useCampaigns();
-  const kb = useKbDocuments();
   const mode = useSendingMode();
   const credits = useCredits();
   const counts = useTaskCounts();
   const tasks = useTasks();
 
   const live = !!mode.data?.data?.sendingEnabled && !mode.data?.data?.dryRun;
-
-  // Setup milestones — completion derived from REAL state (each from its own endpoint).
-  const items = [
-    { label: "Connect a mailbox", done: (mailboxes.data?.data ?? []).length > 0, href: "/senders" },
-    { label: "Add a sending domain", done: (domains.data?.data ?? []).length > 0, href: "/senders" },
-    { label: "Add agent coaching", done: (coaching.data?.data ?? []).length > 0, href: "/manage" },
-    { label: "Add proof points", done: (proof.data?.data ?? []).length > 0, href: "/manage" },
-    { label: "Save leads", done: (leads.data?.data ?? []).length > 0, href: "/leads" },
-    { label: "Create a campaign", done: (campaigns.data?.data ?? []).length > 0, href: "/campaigns" },
-    { label: "Add knowledge sources", done: (kb.data?.data ?? []).length > 0, href: "/manage" },
-    { label: "Go live (deliberate flip)", done: live, href: "/senders" },
-  ];
-  const completed = items.filter((i) => i.done).length;
-
   const warm = (mailboxes.data?.data ?? []).filter((m) => m.status === "warm").length;
   const pending = counts.data?.pending.outbound_approval ?? 0;
   const pendingTasks = (tasks.data?.data ?? []).filter((t) => t.status === "pending").slice(0, 3);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      {/* Setup checklist */}
-      <Card>
-        <div className="flex items-baseline justify-between">
-          <h2 className={EYEBROW}>Setup</h2>
-          <span className="font-mono text-sm tabular-nums text-foreground">
-            {completed} of {items.length} complete
-          </span>
-        </div>
-        <ul className="mt-3 space-y-1">
-          {items.map((i) => (
-            <li key={i.label}>
-              <Link
-                href={i.href}
-                className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-secondary/60"
-              >
-                <span
-                  className={cn(
-                    "flex size-4 shrink-0 items-center justify-center rounded-full border",
-                    i.done ? "border-primary bg-primary text-primary-foreground" : "border-border",
-                  )}
-                  aria-hidden
-                >
-                  {i.done && <Check className="size-3" />}
-                </span>
-                <span className={i.done ? "text-muted-foreground line-through" : "text-foreground"}>
-                  {i.label}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <p className="mt-2 font-mono text-[11px] text-muted-foreground">
-          completion tracks real configuration; credit rewards arrive with billing
-        </p>
-      </Card>
+      <QuestsCard />
 
       {/* Agent status */}
       <Card>
@@ -93,12 +104,7 @@ export function ManageOverview() {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div>
             <div className="font-mono text-[11px] text-muted-foreground">sending</div>
-            <div
-              className={cn(
-                "mt-0.5 font-mono text-sm",
-                live ? "text-emerald-700" : "text-muted-foreground",
-              )}
-            >
+            <div className={cn("mt-0.5 font-mono text-sm", live ? "text-emerald-700" : "text-muted-foreground")}>
               {live ? "live" : "dry-run"}
             </div>
           </div>
@@ -143,10 +149,7 @@ export function ManageOverview() {
               </li>
             ))}
             <li>
-              <Link
-                href="/engage"
-                className="text-sm font-medium text-primary hover:underline"
-              >
+              <Link href="/engage" className="text-sm font-medium text-primary hover:underline">
                 Review in Tasks →
               </Link>
             </li>
