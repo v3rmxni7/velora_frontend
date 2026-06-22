@@ -169,9 +169,10 @@
    surfaces. ADDITIVE ONLY — no token changes, no overrides. Themed to Velora's identity
    (ink #16181D, indigo #4F46E5). Used by Tier A (marketing) and, sparingly, Tier B (app). */
 
-/* Dark hero backdrop: deep ink with an indigo bloom from the top. */
+/* Dark hero backdrop: deep ink lit by two offset indigo blooms (a quiet mesh, not a flat wash). */
 .bg-hero-ink {
   background:
+    radial-gradient(55% 70% at 82% 8%, rgba(99, 91, 255, 0.18) 0%, transparent 55%),
     radial-gradient(80% 120% at 50% -10%, rgba(79, 70, 229, 0.32) 0%, transparent 60%),
     linear-gradient(180deg, #0b0d12 0%, #16181d 100%);
 }
@@ -200,4 +201,33 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+/* The product artifact lifted off the dark hero: a layered shadow — close contact shadow, soft
+   ambient elevation, and a wide indigo glow. Depth, not a flat drop-shadow. */
+.shadow-product {
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.35),
+    0 28px 70px -26px rgba(0, 0, 0, 0.55),
+    0 0 90px -16px rgba(79, 70, 229, 0.5);
+}
+
+/* Gentle scroll cue at the foot of the hero (a chevron nudging downward). Decorative only. */
+@keyframes nudge {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  50% {
+    transform: translateY(5px);
+    opacity: 1;
+  }
+}
+.animate-nudge {
+  animation: nudge 1.8s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-nudge {
+    animation: none;
+  }
 }

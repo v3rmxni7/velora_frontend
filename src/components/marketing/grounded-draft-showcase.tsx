@@ -12,7 +12,7 @@ const FACTS = [
 
 export function GroundedDraftShowcase() {
   return (
-    <article className="relative overflow-hidden rounded-md border border-border bg-card p-5 pl-6 text-left shadow-glow-indigo">
+    <article className="relative overflow-hidden rounded-md border border-border bg-card p-5 pl-6 text-left shadow-product ring-1 ring-black/5">
       {/* Evidence rail — confidence encoded in color (high → indigo). Draws in on mount (reduced-motion safe). */}
       <span className="absolute inset-y-0 left-0 w-[3px] origin-top animate-rail-draw bg-primary" aria-hidden />
 
