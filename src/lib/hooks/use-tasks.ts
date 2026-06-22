@@ -32,6 +32,12 @@ export function useGenerateDraft() {
       });
     },
     onError: (err) => {
+      // Graceful, honest surface for the backend's 503 ai_unavailable (LLM exhausted / provider
+      // outage — audit F-RT2): a clear "temporarily unavailable", never a raw/confusing error.
+      if (err instanceof ApiError && (err.status === 503 || err.code === "ai_unavailable")) {
+        toast.error("AI drafting is temporarily unavailable — please try again shortly.");
+        return;
+      }
       toast.error(err instanceof ApiError ? err.message : "Draft generation failed.");
     },
   });
