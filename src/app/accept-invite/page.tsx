@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api, ApiError } from "@/lib/api";
 import { createClient } from "@/lib/supabase/client";
+import { AuthShell } from "@/components/marketing/auth-shell";
 
 // Real accept-invite (Slice 4.13). Reads ?token= via useSearchParams (under a Suspense boundary),
 // authenticates the invitee (sign up or sign in), then calls /auth/accept-invite to join the
@@ -21,7 +22,7 @@ function acceptError(err: ApiError): string {
 export default function AcceptInvitePage() {
   // useSearchParams must sit under a Suspense boundary (the repo's engage/page.tsx pattern).
   return (
-    <Suspense fallback={<Shell>Loading…</Shell>}>
+    <Suspense fallback={<AuthShell>Loading…</AuthShell>}>
       <AcceptInvite />
     </Suspense>
   );
@@ -76,29 +77,29 @@ function AcceptInvite() {
 
   if (!token) {
     return (
-      <Shell>
+      <AuthShell>
         <h1 className="font-heading text-lg font-semibold text-foreground">Invalid invite link</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           This link is missing its invite token. Ask your inviter to re-share it.
         </p>
-      </Shell>
+      </AuthShell>
     );
   }
 
   if (checkEmail) {
     return (
-      <Shell>
+      <AuthShell>
         <h1 className="font-heading text-lg font-semibold text-foreground">Confirm your email</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           We sent a confirmation link to <span className="text-foreground">{email}</span>. Confirm
           it, then reopen this invite link to join the team.
         </p>
-      </Shell>
+      </AuthShell>
     );
   }
 
   return (
-    <Shell>
+    <AuthShell>
       <h1 className="font-heading text-lg font-semibold text-foreground">Join your team on Velora</h1>
       <p className="mt-1 text-sm text-muted-foreground">
         {mode === "signup" ? "Create your account to accept the invitation." : "Sign in to accept the invitation."}
@@ -139,15 +140,7 @@ function AcceptInvite() {
       <p className="mt-3 font-mono text-[11px] text-muted-foreground">
         you can only accept an invite sent to your email address
       </p>
-    </Shell>
-  );
-}
-
-function Shell({ children }: { children: React.ReactNode }) {
-  return (
-    <main className="flex min-h-dvh items-center justify-center bg-background p-6">
-      <div className="w-full max-w-sm rounded-md border border-border bg-card p-8">{children}</div>
-    </main>
+    </AuthShell>
   );
 }
 

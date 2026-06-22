@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
 import { createClient } from "@/lib/supabase/client";
+import { AuthShell } from "@/components/marketing/auth-shell";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -37,9 +38,8 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex h-dvh items-center justify-center bg-background">
-      <div className="w-full max-w-sm rounded-md border border-border bg-card p-8">
-        <div className="font-heading text-xl font-semibold text-foreground">Velora</div>
+    <AuthShell>
+      <div className="font-heading text-xl font-semibold text-foreground">Velora</div>
         <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
           Sign in · grounded outreach
         </div>
@@ -81,7 +81,6 @@ export default function LoginPage() {
             Start free
           </Link>
         </p>
-      </div>
-    </main>
+    </AuthShell>
   );
 }

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
 import { createClient } from "@/lib/supabase/client";
+import { AuthShell } from "@/components/marketing/auth-shell";
 
 // Self-serve signup (Slice 4.13). Supabase signUp → if a session is returned (email confirmation off)
 // we provision the org and enter the app; if not (confirmation on, a Supabase project setting) we
@@ -46,7 +47,7 @@ export default function SignupPage() {
 
   if (checkEmail) {
     return (
-      <Shell>
+      <AuthShell>
         <h1 className="font-heading text-lg font-semibold text-foreground">Check your email</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           We sent a confirmation link to <span className="text-foreground">{email}</span>. Confirm
@@ -55,12 +56,12 @@ export default function SignupPage() {
         <Link href="/login" className="mt-4 inline-block text-sm font-medium text-primary hover:underline">
           Go to sign in →
         </Link>
-      </Shell>
+      </AuthShell>
     );
   }
 
   return (
-    <Shell>
+    <AuthShell>
       <div className="font-heading text-xl font-semibold text-foreground">Velora</div>
       <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
         Create your workspace
@@ -91,15 +92,7 @@ export default function SignupPage() {
           Sign in
         </Link>
       </p>
-    </Shell>
-  );
-}
-
-function Shell({ children }: { children: React.ReactNode }) {
-  return (
-    <main className="flex min-h-dvh items-center justify-center bg-background p-6">
-      <div className="w-full max-w-sm rounded-md border border-border bg-card p-8">{children}</div>
-    </main>
+    </AuthShell>
   );
 }
 
