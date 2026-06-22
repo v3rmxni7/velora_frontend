@@ -16,7 +16,7 @@ export const CHIP =
 
 export function Card({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={cn("rounded-md border border-border bg-card p-5", className)}>{children}</div>
+    <div className={cn("rounded-md border border-border bg-card p-5 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]", className)}>{children}</div>
   );
 }
 
@@ -25,7 +25,7 @@ export function Stat({ label, value, hint }: { label: string; value: string | nu
   return (
     <Card>
       <div className={EYEBROW}>{label}</div>
-      <div className="mt-2 font-mono text-2xl tabular-nums text-foreground">{value}</div>
+      <div className="mt-2 font-mono text-2xl font-medium tabular-nums tracking-tight text-foreground">{value}</div>
       {hint ? <p className={`${FOOTNOTE} mt-1`}>{hint}</p> : null}
     </Card>
   );
@@ -52,7 +52,7 @@ export function NotYet({
   reason: keyof typeof NOT_YET_COPY;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-1.5 rounded-md border border-dashed border-border bg-card p-5 text-center">
+    <div className="flex flex-col items-center justify-center gap-1.5 rounded-md border border-dashed border-border bg-muted/30 p-5 text-center dark:border-muted-foreground/30">
       <p className="text-sm text-muted-foreground">{label}</p>
       <p className={FOOTNOTE}>{NOT_YET_COPY[reason]}</p>
     </div>
