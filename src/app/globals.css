@@ -163,3 +163,41 @@
     animation: none;
   }
 }
+
+/* --- Visual-upgrade additive utilities (Slice 0) ----------------------------------------------
+   Static styling helpers for the marketing showpiece (dark hero + glowing product) and elevated
+   surfaces. ADDITIVE ONLY — no token changes, no overrides. Themed to Velora's identity
+   (ink #16181D, indigo #4F46E5). Used by Tier A (marketing) and, sparingly, Tier B (app). */
+
+/* Dark hero backdrop: deep ink with an indigo bloom from the top. */
+.bg-hero-ink {
+  background:
+    radial-gradient(80% 120% at 50% -10%, rgba(79, 70, 229, 0.32) 0%, transparent 60%),
+    linear-gradient(180deg, #0b0d12 0%, #16181d 100%);
+}
+/* Very subtle grid lines for the dark hero (quiet structure, not a pattern). */
+.bg-grid-faint {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+/* Tasteful elevation for light surfaces (cards, the product showcase frame). */
+.shadow-elevated {
+  box-shadow:
+    0 1px 2px rgba(16, 24, 40, 0.04),
+    0 12px 32px -12px rgba(16, 24, 40, 0.14);
+}
+/* Indigo glow for the hero product artifact (the real dashboard, lifted off the dark hero). */
+.shadow-glow-indigo {
+  box-shadow:
+    0 0 0 1px rgba(79, 70, 229, 0.18),
+    0 30px 80px -28px rgba(79, 70, 229, 0.5);
+}
+/* Indigo gradient for emphasis text (used sparingly on display headlines). */
+.text-gradient-indigo {
+  background: linear-gradient(120deg, #4f46e5 0%, #8079f2 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
