@@ -55,7 +55,7 @@ export function DraftCard({ task, reveal }: { task: Task; reveal?: boolean }) {
     <article
       id={`task-${task.id}`}
       className={cn(
-        "relative overflow-hidden rounded-md border border-border bg-card p-5 pl-6",
+        "relative overflow-hidden rounded-md border border-border bg-card p-5 pl-6 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]",
         resolved && "opacity-70",
         reveal && "animate-draft-reveal",
       )}

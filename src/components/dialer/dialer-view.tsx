@@ -45,7 +45,7 @@ export function DialerView() {
             onClick={() => setTab(t.key)}
             className={cn(
               PILL,
-              t.key === tab ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-secondary",
+              t.key === tab ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-accent/50",
             )}
           >
             {t.label}
