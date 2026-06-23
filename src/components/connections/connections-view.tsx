@@ -77,7 +77,7 @@ export function ConnectionsView() {
 
       {/* Outreach channels — honest 🔌 placeholder (4.14). Email is live; LinkedIn automation is
           deferred (SPEC §14) and NOT connected. No backend, no fake connection or activity counts. */}
-      <div className="rounded-md border border-border bg-card p-4">
+      <div className="rounded-md border border-border bg-card p-4 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]">
         <h2 className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
           Outreach channels
         </h2>

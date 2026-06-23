@@ -46,7 +46,7 @@ export function CrmConnectionCard({
   const linked = crmCampaigns.find((c) => c.id === integration?.campaign_id);
 
   return (
-    <div className="space-y-3 rounded-md border border-border bg-card p-4">
+    <div className="space-y-3 rounded-md border border-border bg-card p-4 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]">
       <div className="flex items-center justify-between gap-2">
         <span className="text-sm font-medium text-foreground">{provider.label}</span>
         <span

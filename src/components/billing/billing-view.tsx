@@ -7,7 +7,11 @@ import { cn } from "@/lib/utils";
 const EYEBROW = "font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground";
 
 function Card({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <div className={cn("rounded-md border border-border bg-card p-5", className)}>{children}</div>;
+  return (
+    <div className={cn("rounded-md border border-border bg-card p-5 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]", className)}>
+      {children}
+    </div>
+  );
 }
 
 // Billing (Slice 4.10) — HONEST SHELL. Plan + tiers + the real ledger balance are shown, but the

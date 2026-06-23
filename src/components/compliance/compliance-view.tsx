@@ -12,7 +12,11 @@ const FOOTNOTE = "font-mono text-[11px] text-muted-foreground";
 const CHIP = "rounded border border-border px-1.5 py-0.5 font-mono text-[11px] whitespace-nowrap";
 
 function Card({ children }: { children: React.ReactNode }) {
-  return <div className="rounded-md border border-border bg-card p-5">{children}</div>;
+  return (
+    <div className="rounded-md border border-border bg-card p-5 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]">
+      {children}
+    </div>
+  );
 }
 
 // A short human detail for an audit row: its reason, else the most telling arg (real row data).

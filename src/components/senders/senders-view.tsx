@@ -141,7 +141,7 @@ function SenderConfig({ sender, mailboxes }: { sender: SenderRow; mailboxes: Mai
   const unassigned = mailboxes.filter((m) => m.sender_id === null);
 
   return (
-    <div className="space-y-3 rounded-md border border-border bg-card p-4">
+    <div className="space-y-3 rounded-md border border-border bg-card p-4 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="text-sm font-medium text-foreground">{sender.display_name ?? "(unnamed)"}</span>
         <select
