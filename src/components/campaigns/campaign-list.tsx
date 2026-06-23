@@ -52,7 +52,7 @@ function NewCampaign() {
   };
 
   return (
-    <form onSubmit={submit} className="space-y-4 rounded-md border border-border bg-card p-4">
+    <form onSubmit={submit} className="space-y-4 rounded-md border border-border bg-card p-4 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]">
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {TYPE_META.map((m) => {
           const active = m.type === type;
@@ -64,7 +64,7 @@ function NewCampaign() {
               onClick={() => setType(m.type)}
               className={cn(
                 "rounded-md border p-2.5 text-left transition-colors",
-                active ? "border-primary/40 bg-accent" : "border-border hover:bg-secondary/60",
+                active ? "border-primary/40 bg-accent" : "border-border hover:bg-accent/50",
               )}
             >
               <div className="flex items-center justify-between gap-1">
@@ -191,7 +191,7 @@ export function CampaignList() {
               <li key={c.id}>
                 <Link
                   href={`/campaigns/${c.id}`}
-                  className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3 transition-colors hover:bg-secondary/60"
+                  className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3 transition-colors hover:bg-accent/50"
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-foreground">{c.name}</p>
