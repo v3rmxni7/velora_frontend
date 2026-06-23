@@ -45,7 +45,7 @@ export function AnalyticsHub() {
                 PILL,
                 t.key === tab
                   ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:bg-secondary",
+                  : "text-muted-foreground hover:bg-accent/50",
               )}
             >
               {t.label}
@@ -63,7 +63,7 @@ export function AnalyticsHub() {
                   PILL,
                   d === days
                     ? "bg-accent text-accent-foreground"
-                    : "text-muted-foreground hover:bg-secondary",
+                    : "text-muted-foreground hover:bg-accent/50",
                 )}
               >
                 {d}D
