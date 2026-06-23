@@ -147,7 +147,7 @@ function LeadsTable({
             <TableRow
               key={id}
               onClick={() => onOpen(id)}
-              className="cursor-pointer hover:bg-secondary/50"
+              className="cursor-pointer hover:bg-accent/50"
             >
               {cols.map((c, i) => (
                 <TableCell
@@ -222,7 +222,7 @@ export function LeadsBrowser() {
                 "rounded-md px-2 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors",
                 t.key === tab
                   ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:bg-secondary",
+                  : "text-muted-foreground hover:bg-accent/50",
               )}
             >
               {t.label}

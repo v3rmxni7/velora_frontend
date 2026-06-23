@@ -77,7 +77,7 @@ export function SignalsCatalog() {
               PILL,
               t.key === tab
                 ? "bg-accent text-accent-foreground"
-                : "text-muted-foreground hover:bg-secondary",
+                : "text-muted-foreground hover:bg-accent/50",
             )}
           >
             {t.label}

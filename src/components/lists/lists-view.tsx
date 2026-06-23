@@ -53,7 +53,7 @@ export function ListsView() {
               <button
                 type="button"
                 onClick={() => setSelected(l)}
-                className="flex w-full flex-col gap-1 rounded-md border border-border bg-card p-4 text-left transition-colors hover:bg-secondary/50"
+                className="flex w-full flex-col gap-1 rounded-md border border-border bg-card p-4 text-left shadow-[0_1px_2px_0_rgba(16,24,40,0.04)] transition-colors hover:bg-accent/50"
               >
                 <div className="flex items-center justify-between gap-2">
                   <span className="truncate font-medium text-foreground">{l.name}</span>

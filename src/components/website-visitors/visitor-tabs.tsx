@@ -28,7 +28,7 @@ export function VisitorTabs() {
             onClick={() => setTab(t)}
             className={cn(
               PILL,
-              t === tab ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-secondary",
+              t === tab ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-accent/50",
             )}
           >
             {t === "people" ? "People" : "Companies"}
