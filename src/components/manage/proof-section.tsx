@@ -76,7 +76,7 @@ export function ProofSection() {
               "rounded-md px-2 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors",
               c.key === cat
                 ? "bg-accent text-accent-foreground"
-                : "text-muted-foreground hover:bg-secondary",
+                : "text-muted-foreground hover:bg-accent/50",
             )}
           >
             {c.label}

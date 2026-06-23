@@ -15,7 +15,11 @@ import { cn } from "@/lib/utils";
 const EYEBROW = "font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground";
 
 function Card({ children }: { children: React.ReactNode }) {
-  return <div className="rounded-md border border-border bg-card p-5">{children}</div>;
+  return (
+    <div className="rounded-md border border-border bg-card p-5 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]">
+      {children}
+    </div>
+  );
 }
 
 // The 14-quest onboarding card (Slice 4.10). Completion + credit rewards are REAL: each quest is
@@ -51,7 +55,7 @@ function QuestsCard() {
           <li key={q.key}>
             <Link
               href={q.href}
-              className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-secondary/60"
+              className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent/50"
             >
               <span
                 className={cn(

@@ -16,7 +16,11 @@ const MUTED = "border-border bg-card text-muted-foreground";
 const ON = "border-primary/30 bg-accent text-accent-foreground";
 
 function Card({ children }: { children: React.ReactNode }) {
-  return <div className="rounded-md border border-border bg-card p-5">{children}</div>;
+  return (
+    <div className="rounded-md border border-border bg-card p-5 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]">
+      {children}
+    </div>
+  );
 }
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {

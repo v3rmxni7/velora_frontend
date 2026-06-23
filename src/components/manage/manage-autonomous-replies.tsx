@@ -17,7 +17,11 @@ const ON = "border-primary/30 bg-accent text-accent-foreground";
 const MUTED = "border-border bg-card text-muted-foreground";
 
 function Card({ children }: { children: React.ReactNode }) {
-  return <div className="rounded-md border border-border bg-card p-5">{children}</div>;
+  return (
+    <div className="rounded-md border border-border bg-card p-5 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]">
+      {children}
+    </div>
+  );
 }
 
 const MODES: { key: "off" | "draft" | "send"; meaning: string }[] = [
@@ -46,7 +50,7 @@ function ReplyDraftCard({ task }: { task: Task }) {
   const busy = approve.isPending || reject.isPending;
 
   return (
-    <article className="relative overflow-hidden rounded-md border border-border bg-card p-5 pl-6">
+    <article className="relative overflow-hidden rounded-md border border-border bg-card p-5 pl-6 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]">
       <span className={cn("absolute inset-y-0 left-0 w-[3px]", railColor(task))} aria-hidden />
 
       <div className="flex items-start justify-between gap-3">
