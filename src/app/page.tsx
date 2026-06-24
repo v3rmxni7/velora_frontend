@@ -2,6 +2,7 @@ import { MarketingNav } from "@/components/marketing/marketing-nav";
 import { ScrollProgress } from "@/components/marketing/scroll-progress";
 import { Hero } from "@/components/marketing/hero";
 import { InvariantStrip } from "@/components/marketing/invariant-strip";
+import { LiveDemo } from "@/components/marketing/live-demo";
 import { HowItWorks } from "@/components/marketing/how-it-works";
 import { Differentiators } from "@/components/marketing/differentiators";
 import { Honesty } from "@/components/marketing/honesty";
@@ -23,7 +24,9 @@ export default function Home() {
       <Hero />
       {/* S1 — honest-invariant strip (replaces fabricated stat-counters). */}
       <InvariantStrip />
-      {/* Existing sections — upgraded in later slices (S2 inserts the live demo at #demo). */}
+      {/* S2 — ★ the live grounded-draft demo (the centerpiece). */}
+      <LiveDemo />
+      {/* Existing sections — upgraded in later slices. */}
       <HowItWorks />
       <Differentiators />
       <Honesty />

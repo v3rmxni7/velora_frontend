@@ -6,7 +6,7 @@
 // the app's a11y stance (globals.css already silences the CSS keyframes under prefers-reduced-motion).
 
 import { motion, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
-import { useRef, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 // Premium ease-out — decisive, then settle (cubic-bezier(0.16,1,0.3,1)). Never linear, never bouncy.
@@ -149,4 +149,30 @@ export function ElegantShape({
       </motion.div>
     </motion.div>
   );
+}
+
+/**
+ * Auto-advancing step driver for the live demo (re-typed from the 21st.dev `useNumberCycler`
+ * discipline: the timer re-arms on each step so a manual jump resets the dwell). Pauses on hover/
+ * focus. Under prefers-reduced-motion it does NOT auto-advance — the consumer renders a complete
+ * static state instead. Returns the step, manual jump, pause/resume handlers, and the reduce flag.
+ */
+export function useAutoStep(count: number, intervalMs = 3000) {
+  const reduce = useReducedMotion();
+  const [step, setStep] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (reduce || paused || count <= 1) return;
+    timer.current = setTimeout(() => setStep((s) => (s + 1) % count), intervalMs);
+    return () => {
+      if (timer.current) clearTimeout(timer.current);
+    };
+  }, [step, paused, reduce, count, intervalMs]);
+
+  const goTo = useCallback((i: number) => setStep(i), []);
+  const pause = useCallback(() => setPaused(true), []);
+  const resume = useCallback(() => setPaused(false), []);
+  return { step, goTo, pause, resume, paused, reduce };
 }
