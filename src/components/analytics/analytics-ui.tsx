@@ -1,6 +1,7 @@
 "use client";
 
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { CountUp } from "@/components/motion";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +26,9 @@ export function Stat({ label, value, hint }: { label: string; value: string | nu
   return (
     <Card>
       <div className={EYEBROW}>{label}</div>
-      <div className="mt-2 font-mono text-2xl font-medium tabular-nums tracking-tight text-foreground">{value}</div>
+      <div className="mt-2 font-mono text-2xl font-medium tabular-nums tracking-tight text-foreground">
+        {typeof value === "number" ? <CountUp value={value} /> : value}
+      </div>
       {hint ? <p className={`${FOOTNOTE} mt-1`}>{hint}</p> : null}
     </Card>
   );
