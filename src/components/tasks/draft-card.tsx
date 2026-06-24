@@ -55,8 +55,10 @@ export function DraftCard({ task, reveal }: { task: Task; reveal?: boolean }) {
     <article
       id={`task-${task.id}`}
       className={cn(
-        "relative overflow-hidden rounded-md border border-border bg-card p-5 pl-6 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]",
-        resolved && "opacity-70",
+        "relative overflow-hidden rounded-md border border-border bg-card p-5 pl-6 transition-shadow",
+        resolved
+          ? "opacity-70 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]"
+          : "shadow-[0_2px_10px_-4px_rgba(16,24,40,0.08)]",
         reveal && "animate-draft-reveal",
       )}
     >
@@ -70,7 +72,7 @@ export function DraftCard({ task, reveal }: { task: Task; reveal?: boolean }) {
       />
 
       <div className="flex items-start justify-between gap-3">
-        <h3 className="font-semibold text-foreground">{task.subject ?? "(no subject)"}</h3>
+        <h3 className="font-heading text-[15px] font-semibold text-foreground">{task.subject ?? "(no subject)"}</h3>
         <div className="flex shrink-0 items-center gap-2">
           <span className="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[11px] text-muted-foreground">
             {isTemplate
