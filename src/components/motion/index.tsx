@@ -5,7 +5,7 @@
 // motion, every wrapper renders instantly with NO transform/opacity/parallax animation — honoring
 // the app's a11y stance (globals.css already silences the CSS keyframes under prefers-reduced-motion).
 
-import { motion, useScroll, useTransform, type Variants } from "framer-motion";
+import { animate, motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
@@ -175,6 +175,41 @@ export function ElegantShape({
       </motion.div>
     </motion.div>
   );
+}
+
+/**
+ * In-app number count-up for dashboard stats / counts / credits. Animates 0 → value on mount and
+ * old → new on change; reduced-motion renders the exact final value with no animation. PURELY
+ * presentational: the `value` passed in is the real, already-computed number — this only animates its
+ * reveal (never fabricates or rounds the source). `format` controls display (default: thousands
+ * separators). Dashboard metrics are client-fetched (rendered after their query resolves, behind a
+ * skeleton), so starting from 0 is correct and carries no SSR/hydration value to mismatch.
+ */
+export function CountUp({
+  value,
+  durationMs = 600,
+  format = (v: number) => Math.round(v).toLocaleString(),
+  className,
+}: {
+  value: number;
+  durationMs?: number;
+  format?: (v: number) => string;
+  className?: string;
+}) {
+  const reduce = useReducedMotionSafe();
+  const [shown, setShown] = useState(0);
+  const prev = useRef(0);
+  useEffect(() => {
+    if (reduce) return; // reduced-motion: render the final value verbatim, no animation
+    const controls = animate(prev.current, value, {
+      duration: durationMs / 1000,
+      ease: "easeOut",
+      onUpdate: setShown, // async frame callback — not a synchronous setState-in-effect
+    });
+    prev.current = value;
+    return () => controls.stop();
+  }, [value, reduce, durationMs]);
+  return <span className={className}>{format(reduce ? value : shown)}</span>;
 }
 
 /**
