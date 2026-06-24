@@ -7,6 +7,7 @@
 
 import { motion, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useRef, type ReactNode } from "react";
+import { cn } from "@/lib/utils";
 
 // Premium ease-out — decisive, then settle (cubic-bezier(0.16,1,0.3,1)). Never linear, never bouncy.
 const EASE = [0.16, 1, 0.3, 1] as const;
@@ -96,6 +97,56 @@ export function Parallax({
   return (
     <motion.div ref={ref} style={{ y }} className={className}>
       {children}
+    </motion.div>
+  );
+}
+
+/**
+ * A large, soft, blurred INDIGO capsule for hero/dark-section depth (re-typed + de-chromed from the
+ * 21st.dev `ElegantShape` reference — monochrome, our craft law). Entrance drift-in + ONE gentle
+ * infinite y-float. Reduced-motion → a static positioned capsule (no animation). Decorative only.
+ */
+export function ElegantShape({
+  className,
+  delay = 0,
+  width = 400,
+  height = 110,
+  rotate = 0,
+}: {
+  className?: string;
+  delay?: number;
+  width?: number;
+  height?: number;
+  rotate?: number;
+}) {
+  const reduce = useReducedMotion();
+  const capsule = (
+    <div
+      style={{ width, height }}
+      className="rounded-full border border-white/[0.08] bg-gradient-to-r from-primary/[0.16] to-transparent shadow-[0_8px_40px_-8px_rgba(79,70,229,0.18)] backdrop-blur-[2px]"
+    />
+  );
+  if (reduce) {
+    return (
+      <div className={cn("pointer-events-none absolute", className)} style={{ transform: `rotate(${rotate}deg)` }} aria-hidden>
+        {capsule}
+      </div>
+    );
+  }
+  return (
+    <motion.div
+      className={cn("pointer-events-none absolute", className)}
+      aria-hidden
+      initial={{ opacity: 0, y: -110, rotate: rotate - 12 }}
+      animate={{ opacity: 1, y: 0, rotate }}
+      transition={{ duration: 2.2, delay, ease: [0.23, 0.86, 0.39, 0.96], opacity: { duration: 1.1 } }}
+    >
+      <motion.div
+        animate={{ y: [0, 14, 0] }}
+        transition={{ duration: 12, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+      >
+        {capsule}
+      </motion.div>
     </motion.div>
   );
 }

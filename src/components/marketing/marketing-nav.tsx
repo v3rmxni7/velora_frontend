@@ -1,0 +1,114 @@
+"use client";
+
+import Link from "next/link";
+import { ChevronDown } from "lucide-react";
+import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
+
+// Sticky marketing nav over the dark hero (Mynor craft: unobtrusive at top, condenses to a blurred
+// ink bar once scrolled so it stays legible over the light sections below). A "Product" dropdown
+// (hover + focus-within, keyboard-safe) anchors to the real sections; the indigo "Start free" CTA
+// repeats here (it also lives in the hero + closing band, so a conversion path is always in view).
+// Anchors point at real section ids; nothing fabricated.
+
+const PRODUCT_LINKS = [
+  { href: "#how", label: "How it works" },
+  { href: "#demo", label: "Live demo" },
+  { href: "#motions", label: "Every motion" },
+  { href: "#integrations", label: "Integrations" },
+];
+
+function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="group relative rounded-md px-3 py-1.5 text-sm text-white/70 transition-colors hover:text-white"
+    >
+      {children}
+      <span
+        className="pointer-events-none absolute inset-x-3 -bottom-px h-px origin-left scale-x-0 bg-white/50 transition-transform duration-200 ease-out group-hover:scale-x-100"
+        aria-hidden
+      />
+    </Link>
+  );
+}
+
+export function MarketingNav() {
+  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <header
+      className={cn(
+        "fixed inset-x-0 top-0 z-40 transition-colors duration-300",
+        scrolled
+          ? "border-b border-white/10 bg-[#0b0d12]/80 backdrop-blur-md"
+          : "border-b border-transparent",
+      )}
+    >
+      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
+        <Link href="/" className="font-heading text-lg font-semibold tracking-tight text-white">
+          Velora
+        </Link>
+
+        <div className="hidden items-center gap-1 md:flex">
+          <div
+            className="relative"
+            onMouseEnter={() => setOpen(true)}
+            onMouseLeave={() => setOpen(false)}
+            onFocus={() => setOpen(true)}
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpen(false);
+            }}
+          >
+            <button
+              type="button"
+              aria-expanded={open}
+              className="flex items-center gap-1 rounded-md px-3 py-1.5 text-sm text-white/70 transition-colors hover:text-white"
+            >
+              Product
+              <ChevronDown className={cn("size-3.5 transition-transform duration-200", open && "rotate-180")} aria-hidden />
+            </button>
+            {open && (
+              <div className="absolute left-0 top-full w-52 rounded-md border border-white/10 bg-[#0b0d12]/95 p-1.5 shadow-xl backdrop-blur-md">
+                {PRODUCT_LINKS.map((l) => (
+                  <Link
+                    key={l.href}
+                    href={l.href}
+                    className="block rounded-md px-2.5 py-1.5 text-sm text-white/70 transition-colors hover:bg-white/5 hover:text-white"
+                  >
+                    {l.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+          <NavLink href="#pricing">Pricing</NavLink>
+          <NavLink href="#honesty">Honesty</NavLink>
+        </div>
+
+        <div className="flex items-center gap-1 sm:gap-2">
+          <Link
+            href="/login"
+            className="rounded-md px-3 py-1.5 text-sm text-white/70 transition-colors hover:text-white"
+          >
+            Log in
+          </Link>
+          <Link
+            href="/signup"
+            className="rounded-md bg-primary px-3.5 py-1.5 text-sm font-medium text-primary-foreground shadow-glow-indigo transition-all duration-200 hover:-translate-y-px hover:bg-primary/90"
+          >
+            Start free
+          </Link>
+        </div>
+      </nav>
+    </header>
+  );
+}
