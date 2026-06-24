@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { CountUp } from "@/components/motion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDeliverability } from "@/lib/hooks/use-deliverability";
 import { cn } from "@/lib/utils";
@@ -22,7 +23,7 @@ function Stat({ label, value }: { label: string; value: number }) {
   return (
     <Card>
       <div className={EYEBROW}>{label}</div>
-      <div className="mt-2 font-mono text-2xl tabular-nums text-foreground">{value}</div>
+      <div className="mt-2 font-mono text-2xl tabular-nums text-foreground"><CountUp value={value} /></div>
     </Card>
   );
 }
@@ -63,7 +64,7 @@ export function DeliverabilityView() {
         <span className="absolute inset-y-0 left-0 w-[3px] bg-primary" aria-hidden />
         <div className={EYEBROW}>Sends today</div>
         <div className="mt-2 flex items-baseline gap-2">
-          <span className="font-mono text-3xl tabular-nums text-foreground">{d.sends.today}</span>
+          <span className="font-mono text-3xl tabular-nums text-foreground"><CountUp value={d.sends.today} /></span>
           <span className="font-mono text-sm text-muted-foreground">
             / {d.sends.dailyCap} daily cap
           </span>

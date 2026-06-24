@@ -1,5 +1,6 @@
 "use client";
 
+import { CountUp } from "@/components/motion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useBilling } from "@/lib/hooks/use-billing";
 import { cn } from "@/lib/utils";
@@ -50,7 +51,7 @@ export function BillingView() {
           <div>
             <h2 className={EYEBROW}>Credit balance</h2>
             <p className="mt-1 font-mono text-2xl tabular-nums text-foreground">
-              {balance.toLocaleString()}
+              <CountUp value={balance} />
             </p>
             {lowBalance && (
               <p className="mt-1 font-mono text-[11px] text-amber-700 dark:text-amber-400">
