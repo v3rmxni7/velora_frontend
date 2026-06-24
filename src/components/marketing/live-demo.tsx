@@ -1,8 +1,8 @@
 "use client";
 
-import { AnimatePresence, animate, motion } from "framer-motion";
+import { AnimatePresence, animate, motion, useInView } from "framer-motion";
 import { Check, ShieldCheck } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Reveal, useAutoStep, useReducedMotionSafe } from "@/components/motion";
 import { cn } from "@/lib/utils";
 
@@ -145,7 +145,10 @@ function VeloraDemoWindow({ children }: { children: React.ReactNode }) {
 }
 
 export function LiveDemo() {
-  const { step, goTo, pause, resume, reduce } = useAutoStep(STAGES.length, DURATIONS);
+  // Gate the auto-play on visibility so timers + stage animations don't churn while off-screen.
+  const rootRef = useRef<HTMLElement>(null);
+  const inView = useInView(rootRef, { amount: 0.3 });
+  const { step, goTo, pause, resume, reduce } = useAutoStep(STAGES.length, DURATIONS, inView);
   const s = reduce ? STAGES.length - 1 : step; // reduced-motion shows the finished state
 
   // Fire the drop ~1.5s into Filter; reset at the top of each loop via the render-time prev-step
@@ -166,7 +169,7 @@ export function LiveDemo() {
   const factsLabel = s === 0 ? "researching facts" : s === 1 && !fired ? "filtering · checking the floor" : "grounded on 3 verified facts";
 
   return (
-    <section id="demo" className="relative isolate overflow-hidden bg-hero-ink py-24 text-white lg:py-28">
+    <section ref={rootRef} id="demo" className="relative isolate overflow-hidden bg-hero-ink py-24 text-white lg:py-28">
       <div className="pointer-events-none absolute inset-0 bg-grid-faint [mask-image:radial-gradient(70%_60%_at_50%_0%,black,transparent)]" aria-hidden />
       <div className="relative mx-auto max-w-6xl px-6">
         <Reveal>
@@ -262,6 +265,7 @@ export function LiveDemo() {
                       <motion.span
                         initial={{ opacity: 0, x: 4 }}
                         animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 4 }}
                         className="rounded border border-destructive/30 bg-destructive/10 px-1.5 py-0.5 font-mono text-[10px] text-destructive"
                       >
                         1 dropped · &lt; 0.60
