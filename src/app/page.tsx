@@ -1,4 +1,7 @@
+import { MarketingNav } from "@/components/marketing/marketing-nav";
+import { ScrollProgress } from "@/components/marketing/scroll-progress";
 import { Hero } from "@/components/marketing/hero";
+import { InvariantStrip } from "@/components/marketing/invariant-strip";
 import { HowItWorks } from "@/components/marketing/how-it-works";
 import { Differentiators } from "@/components/marketing/differentiators";
 import { Honesty } from "@/components/marketing/honesty";
@@ -6,23 +9,24 @@ import { Pricing } from "@/components/marketing/pricing";
 import { FinalCta } from "@/components/marketing/final-cta";
 import { SiteFooter } from "@/components/marketing/site-footer";
 
-// Public marketing landing (Slice 4.13). Static server component → fast LCP (SPEC §11). HONEST
-// positioning per SPEC §1/§11: the wedge is data + deliverability + transparency, not "magic AI".
-// NO fabricated testimonials, logos, or results/deliverability guarantees. The page composes client
-// section islands (hero + A1b/A1c sections) but stays a server component itself (prerendered static).
+// Public marketing landing — the rebuild (Artisan structure + Mynor craft, in Velora's honest
+// identity). Static server component composing client islands. HONEST: no fabricated testimonials,
+// logos, or aggregate result stats — the live demo + invariant strip + honesty manifesto + real
+// pricing carry the trust load. Built section by section; sections upgrade in later slices.
 
 export default function Home() {
   return (
     <main className="min-h-dvh bg-background text-foreground">
-      {/* A1a — the dark hero + nav + real grounded-draft centerpiece. */}
+      <ScrollProgress />
+      <MarketingNav />
+      {/* S1 — dark hero (floating indigo depth + real grounded-draft centerpiece). */}
       <Hero />
-
-      {/* A1b — how it works (the real pipeline), the real differentiators, the honesty manifesto. */}
+      {/* S1 — honest-invariant strip (replaces fabricated stat-counters). */}
+      <InvariantStrip />
+      {/* Existing sections — upgraded in later slices (S2 inserts the live demo at #demo). */}
       <HowItWorks />
       <Differentiators />
       <Honesty />
-
-      {/* A1c — pricing (the 3 real tiers), the closing CTA, the footer. */}
       <Pricing />
       <FinalCta />
       <SiteFooter />
