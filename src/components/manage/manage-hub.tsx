@@ -30,22 +30,24 @@ export function ManageHub() {
 
   return (
     <div className="space-y-5">
-      <div className="mx-auto flex max-w-3xl gap-1">
-        {TABS.map((t) => (
-          <button
-            type="button"
-            key={t.key}
-            onClick={() => setTab(t.key)}
-            className={cn(
-              "rounded-md px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors",
-              t.key === tab
-                ? "bg-accent text-accent-foreground"
-                : "text-muted-foreground hover:bg-accent/50",
-            )}
-          >
-            {t.label}
-          </button>
-        ))}
+      <div className="mx-auto max-w-3xl">
+        <div className="inline-flex gap-0.5 rounded-lg border border-border bg-secondary/40 p-0.5">
+          {TABS.map((t) => (
+            <button
+              type="button"
+              key={t.key}
+              onClick={() => setTab(t.key)}
+              className={cn(
+                "rounded-md px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-all",
+                t.key === tab
+                  ? "bg-card text-primary shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]"
+                  : "text-muted-foreground hover:text-foreground",
+              )}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {tab === "overview" ? (

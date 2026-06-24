@@ -2,6 +2,7 @@
 
 import { Check } from "lucide-react";
 import Link from "next/link";
+import { CountUp } from "@/components/motion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCampaigns } from "@/lib/hooks/use-campaigns";
 import { useCredits } from "@/lib/hooks/use-credits";
@@ -48,7 +49,7 @@ function QuestsCard() {
         </span>
       </div>
       <p className="mt-1 font-mono text-[11px] text-muted-foreground">
-        {creditsEarned.toLocaleString()} credits earned — each quest pays real credits as you complete it
+        <CountUp value={creditsEarned} /> credits earned — each quest pays real credits as you complete it
       </p>
       <ul className="mt-3 space-y-1">
         {items.map((q) => (
