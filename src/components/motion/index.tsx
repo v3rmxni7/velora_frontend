@@ -5,18 +5,44 @@
 // motion, every wrapper renders instantly with NO transform/opacity/parallax animation — honoring
 // the app's a11y stance (globals.css already silences the CSS keyframes under prefers-reduced-motion).
 
-import { motion, useReducedMotion, useScroll, useTransform, type Variants } from "framer-motion";
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { motion, useScroll, useTransform, type Variants } from "framer-motion";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 // Premium ease-out — decisive, then settle (cubic-bezier(0.16,1,0.3,1)). Never linear, never bouncy.
 const EASE = [0.16, 1, 0.3, 1] as const;
 
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+function subscribeReducedMotion(onChange: () => void) {
+  if (typeof window === "undefined" || !window.matchMedia) return () => {};
+  const mq = window.matchMedia(REDUCED_MOTION_QUERY);
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+}
+
+/**
+ * SSR-safe reduced-motion via useSyncExternalStore. The SERVER snapshot is `false`, and React uses it
+ * for BOTH the server render and the client's first (hydration) render — so the hydrated tree always
+ * matches the static HTML. Immediately after hydration React switches to the live client snapshot
+ * (the real media query), and the subscription re-renders if the user toggles the OS setting. Any
+ * component that branches its RENDER on reduced motion (different markup/structure/step) MUST use this
+ * — not framer's useReducedMotion() directly — because under SSG the server renders reduce=false while
+ * a direct client read returns reduce=true synchronously, producing a hydration mismatch that
+ * regenerates the whole tree. (No setState-in-effect; non-reduced users see no behavior change.)
+ */
+export function useReducedMotionSafe() {
+  return useSyncExternalStore(
+    subscribeReducedMotion,
+    () => window.matchMedia(REDUCED_MOTION_QUERY).matches, // client snapshot
+    () => false, // server + first-hydration snapshot
+  );
+}
+
 type Common = { children: ReactNode; className?: string; delay?: number };
 
 /** Scroll-triggered reveal: fades + lifts (+ a touch of blur) into view once. Marketing sections. */
 export function Reveal({ children, className, delay = 0, y = 24 }: Common & { y?: number }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   if (reduce) return <div className={className}>{children}</div>;
   return (
     <motion.div
@@ -33,7 +59,7 @@ export function Reveal({ children, className, delay = 0, y = 24 }: Common & { y?
 
 /** Mount fade: animates once on mount. Use for above-the-fold hero content + subtle app entrances. */
 export function FadeIn({ children, className, delay = 0, y = 10 }: Common & { y?: number }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   if (reduce) return <div className={className}>{children}</div>;
   return (
     <motion.div
@@ -54,7 +80,7 @@ const STAGGER_ITEM: Variants = {
 
 /** Stagger container: reveals its <StaggerItem> children in sequence as they enter view. */
 export function Stagger({ children, className, gap = 0.09 }: Common & { gap?: number }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   if (reduce) return <div className={className}>{children}</div>;
   return (
     <motion.div
@@ -70,7 +96,7 @@ export function Stagger({ children, className, gap = 0.09 }: Common & { gap?: nu
 }
 
 export function StaggerItem({ children, className }: { children: ReactNode; className?: string }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   if (reduce) return <div className={className}>{children}</div>;
   return (
     <motion.div className={className} variants={STAGGER_ITEM}>
@@ -89,7 +115,7 @@ export function Parallax({
   className,
   distance = 50,
 }: Common & { distance?: number }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [distance, -distance]);
@@ -119,7 +145,7 @@ export function ElegantShape({
   height?: number;
   rotate?: number;
 }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const capsule = (
     <div
       style={{ width, height }}
@@ -158,7 +184,7 @@ export function ElegantShape({
  * static state instead. Returns the step, manual jump, pause/resume handlers, and the reduce flag.
  */
 export function useAutoStep(count: number, intervalMs: number | number[] = 3000) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const [step, setStep] = useState(0);
   const [paused, setPaused] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);

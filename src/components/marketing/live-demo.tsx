@@ -1,9 +1,9 @@
 "use client";
 
-import { AnimatePresence, animate, motion, useReducedMotion } from "framer-motion";
+import { AnimatePresence, animate, motion } from "framer-motion";
 import { Check, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Reveal, useAutoStep } from "@/components/motion";
+import { Reveal, useAutoStep, useReducedMotionSafe } from "@/components/motion";
 import { cn } from "@/lib/utils";
 
 // ★ THE CENTERPIECE — the live grounded-draft demo. The thesis, animated: it throws away the fact it
@@ -39,7 +39,7 @@ const DRAFT =
 
 // Count-up confidence (0 → value), reduced-motion → final value immediately.
 function Confidence({ value, run }: { value: number; run: boolean }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const [n, setN] = useState<number | null>(null);
   useEffect(() => {
     if (reduce || !run) return;
@@ -88,7 +88,7 @@ function WeakFactRow({ rejected }: { rejected: boolean }) {
 
 // Word-staggered "typing" with a blinking caret while composing; reduced-motion → full text instantly.
 function TypedDraft({ run }: { run: boolean }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const words = DRAFT.split(" ");
   if (reduce || !run) return <span>{DRAFT}</span>;
   return (
@@ -113,7 +113,7 @@ function TypedDraft({ run }: { run: boolean }) {
 }
 
 function VeloraDemoWindow({ children }: { children: React.ReactNode }) {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   return (
     <div className="overflow-hidden rounded-md border border-border bg-card shadow-glow-indigo ring-1 ring-black/5">
       <div className="flex h-10 items-center gap-3 border-b border-border bg-secondary/40 px-3.5">

@@ -1,7 +1,7 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
-import { Reveal } from "@/components/motion";
+import { motion } from "framer-motion";
+import { Reveal, useReducedMotionSafe } from "@/components/motion";
 
 // S4 — the signal hub: a node-graph that FANS IN. Re-themed from the 21st.dev `Pulse Beams` technique
 // (two stacked SVG paths — a faint base + a bright overlay whose <motion.linearGradient> coordinates
@@ -56,7 +56,7 @@ function GradientStops() {
 }
 
 function FanInSvg() {
-  const reduce = useReducedMotion();
+  const reduce = useReducedMotionSafe();
   const allPaths = [...SOURCES.map((s) => beamPath(s.y)), OUT_PATH];
   return (
     <svg
