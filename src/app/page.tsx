@@ -5,6 +5,7 @@ import { InvariantStrip } from "@/components/marketing/invariant-strip";
 import { LiveDemo } from "@/components/marketing/live-demo";
 import { HowItWorks } from "@/components/marketing/how-it-works";
 import { Differentiators } from "@/components/marketing/differentiators";
+import { SignalHub } from "@/components/marketing/signal-hub";
 import { Honesty } from "@/components/marketing/honesty";
 import { Pricing } from "@/components/marketing/pricing";
 import { FinalCta } from "@/components/marketing/final-cta";
@@ -29,6 +30,8 @@ export default function Home() {
       {/* Existing sections — upgraded in later slices. */}
       <HowItWorks />
       <Differentiators />
+      {/* S4 — the signal hub (Pulse Beams node-graph, honest fan-IN → one grounded email). */}
+      <SignalHub />
       <Honesty />
       <Pricing />
       <FinalCta />
