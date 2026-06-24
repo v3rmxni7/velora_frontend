@@ -54,7 +54,7 @@ export function Hero() {
               <div className="mt-8 flex flex-wrap items-center gap-3">
                 <Link
                   href="/signup"
-                  className="group inline-flex items-center gap-1.5 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-glow-indigo transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-[0_0_0_1px_rgba(79,70,229,0.45),0_18px_44px_-14px_rgba(79,70,229,0.75)]"
+                  className="group inline-flex items-center gap-1.5 rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-glow-indigo transition-all duration-200 hover:-translate-y-0.5 hover:bg-primary/90 hover:shadow-[0_0_0_1px_rgba(79,70,229,0.45),0_18px_44px_-14px_rgba(79,70,229,0.75)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400"
                 >
                   Start free
                   <span className="transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden>
@@ -63,7 +63,7 @@ export function Hero() {
                 </Link>
                 <Link
                   href="#demo"
-                  className="rounded-md border border-white/20 px-5 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/10"
+                  className="rounded-md border border-white/20 px-5 py-2.5 text-sm font-medium text-white transition-all duration-200 hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400"
                 >
                   See it draft, live
                 </Link>

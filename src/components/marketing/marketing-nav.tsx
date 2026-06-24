@@ -18,11 +18,15 @@ const PRODUCT_LINKS = [
   { href: "#integrations", label: "Integrations" },
 ];
 
+// Shared keyboard focus ring — visible on BOTH the dark hero and the blurred ink bar (indigo-400 reads
+// on light and dark). Every nav interactive uses it; the global outline-ring/50 was too faint on dark.
+const FOCUS = "rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400";
+
 function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <Link
       href={href}
-      className="group relative rounded-md px-3 py-1.5 text-sm text-white/70 transition-colors hover:text-white"
+      className={`group relative px-3 py-1.5 text-sm text-white/70 transition-colors hover:text-white ${FOCUS}`}
     >
       {children}
       <span
@@ -65,13 +69,16 @@ export function MarketingNav() {
             onMouseLeave={() => setOpen(false)}
             onFocus={() => setOpen(true)}
             onBlur={(e) => {
-              if (!e.currentTarget.contains(e.relatedTarget as Node)) setOpen(false);
+              if (!e.relatedTarget || !e.currentTarget.contains(e.relatedTarget as Node)) setOpen(false);
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Escape") setOpen(false);
             }}
           >
             <button
               type="button"
               aria-expanded={open}
-              className="flex items-center gap-1 rounded-md px-3 py-1.5 text-sm text-white/70 transition-colors hover:text-white"
+              className={`flex items-center gap-1 px-3 py-1.5 text-sm text-white/70 transition-colors hover:text-white ${FOCUS}`}
             >
               Product
               <ChevronDown className={cn("size-3.5 transition-transform duration-200", open && "rotate-180")} aria-hidden />
@@ -82,7 +89,7 @@ export function MarketingNav() {
                   <Link
                     key={l.href}
                     href={l.href}
-                    className="block rounded-md px-2.5 py-1.5 text-sm text-white/70 transition-colors hover:bg-white/5 hover:text-white"
+                    className={`block px-2.5 py-1.5 text-sm text-white/70 transition-colors hover:bg-white/5 hover:text-white ${FOCUS}`}
                   >
                     {l.label}
                   </Link>
@@ -97,13 +104,13 @@ export function MarketingNav() {
         <div className="flex items-center gap-1 sm:gap-2">
           <Link
             href="/login"
-            className="rounded-md px-3 py-1.5 text-sm text-white/70 transition-colors hover:text-white"
+            className={`px-3 py-1.5 text-sm text-white/70 transition-colors hover:text-white ${FOCUS}`}
           >
             Log in
           </Link>
           <Link
             href="/signup"
-            className="rounded-md bg-primary px-3.5 py-1.5 text-sm font-medium text-primary-foreground shadow-glow-indigo transition-all duration-200 hover:-translate-y-px hover:bg-primary/90"
+            className={`rounded-md bg-primary px-3.5 py-1.5 text-sm font-medium text-primary-foreground shadow-glow-indigo transition-all duration-200 hover:-translate-y-px hover:bg-primary/90 ${FOCUS}`}
           >
             Start free
           </Link>
