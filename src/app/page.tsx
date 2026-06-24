@@ -29,9 +29,11 @@ export default function Home() {
       <LiveDemo />
       {/* Existing sections — upgraded in later slices. */}
       <HowItWorks />
-      <Differentiators />
-      {/* S4 — the signal hub (Pulse Beams node-graph, honest fan-IN → one grounded email). */}
+      {/* S4 — the signal hub (Pulse Beams node-graph, honest fan-IN → one grounded email).
+          Placed after the loop (it visualizes the loop's "Find from sources" step) and kept off
+          the Honesty dark band so dark/light sections keep alternating. */}
       <SignalHub />
+      <Differentiators />
       <Honesty />
       <Pricing />
       <FinalCta />
