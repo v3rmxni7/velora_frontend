@@ -2,50 +2,50 @@
 
 import { Reveal, Stagger, StaggerItem, Parallax } from "@/components/motion";
 
-// A1b — "How it works": the REAL Researcher→filter→Writer→verify pipeline, ending on the two-flag
-// safety step. Copy is grounded against the actual backend (read-only audit) and written to the
-// honesty guardrails: verification is automated RULE-BASED checks (not an LLM grading itself),
-// "personalized" is strictly EARNED (≥2 verified, lead-specific facts — else a safe template, never
-// a guess), and nothing sends until two org flags are deliberately flipped. No deliverability/result
-// promises, no "never hallucinates". The vertical rail echoes the product's evidence rail.
+// S3 — "How it works", repurposed as the broader AUTONOMOUS LOOP (the live demo above already shows
+// the draft pipeline in motion, so re-explaining Researcher→verify→Writer here would be redundant).
+// This is the breadth the demo can't show: Find → Draft → Guard → Engage → Measure. Copy is grounded
+// against the real backend and written to the honesty guardrails — dormant pieces are phrased for what
+// they actually do today (anonymous site visits are captured; identification needs a resolver, so we
+// don't claim it), nothing overclaims outcomes, and the send step stays dry-run-by-default. The
+// vertical rail echoes the product's evidence rail; the Guard step is amber, echoing the dry-run gate.
 
 const STEPS = [
   {
     n: "01",
-    title: "Gather what's verifiably true",
-    body: "Every draft starts from the lead's own structured fields — scoped to your workspace — plus your proof points, coaching notes, and, when available, passages from your website knowledge base retrieved by semantic search.",
-    chip: "your data only",
+    title: "Find the people worth reaching",
+    body: "Velora pulls prospects from the lists you import, live buyer-intent signals, and the anonymous visits on your own site — every record scoped to your workspace and enriched only from sources you provided.",
+    chip: "your workspace only",
+    tags: ["lead discovery", "intent signals", "website visits"],
   },
   {
     n: "02",
-    title: "Research & cite",
-    body: "An AI step pulls out a handful of facts about the lead — each one tagged with the exact source it came from and a self-reported confidence score. Nothing is written yet.",
-    chip: "cited + scored",
+    title: "Draft only what it can stand behind",
+    body: "The Researcher cites and scores facts, the Writer uses only the verified ones, and an automated check rewrites or falls back to a safe template if anything can't be traced. That's the pipeline you watched run above.",
+    chip: "grounded or it falls back",
+    tags: ["researcher", "verifier", "writer"],
   },
   {
     n: "03",
-    title: "Keep only what's grounded",
-    body: "Any “fact” that can't be traced back to a real source you provided — or that the model isn't confident about — is dropped before a single word is drafted.",
-    chip: "drop unsourced / low-confidence",
+    title: "Run it autonomously — inside real guardrails",
+    body: "Turn on autonomy and Velora works the queue on its own, behind guardrails you set: a two-flag send gate, per-org and global daily volume caps, and a scheduled anomaly auto-pause that trips on the first sign of trouble.",
+    chip: "dry-run until you flip it",
+    tags: ["two-flag gate", "volume caps", "auto-pause"],
+    safety: true,
   },
   {
     n: "04",
-    title: "Write only when it's earned",
-    body: "With enough verified, lead-specific facts, a capable model drafts using only those facts, under instructions to add no numbers, companies, or claims of its own. Short of that bar, Velora sends a safe template instead of guessing.",
-    chip: "≥ 2 verified facts to personalize",
+    title: "Sequence, then get out of the way",
+    body: "Multi-step follow-ups go out on a durable schedule — and the instant a human replies, the sequence halts and the person is suppressed. The agent never talks over a reply, autonomous or not.",
+    chip: "halt on reply",
+    tags: ["follow-up steps", "reply routing", "global suppression"],
   },
   {
     n: "05",
-    title: "Verify, then rewrite or fall back",
-    body: "Automated rule-based checks scan the draft for high-risk hard claims — figures, dollar amounts, company names — and flag any that don't trace to the allowed sources. Fail once, it rewrites; fail again, it falls back to the safe template.",
-    chip: "rule-based, not an AI grading itself",
-  },
-  {
-    n: "06",
-    title: "Nothing sends until you say go",
-    body: "Each email lands as a reviewable draft showing its sources and confidence. New workspaces are dry-run only — turning on live sending takes a deliberate flip a logged-in user, or the copilot, simply can't make.",
-    chip: "dry-run by default",
-    safety: true,
+    title: "Numbers you can trust — or none at all",
+    body: "Every rate is computed from real send and reply events. Where there's nothing to measure yet, Velora shows you exactly that — a labelled empty state — instead of a fabricated metric to look impressive.",
+    chip: "real events only",
+    tags: ["honest-empty", "no vanity stats"],
   },
 ];
 
@@ -61,17 +61,17 @@ export function HowItWorks() {
 
       <div className="mx-auto max-w-3xl px-6">
         <Reveal>
-          <p className={EYEBROW}>How Velora writes</p>
+          <p className={EYEBROW}>The loop</p>
         </Reveal>
         <Reveal delay={0.06}>
           <h2 className="mt-3 font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            Grounded by construction — not by promise.
+            One loop — accountable at every step.
           </h2>
         </Reveal>
         <Reveal delay={0.12}>
           <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">
-            The same Researcher → verify → Writer pipeline that powers the draft above, step by step.
-            Every guardrail here is enforced in code, not in the copy.
+            From the first signal to the last number, each stage is enforced in code — not in this copy.
+            And the stage that matters most, sending, stays dry-run until you deliberately flip it.
           </p>
         </Reveal>
 
@@ -83,7 +83,7 @@ export function HowItWorks() {
           />
           {STEPS.map((s) => (
             <StaggerItem key={s.n} className="relative flex gap-5 pb-9 last:pb-0 sm:gap-6">
-              {/* Step marker — sits on the rail. Safety step is amber, echoing the dry-run status. */}
+              {/* Step marker — sits on the rail. The Guard (safety) step is amber, echoing dry-run. */}
               <div
                 className={`relative z-10 flex size-9 shrink-0 items-center justify-center rounded-full border bg-background font-mono text-[11px] tabular-nums sm:size-11 sm:text-xs ${
                   s.safety
@@ -114,6 +114,17 @@ export function HowItWorks() {
                   </span>
                 </div>
                 <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">{s.body}</p>
+                {/* Surface micro-chips — the real product pieces this stage uses (mono = data voice). */}
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {s.tags.map((t) => (
+                    <span
+                      key={t}
+                      className="rounded border border-border/70 bg-secondary/40 px-1.5 py-0.5 font-mono text-[10px] tracking-tight text-muted-foreground"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                </div>
               </div>
             </StaggerItem>
           ))}
