@@ -67,7 +67,7 @@ function FactRow({ text, source, c, used, run }: { text: string; source: string;
 function WeakFactRow({ rejected }: { rejected: boolean }) {
   return (
     <motion.div
-      className="flex items-baseline gap-2.5 rounded py-1"
+      className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1 rounded py-1"
       animate={rejected ? { backgroundColor: ["rgba(220,38,38,0)", "rgba(220,38,38,0.16)", "rgba(220,38,38,0)"] } : {}}
       transition={{ duration: 0.7, ease: "easeOut" }}
     >
@@ -77,7 +77,7 @@ function WeakFactRow({ rejected }: { rejected: boolean }) {
       ) : (
         <Confidence value={0.41} run />
       )}
-      <span className={cn("flex-1 text-sm transition-colors", rejected ? "text-muted-foreground line-through" : "text-foreground")}>{DROPPED.text}</span>
+      <span className={cn("min-w-0 flex-1 text-sm transition-colors", rejected ? "text-muted-foreground line-through" : "text-foreground")}>{DROPPED.text}</span>
       <span className="shrink-0 rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground">{DROPPED.source}</span>
       <span className={cn("shrink-0 font-mono text-[10px] font-medium transition-colors", rejected ? "text-destructive" : "text-muted-foreground")}>
         {rejected ? "✕ < 0.60 — dropped" : "scoring…"}
