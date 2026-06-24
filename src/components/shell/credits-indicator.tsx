@@ -40,7 +40,7 @@ export function CreditsIndicator() {
           const pct = granted > 0 ? Math.min(100, Math.round((used / granted) * 100)) : 0;
           return (
             <>
-              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-secondary">
+              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-secondary shadow-[inset_0_1px_1px_rgba(16,24,40,0.06)]">
                 <div
                   className={cn("h-full", low ? "bg-amber-500" : "bg-primary")}
                   style={{ width: `${pct}%` }}

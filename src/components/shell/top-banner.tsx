@@ -3,7 +3,7 @@
 // trial/upgrade banner lands with the billing slice. On-brand (indigo accent), not Artisan's magenta.
 export function TopBanner() {
   return (
-    <div className="flex h-9 shrink-0 items-center justify-between gap-3 border-b border-border bg-accent/60 px-5">
+    <div className="flex h-9 shrink-0 items-center justify-between gap-3 border-b border-border bg-accent/60 px-5 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]">
       <p className="truncate text-xs text-foreground">
         <span className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-primary">
           Beta

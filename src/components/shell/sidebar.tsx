@@ -115,7 +115,7 @@ function NavRow({ item, active }: { item: NavItem; active: boolean }) {
           : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
       )}
     >
-      <item.icon className="size-4" />
+      <item.icon className={cn("size-4 shrink-0", active && "text-primary")} />
       {item.label}
       {item.href === "/engage" && <TasksBadge />}
     </Link>
@@ -135,7 +135,7 @@ export function Sidebar() {
         >
           Velora
         </Link>
-        <span className="rounded border border-border px-1 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-muted-foreground">
+        <span className="rounded border border-primary/30 bg-accent px-1 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-primary">
           Beta
         </span>
       </div>
@@ -165,7 +165,7 @@ export function Sidebar() {
             "flex w-full items-center gap-2.5 rounded-md border px-2.5 py-2 text-sm transition-all",
             pathname.startsWith("/copilot")
               ? "border-primary/40 bg-accent text-accent-foreground"
-              : "border-border bg-card text-foreground hover:border-primary/40 hover:bg-accent hover:shadow-[0_2px_12px_-4px_rgba(79,70,229,0.3)]",
+              : "border-border bg-card text-foreground shadow-[0_1px_2px_0_rgba(16,24,40,0.04)] hover:border-primary/40 hover:bg-accent hover:shadow-[0_2px_12px_-4px_rgba(79,70,229,0.3)]",
           )}
         >
           <Sparkles className="size-4 text-primary" />
