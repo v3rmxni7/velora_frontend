@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +22,9 @@ const PRODUCT_LINKS = [
 // on light and dark). Every nav interactive uses it; the global outline-ring/50 was too faint on dark.
 const FOCUS = "rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400";
 
+// Below md the desktop links are hidden, so the mobile menu surfaces the same real anchors + Log in.
+const MOBILE_LINKS = [...PRODUCT_LINKS, { href: "#pricing", label: "Pricing" }, { href: "#honesty", label: "Honesty" }];
+
 function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <Link
@@ -40,6 +43,7 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
 export function MarketingNav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 24);
@@ -50,9 +54,15 @@ export function MarketingNav() {
 
   return (
     <header
+      onKeyDown={(e) => {
+        if (e.key === "Escape") {
+          setOpen(false);
+          setMenuOpen(false);
+        }
+      }}
       className={cn(
         "fixed inset-x-0 top-0 z-40 transition-colors duration-300",
-        scrolled
+        scrolled || menuOpen
           ? "border-b border-white/10 bg-[#0b0d12]/80 backdrop-blur-md"
           : "border-b border-transparent",
       )}
@@ -104,7 +114,7 @@ export function MarketingNav() {
         <div className="flex items-center gap-1 sm:gap-2">
           <Link
             href="/login"
-            className={`px-3 py-1.5 text-sm text-white/70 transition-colors hover:text-white ${FOCUS}`}
+            className={`hidden px-3 py-1.5 text-sm text-white/70 transition-colors hover:text-white md:inline-flex ${FOCUS}`}
           >
             Log in
           </Link>
@@ -114,8 +124,43 @@ export function MarketingNav() {
           >
             Start free
           </Link>
+          {/* Hamburger — mobile only (below md the desktop links are hidden). */}
+          <button
+            type="button"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((v) => !v)}
+            className={`-mr-1 inline-flex size-9 items-center justify-center text-white/80 transition-colors hover:text-white md:hidden ${FOCUS}`}
+          >
+            {menuOpen ? <X className="size-5" aria-hidden /> : <Menu className="size-5" aria-hidden />}
+          </button>
         </div>
       </nav>
+
+      {/* Mobile menu panel — the same real anchors + Log in, surfaced below the bar. */}
+      {menuOpen && (
+        <div className="border-t border-white/10 bg-[#0b0d12]/95 backdrop-blur-md md:hidden">
+          <div className="mx-auto max-w-6xl space-y-1 px-6 py-4">
+            {MOBILE_LINKS.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                onClick={() => setMenuOpen(false)}
+                className={`block px-3 py-2 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-white ${FOCUS}`}
+              >
+                {l.label}
+              </Link>
+            ))}
+            <Link
+              href="/login"
+              onClick={() => setMenuOpen(false)}
+              className={`block px-3 py-2 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-white ${FOCUS}`}
+            >
+              Log in
+            </Link>
+          </div>
+        </div>
+      )}
     </header>
   );
 }
