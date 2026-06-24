@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 const PRODUCT_LINKS = [
   { href: "#how", label: "How it works" },
   { href: "#demo", label: "Live demo" },
-  { href: "#motions", label: "Every motion" },
+  { href: "#why", label: "Why Velora" },
   { href: "#integrations", label: "Integrations" },
 ];
 

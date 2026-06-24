@@ -35,7 +35,7 @@ const EYEBROW = "font-mono text-[11px] uppercase tracking-[0.14em] text-primary"
 
 export function Differentiators() {
   return (
-    <section className="border-y border-border bg-card py-24 lg:py-28">
+    <section id="why" className="border-y border-border bg-card py-24 lg:py-28">
       <div className="mx-auto max-w-5xl px-6">
         <Reveal>
           <p className={EYEBROW}>Why teams pick Velora</p>

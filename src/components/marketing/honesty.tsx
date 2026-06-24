@@ -8,7 +8,7 @@ import { Reveal, Parallax } from "@/components/motion";
 
 export function Honesty() {
   return (
-    <section className="relative isolate overflow-hidden bg-hero-ink py-24 text-white lg:py-32">
+    <section id="honesty" className="relative isolate overflow-hidden bg-hero-ink py-24 text-white lg:py-32">
       <div
         className="pointer-events-none absolute inset-0 bg-grid-faint [mask-image:radial-gradient(70%_60%_at_50%_30%,black,transparent)]"
         aria-hidden
