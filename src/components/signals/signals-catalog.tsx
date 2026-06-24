@@ -14,7 +14,10 @@ import {
 import { cn } from "@/lib/utils";
 
 const FOOTNOTE = "font-mono text-[11px] text-muted-foreground";
-const PILL = "rounded-md px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors";
+const PILL = "rounded-md px-2.5 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-all";
+const SEG_GROUP = "inline-flex flex-wrap gap-0.5 rounded-lg border border-border bg-secondary/40 p-0.5";
+const SEG_ACTIVE = "bg-card text-primary shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]";
+const SEG_INACTIVE = "text-muted-foreground hover:text-foreground";
 const SELECT_CLASS =
   "h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:opacity-50";
 
@@ -67,18 +70,13 @@ export function SignalsCatalog() {
         as the signal fires. Real feeds connect at go-live; the catalog below is real.
       </p>
 
-      <div className="flex flex-wrap gap-1">
+      <div className={SEG_GROUP}>
         {TABS.map((t) => (
           <button
             type="button"
             key={t.key}
             onClick={() => setTab(t.key)}
-            className={cn(
-              PILL,
-              t.key === tab
-                ? "bg-accent text-accent-foreground"
-                : "text-muted-foreground hover:bg-accent/50",
-            )}
+            className={cn(PILL, t.key === tab ? SEG_ACTIVE : SEG_INACTIVE)}
           >
             {t.label}
             <span className="ml-1.5 tabular-nums opacity-60">{counts[t.key]}</span>
