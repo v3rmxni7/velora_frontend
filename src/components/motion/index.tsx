@@ -157,7 +157,7 @@ export function ElegantShape({
  * focus. Under prefers-reduced-motion it does NOT auto-advance — the consumer renders a complete
  * static state instead. Returns the step, manual jump, pause/resume handlers, and the reduce flag.
  */
-export function useAutoStep(count: number, intervalMs = 3000) {
+export function useAutoStep(count: number, intervalMs: number | number[] = 3000) {
   const reduce = useReducedMotion();
   const [step, setStep] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -165,7 +165,8 @@ export function useAutoStep(count: number, intervalMs = 3000) {
 
   useEffect(() => {
     if (reduce || paused || count <= 1) return;
-    timer.current = setTimeout(() => setStep((s) => (s + 1) % count), intervalMs);
+    const ms = Array.isArray(intervalMs) ? (intervalMs[step] ?? 3000) : intervalMs;
+    timer.current = setTimeout(() => setStep((s) => (s + 1) % count), ms);
     return () => {
       if (timer.current) clearTimeout(timer.current);
     };
