@@ -229,7 +229,7 @@ export function LiveDemo() {
                       </span>
                       <span className={cn("font-heading text-sm font-medium", active || done ? "text-white" : "text-white/55")}>{stage.label}</span>
                     </div>
-                    <p className={cn("mt-1.5 pl-7 text-[12px] leading-relaxed transition-colors", active ? "text-white/65" : "text-white/35")}>{stage.blurb}</p>
+                    <p className={cn("mt-1.5 pl-7 text-[12px] leading-relaxed transition-colors", active ? "text-white/80" : "text-white/55")}>{stage.blurb}</p>
                   </button>
                 </li>
               );

@@ -97,7 +97,7 @@ export function Hero() {
                 aria-hidden
               />
               <FadeIn delay={0.2} y={20} className="relative">
-                <p className="mb-2 text-center font-mono text-[10px] uppercase tracking-[0.16em] text-white/40">
+                <p className="mb-2 text-center font-mono text-[10px] uppercase tracking-[0.16em] text-white/60">
                   a grounded draft · the actual format
                 </p>
                 <GroundedDraftShowcase />
@@ -111,7 +111,7 @@ export function Hero() {
           <div className="hidden justify-center pb-10 lg:flex">
             <Link
               href="#demo"
-              className="flex flex-col items-center gap-1.5 text-white/40 transition-colors hover:text-white/70"
+              className="flex flex-col items-center gap-1.5 text-white/60 transition-colors hover:text-white/80"
               aria-label="Scroll to the live demo"
             >
               <span className="font-mono text-[10px] uppercase tracking-[0.2em]">scroll</span>

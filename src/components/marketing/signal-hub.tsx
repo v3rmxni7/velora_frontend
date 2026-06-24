@@ -222,7 +222,7 @@ export function SignalHub() {
         </Reveal>
 
         <Reveal delay={0.22}>
-          <p className="mt-10 text-center font-mono text-[11px] text-white/40">
+          <p className="mt-10 text-center font-mono text-[11px] text-white/70">
             email is live today · other channels are on the roadmap, and we label them honestly
           </p>
         </Reveal>
