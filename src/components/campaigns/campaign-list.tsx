@@ -63,8 +63,10 @@ function NewCampaign() {
               key={m.type}
               onClick={() => setType(m.type)}
               className={cn(
-                "rounded-md border p-2.5 text-left transition-colors",
-                active ? "border-primary/40 bg-accent" : "border-border hover:bg-accent/50",
+                "rounded-md border p-2.5 text-left transition-all",
+                active
+                  ? "border-primary/40 bg-accent shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]"
+                  : "border-border hover:-translate-y-0.5 hover:border-primary/20 hover:bg-accent/50 hover:shadow-[0_2px_10px_-4px_rgba(16,24,40,0.1)]",
               )}
             >
               <div className="flex items-center justify-between gap-1">
@@ -191,7 +193,7 @@ export function CampaignList() {
               <li key={c.id}>
                 <Link
                   href={`/campaigns/${c.id}`}
-                  className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3 transition-colors hover:bg-accent/50"
+                  className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3 transition-all hover:-translate-y-0.5 hover:border-primary/20 hover:bg-accent/50 hover:shadow-[0_2px_10px_-4px_rgba(16,24,40,0.1)]"
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium text-foreground">{c.name}</p>
