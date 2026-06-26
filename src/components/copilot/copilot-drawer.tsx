@@ -1,11 +1,12 @@
 "use client";
 
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
-import { ChevronDown, Maximize2, Sparkles, X } from "lucide-react";
+import { ChevronDown, Maximize2, X } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { AvaAvatar } from "./ava-avatar";
 import { CopilotChat } from "./copilot-chat";
 import { useCopilotDrawer } from "./copilot-drawer-context";
 import { ThreadList } from "./thread-list";
@@ -26,21 +27,21 @@ export function CopilotDrawer() {
         <DialogPrimitive.Popup className="fixed inset-y-0 right-0 z-50 flex w-full max-w-md flex-col border-l border-border bg-background ring-1 ring-foreground/10 duration-150 outline-none data-open:animate-in data-open:slide-in-from-right data-closed:animate-out data-closed:slide-out-to-right">
           {/* Header */}
           <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border px-4">
-            <span className="flex size-6 items-center justify-center rounded-md bg-accent text-accent-foreground">
-              <Sparkles className="size-3.5" />
-            </span>
+            <AvaAvatar />
             <DialogPrimitive.Title className="font-heading text-base font-semibold text-foreground">
               Ava
             </DialogPrimitive.Title>
             <div className="ml-auto flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                render={<Link href="/copilot" onClick={() => setOpen(false)} />}
+              {/* A navigation element → a real <Link> (semantically a link, not a button) styled with
+                  buttonVariants. Avoids Base UI's nativeButton warning + keeps correct link a11y. */}
+              <Link
+                href="/copilot"
+                onClick={() => setOpen(false)}
+                className={cn(buttonVariants({ variant: "ghost", size: "sm" }))}
               >
                 <Maximize2 className="size-3.5" />
                 Full screen
-              </Button>
+              </Link>
               <DialogPrimitive.Close
                 render={<Button variant="ghost" size="icon-sm" aria-label="Close" />}
               >

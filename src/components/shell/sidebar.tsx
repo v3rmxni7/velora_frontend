@@ -15,13 +15,13 @@ import {
   Plug,
   Search,
   ShieldCheck,
-  Sparkles,
   UserCog,
   Users,
   Zap,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AvaAvatar } from "@/components/copilot/ava-avatar";
 import { useCopilotDrawer } from "@/components/copilot/copilot-drawer-context";
 import { CreditsIndicator } from "@/components/shell/credits-indicator";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -168,7 +168,7 @@ export function Sidebar() {
               : "border-border bg-card text-foreground shadow-[0_1px_2px_0_rgba(16,24,40,0.04)] hover:border-primary/40 hover:bg-accent hover:shadow-[0_2px_12px_-4px_rgba(79,70,229,0.3)]",
           )}
         >
-          <Sparkles className="size-4 text-primary" />
+          <AvaAvatar className="size-5" iconClassName="size-3" />
           Chat with Ava
         </button>
       </div>
