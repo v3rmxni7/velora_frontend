@@ -49,6 +49,44 @@ function LoadingRows() {
   );
 }
 
+// The spend guardrails (402 not-enough-credits / 429 daily-quota) are EXPECTED states, not bugs —
+// surface them in the app's calm amber "guardrail" voice with honest, specific copy (never the
+// misleading "backend is down"). Genuine failures (unparseable query, provider/backend error) stay
+// in the destructive voice. DISPLAY ONLY — the guard itself lives in the backend find-leads route
+// and is not touched here; we only read ApiError.status/.code that the backend already returns.
+function SearchError({ error }: { error: unknown }) {
+  const api = error instanceof ApiError ? error : null;
+  const guard =
+    "rounded-md border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200";
+  const fail = "font-mono text-xs text-destructive";
+
+  if (api?.status === 429 || api?.code === "lead_search_rate_limited") {
+    return (
+      <p className={guard}>
+        Daily lead-search limit reached for this workspace — it resets at 00:00 UTC. Saved leads and
+        drafting are unaffected.
+      </p>
+    );
+  }
+  if (api?.status === 402 || api?.code === "insufficient_credit") {
+    return (
+      <p className={guard}>
+        Not enough credits for a lead search — nothing was charged for this attempt. Top up in
+        Billing to keep sourcing leads.
+      </p>
+    );
+  }
+  if (api?.status === 422) {
+    return <p className={fail}>Couldn’t parse that query — try rephrasing it.</p>;
+  }
+  if (api && api.status >= 500) {
+    return (
+      <p className={fail}>The lead provider is temporarily unavailable — please try again shortly.</p>
+    );
+  }
+  return <p className={fail}>Search failed — check that the backend is running and try again.</p>;
+}
+
 export function SearchSection() {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -101,13 +139,7 @@ export function SearchSection() {
 
         {search.isPending && <LoadingRows />}
 
-        {search.isError && (
-          <p className="font-mono text-xs text-destructive">
-            {search.error instanceof ApiError && search.error.status === 422
-              ? "Couldn’t parse that query — try rephrasing it."
-              : "Search failed — check that the backend is running and try again."}
-          </p>
-        )}
+        {search.isError && <SearchError error={search.error} />}
 
         {search.isSuccess && (
           <>
