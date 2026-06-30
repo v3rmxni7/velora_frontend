@@ -160,7 +160,8 @@ function InviteSection() {
         <div className="mt-3 space-y-1.5 rounded-md border border-border bg-card p-3">
           <p className={FOOTNOTE}>
             Invite link for <span className="text-foreground">{link.email}</span> — no email is sent;
-            share it directly. (Acceptance + signup arrive in a later onboarding slice.)
+            share it directly. The recipient opens it to sign up (or sign in) with this email and
+            join your workspace.
           </p>
           <div className="flex items-center gap-2">
             <code className="min-w-0 flex-1 truncate rounded border border-border bg-secondary/40 px-2 py-1.5 font-mono text-[11px] text-foreground">
