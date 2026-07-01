@@ -3,6 +3,8 @@ import { ScrollProgress } from "@/components/marketing/scroll-progress";
 import { Hero } from "@/components/marketing/hero";
 import { InvariantStrip } from "@/components/marketing/invariant-strip";
 import { LiveDemo } from "@/components/marketing/live-demo";
+import { MeetAva } from "@/components/marketing/meet-ava";
+import { AvaHub } from "@/components/marketing/ava-hub";
 import { HowItWorks } from "@/components/marketing/how-it-works";
 import { Differentiators } from "@/components/marketing/differentiators";
 import { SignalHub } from "@/components/marketing/signal-hub";
@@ -27,6 +29,11 @@ export default function Home() {
       <InvariantStrip />
       {/* S2 — ★ the live grounded-draft demo (the centerpiece). */}
       <LiveDemo />
+      {/* Mascot anchor — meet the instrument that just drafted (light), then the capability hub:
+          the mascot backlit at centre with Velora's REAL shipped capabilities orbiting (dark). Our
+          honest take on Artisan's "With Ava, it's easy" composition. Light→dark keeps alternation. */}
+      <MeetAva />
+      <AvaHub />
       {/* Existing sections — upgraded in later slices. */}
       <HowItWorks />
       {/* S4 — the signal hub (Pulse Beams node-graph, honest fan-IN → one grounded email).

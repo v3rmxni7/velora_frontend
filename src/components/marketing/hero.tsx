@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ChevronDown } from "lucide-react";
+import { AvaAvatar } from "@/components/copilot/ava-avatar";
 import { ElegantShape, FadeIn, Parallax } from "@/components/motion";
 import { GroundedDraftShowcase } from "./grounded-draft-showcase";
 
@@ -97,9 +98,12 @@ export function Hero() {
                 aria-hidden
               />
               <FadeIn delay={0.2} y={20} className="relative">
-                <p className="mb-2 text-center font-mono text-[10px] uppercase tracking-[0.16em] text-white/60">
-                  a grounded draft · the actual format
-                </p>
+                <div className="mb-3 flex items-center justify-center gap-2">
+                  <AvaAvatar className="size-7" active />
+                  <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/60">
+                    Ava drafted this · the actual format
+                  </p>
+                </div>
                 <GroundedDraftShowcase />
               </FadeIn>
             </Parallax>
