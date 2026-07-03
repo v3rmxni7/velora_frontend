@@ -16,14 +16,22 @@ import { cn } from "@/lib/utils";
 export function AvaAvatar({
   className,
   active = false,
+  uid: uidProp,
 }: {
   className?: string;
   /** Retained for call-site compatibility; the mascot SVG scales with `className`. */
   iconClassName?: string;
   active?: boolean;
+  /**
+   * Stable per-instance id for the SVG defs — pass a unique literal at every call site. useId is
+   * NOT hydration-safe in the app shell (server/client trees can diverge above this component →
+   * mismatched ids leave url(#…) gradient/filter refs dangling + a console hydration error).
+   */
+  uid?: string;
 }) {
-  // useId can contain characters SVG url(#…) references don't resolve reliably — strip to alphanumerics.
-  const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
+  // Fallback only; url(#…) resolves reliably with alphanumerics — strip everything else.
+  const reactId = useId().replace(/[^a-zA-Z0-9]/g, "");
+  const uid = uidProp ?? reactId;
   const reduce = useReducedMotion();
   const live = active && !reduce;
   const [c0, c1, c2] = active ? ["#c4ceff", "#4f46e5", "#312e81"] : ["#b0bcfc", "#4f46e5", "#37309e"];

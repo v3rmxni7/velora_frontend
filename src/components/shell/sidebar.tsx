@@ -90,7 +90,15 @@ function TasksBadge() {
   );
 }
 
-function NavRow({ item, active }: { item: NavItem; active: boolean }) {
+function NavRow({
+  item,
+  active,
+  onNavigate,
+}: {
+  item: NavItem;
+  active: boolean;
+  onNavigate?: () => void;
+}) {
   if (item.soon) {
     return (
       <div
@@ -108,6 +116,7 @@ function NavRow({ item, active }: { item: NavItem; active: boolean }) {
   return (
     <Link
       href={item.href}
+      onClick={onNavigate}
       className={cn(
         "flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors",
         active
@@ -122,13 +131,22 @@ function NavRow({ item, active }: { item: NavItem; active: boolean }) {
   );
 }
 
-export function Sidebar() {
+// The shared sidebar column — rendered by both the desktop <aside> and the mobile off-canvas drawer
+// (MobileNav). onNavigate closes the mobile drawer on a link tap (no-op on desktop). avaUid keeps the
+// two mounted instances' SVG def ids distinct so neither the desktop nor drawer mascot collides.
+export function SidebarBody({
+  onNavigate,
+  avaUid = "avaSidebar",
+}: {
+  onNavigate?: () => void;
+  avaUid?: string;
+}) {
   const pathname = usePathname();
   const { openDrawer } = useCopilotDrawer();
 
   return (
-    <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-sidebar">
-      <div className="flex h-14 items-center gap-2 border-b border-border px-5">
+    <>
+      <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border px-5">
         <Link
           href="/"
           className="font-heading text-lg font-semibold tracking-tight text-foreground"
@@ -139,7 +157,7 @@ export function Sidebar() {
           Beta
         </span>
       </div>
-      <nav className="flex-1 space-y-6 overflow-auto px-3 py-5">
+      <nav className="flex-1 space-y-4 overflow-auto px-3 py-4 [scrollbar-color:var(--border)_transparent] [scrollbar-width:thin]">
         {GROUPS.map((group) => (
           <div key={group.eyebrow}>
             <div className="px-2 pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
@@ -148,7 +166,11 @@ export function Sidebar() {
             <ul className="space-y-0.5">
               {group.items.map((item) => (
                 <li key={item.href}>
-                  <NavRow item={item} active={pathname.startsWith(item.href)} />
+                  <NavRow
+                    item={item}
+                    active={pathname.startsWith(item.href)}
+                    onNavigate={onNavigate}
+                  />
                 </li>
               ))}
             </ul>
@@ -157,10 +179,13 @@ export function Sidebar() {
       </nav>
       {/* Chat with Ava — opens the slide-out copilot drawer (the drawer itself has a "Full screen ↗"
           link to /copilot). */}
-      <div className="border-t border-border px-3 py-3">
+      <div className="shrink-0 border-t border-border px-3 py-3">
         <button
           type="button"
-          onClick={openDrawer}
+          onClick={() => {
+            openDrawer();
+            onNavigate?.();
+          }}
           className={cn(
             "flex w-full items-center gap-2.5 rounded-md border px-2.5 py-2 text-sm transition-all",
             pathname.startsWith("/copilot")
@@ -168,11 +193,20 @@ export function Sidebar() {
               : "border-border bg-card text-foreground shadow-[0_1px_2px_0_rgba(16,24,40,0.04)] hover:border-primary/40 hover:bg-accent hover:shadow-[0_2px_12px_-4px_rgba(79,70,229,0.3)]",
           )}
         >
-          <AvaAvatar className="size-5" iconClassName="size-3" />
+          <AvaAvatar className="size-5" iconClassName="size-3" uid={avaUid} />
           Chat with Ava
         </button>
       </div>
       <CreditsIndicator />
+    </>
+  );
+}
+
+// Desktop sidebar — hidden below md, where MobileNav's off-canvas drawer takes over.
+export function Sidebar() {
+  return (
+    <aside className="hidden w-60 shrink-0 flex-col border-r border-border bg-sidebar md:flex">
+      <SidebarBody />
     </aside>
   );
 }

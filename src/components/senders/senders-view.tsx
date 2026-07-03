@@ -75,7 +75,7 @@ function Mailboxes() {
         </ul>
       )}
       <p className={`${FOOTNOTE} mt-2`}>
-        warm = cleared the warmup thresholds — only warm mailboxes can send (Slice 2.8 gate)
+        warm = cleared the warmup thresholds — only warm mailboxes can send
       </p>
     </section>
   );

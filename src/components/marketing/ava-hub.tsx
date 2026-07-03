@@ -109,7 +109,7 @@ export function AvaHub() {
                 className="pointer-events-none absolute left-1/2 top-1/2 size-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/25 blur-[74px]"
                 aria-hidden
               />
-              <AvaAvatar active className="relative size-36" />
+              <AvaAvatar active className="relative size-36" uid="avaHubD" />
             </div>
             {/* orbiting capabilities */}
             {CAPS.map((c, i) => {
@@ -138,7 +138,7 @@ export function AvaHub() {
                 className="pointer-events-none absolute left-1/2 top-1/2 size-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/25 blur-[50px]"
                 aria-hidden
               />
-              <AvaAvatar active className="relative size-24" />
+              <AvaAvatar active className="relative size-24" uid="avaHubM" />
             </div>
             <div className="flex flex-wrap justify-center gap-2">
               {CAPS.map((c) => (

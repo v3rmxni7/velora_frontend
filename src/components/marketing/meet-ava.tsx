@@ -25,7 +25,7 @@ export function MeetAva() {
               className="pointer-events-none absolute left-1/2 top-1/2 size-44 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/15 blur-[52px]"
               aria-hidden
             />
-            <AvaAvatar active className="relative size-32" />
+            <AvaAvatar active className="relative size-32" uid="avaMeet" />
             <span className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full border border-border bg-background/80 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground backdrop-blur-sm">
               Ava · instrument, not a person
             </span>

@@ -99,7 +99,7 @@ export function Hero() {
               />
               <FadeIn delay={0.2} y={20} className="relative">
                 <div className="mb-3 flex items-center justify-center gap-2">
-                  <AvaAvatar className="size-7" active />
+                  <AvaAvatar className="size-7" active uid="avaHero" />
                   <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/60">
                     Ava drafted this · the actual format
                   </p>

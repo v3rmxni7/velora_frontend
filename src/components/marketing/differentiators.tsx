@@ -42,7 +42,7 @@ export function Differentiators() {
         </Reveal>
         <Reveal delay={0.06}>
           <h2 className="mt-3 max-w-2xl font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            The wedge is data, deliverability, and candor.
+            The difference is data, deliverability, and candor.
           </h2>
         </Reveal>
 

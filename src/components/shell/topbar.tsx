@@ -2,6 +2,7 @@
 
 import { LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
+import { MobileNav } from "@/components/shell/mobile-nav";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 
@@ -25,13 +26,13 @@ function UserMenu() {
   return (
     <div className="flex items-center gap-2">
       {email && (
-        <span className="rounded-md border border-border bg-card px-2.5 py-1 font-mono text-xs text-muted-foreground">
+        <span className="hidden max-w-[40vw] truncate rounded-md border border-border bg-card px-2.5 py-1 font-mono text-xs text-muted-foreground sm:inline-block">
           {email}
         </span>
       )}
       <Button variant="ghost" size="sm" onClick={signOut} aria-label="Sign out">
         <LogOut className="size-4" />
-        Sign out
+        <span className="hidden sm:inline">Sign out</span>
       </Button>
     </div>
   );
@@ -39,8 +40,11 @@ function UserMenu() {
 
 export function Topbar({ title }: { title?: string }) {
   return (
-    <header className="flex h-14 shrink-0 items-center justify-between border-b border-border bg-background px-6">
-      <h1 className="font-heading text-base font-semibold text-foreground">{title ?? ""}</h1>
+    <header className="flex h-14 shrink-0 items-center gap-2 border-b border-border bg-background px-4 md:px-6">
+      <MobileNav />
+      <h1 className="min-w-0 flex-1 truncate font-heading text-base font-semibold text-foreground">
+        {title ?? ""}
+      </h1>
       <UserMenu />
     </header>
   );

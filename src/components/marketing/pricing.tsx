@@ -14,7 +14,7 @@ const TIERS = [
     price: 249,
     leads: "~2K leads/mo",
     credits: "2,000 credits",
-    blurb: "Solo or small team. Email-first. The wedge.",
+    blurb: "Solo or small team. Email-first.",
   },
   {
     name: "Growth",
