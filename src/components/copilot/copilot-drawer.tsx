@@ -62,7 +62,7 @@ export function CopilotDrawer() {
               Recent chats
             </button>
             {historyOpen && (
-              <div className="mt-2 max-h-64">
+              <div className="mt-2 max-h-64 duration-150 animate-in fade-in-0 slide-in-from-top-1">
                 <ThreadList
                   selectedId={selectedId}
                   onSelect={(id) => {

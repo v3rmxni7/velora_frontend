@@ -1,8 +1,9 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { Activity, Bot, FileText, Globe, Phone, Plug, ShieldCheck, Zap } from "lucide-react";
 import { AvaAvatar } from "@/components/copilot/ava-avatar";
-import { Reveal } from "@/components/motion";
+import { Reveal, useReducedMotionSafe } from "@/components/motion";
 
 // The capability hub — our honest take on Artisan's signature "With Ava, it's easy" composition: their
 // (fabricated human) Ava sat glowing at the centre with capabilities orbiting her. Ours puts the honest
@@ -25,6 +26,23 @@ const CAPS = [
   { icon: ShieldCheck, label: "Compliance" },
   { icon: Bot, label: "Autonomy", note: "dry-run" },
 ];
+
+/** One-shot staggered settle for an orbit pill; a plain span under reduced motion. */
+function OrbitEntrance({ index, children }: { index: number; children: React.ReactNode }) {
+  const reduce = useReducedMotionSafe();
+  if (reduce) return <>{children}</>;
+  return (
+    <motion.span
+      className="inline-block"
+      initial={{ opacity: 0, scale: 0.9 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true, margin: "-80px" }}
+      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1], delay: 0.25 + index * 0.06 }}
+    >
+      {children}
+    </motion.span>
+  );
+}
 
 function Pill({
   icon: Icon,
@@ -113,7 +131,9 @@ export function AvaHub() {
               />
               <AvaAvatar active className="relative size-36" uid="avaHubD" />
             </div>
-            {/* orbiting capabilities */}
+            {/* orbiting capabilities — pills settle onto the ring in sequence (clockwise from 12
+                o'clock), matching the staggered rhythm every other multi-item section uses. One-shot
+                entrance, no loop; reduced-motion renders them static. */}
             {CAPS.map((c, i) => {
               const angle = (i / n) * Math.PI * 2 - Math.PI / 2;
               const r = 40; // ring % radius — kept off the edge so east/west pills clear the box
@@ -127,7 +147,9 @@ export function AvaHub() {
                     transform: "translate(-50%,-50%)",
                   }}
                 >
-                  <Pill icon={c.icon} label={c.label} note={c.note} />
+                  <OrbitEntrance index={i}>
+                    <Pill icon={c.icon} label={c.label} note={c.note} />
+                  </OrbitEntrance>
                 </div>
               );
             })}

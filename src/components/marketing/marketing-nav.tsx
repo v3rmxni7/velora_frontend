@@ -123,7 +123,7 @@ export function MarketingNav() {
           </Link>
           <Link
             href="/signup"
-            className={`rounded-md bg-primary px-3.5 py-1.5 text-sm font-medium text-primary-foreground shadow-glow-indigo transition-all duration-200 hover:-translate-y-px hover:bg-primary/90 ${FOCUS}`}
+            className={`rounded-md bg-primary px-3.5 py-1.5 text-sm font-medium text-primary-foreground shadow-glow-indigo transition-all duration-200 hover:-translate-y-px active:translate-y-0 hover:bg-primary/90 ${FOCUS}`}
           >
             Start free
           </Link>

@@ -129,6 +129,12 @@
   html {
     @apply font-sans;
   }
+  /* Tailwind v4 leaves <button> on the default arrow cursor while sibling <Link> CTAs get pointer —
+     mixed affordance on the same surfaces. Restore pointer for enabled buttons app-wide. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
 }
 
 /* The one orchestrated reveal: a just-created draft card fades up while its evidence

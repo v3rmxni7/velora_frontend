@@ -101,7 +101,7 @@ export function Pricing() {
           {TIERS.map((t) => (
             <StaggerItem key={t.name}>
               <div
-                className={`group relative flex h-full flex-col rounded-lg border bg-card p-6 transition-all duration-200 hover:-translate-y-0.5 ${
+                className={`group relative flex h-full flex-col rounded-lg border bg-card p-6 transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 ${
                   t.featured
                     ? "border-primary/40 shadow-glow-indigo ring-1 ring-primary/15"
                     : "border-border hover:border-primary/20 hover:shadow-elevated"
@@ -123,7 +123,7 @@ export function Pricing() {
                 <p className="mt-4 flex-1 text-sm leading-relaxed text-muted-foreground">{t.blurb}</p>
                 <Link
                   href="/signup"
-                  className={`mt-6 block rounded-md px-3 py-2.5 text-center text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 ${
+                  className={`mt-6 block rounded-md px-3 py-2.5 text-center text-sm font-medium transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 ${
                     t.featured
                       ? "bg-primary text-primary-foreground shadow-glow-indigo hover:bg-primary/90"
                       : "border border-border text-foreground hover:border-primary/30 hover:bg-accent"

@@ -40,7 +40,7 @@ export function Honesty() {
         <Reveal delay={0.18}>
           <Link
             href="/trust"
-            className="group mt-8 inline-flex items-center gap-1.5 rounded-md border border-white/20 px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400"
+            className="group mt-8 inline-flex items-center gap-1.5 rounded-md border border-white/20 px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 hover:border-white/40 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400"
           >
             Read the guardrails
             <span className="transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden>
