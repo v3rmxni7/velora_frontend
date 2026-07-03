@@ -14,8 +14,11 @@ import { cn } from "@/lib/utils";
 const PRODUCT_LINKS = [
   { href: "#how", label: "How it works" },
   { href: "#demo", label: "Live demo" },
+  { href: "#product", label: "The product" },
   { href: "#why", label: "Why Velora" },
   { href: "#integrations", label: "Integrations" },
+  { href: "/trust", label: "Trust & security" },
+  { href: "/changelog", label: "Changelog" },
 ];
 
 // Shared keyboard focus ring — visible on BOTH the dark hero and the blurred ink bar (indigo-400 reads

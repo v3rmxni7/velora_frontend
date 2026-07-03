@@ -16,6 +16,7 @@ const PRODUCT = [
 
 const TRUST = [
   { label: "Trust & security", href: "/trust" },
+  { label: "Changelog", href: "/changelog" },
   { label: "Privacy", href: "/privacy" },
   { label: "Terms", href: "/terms" },
 ];

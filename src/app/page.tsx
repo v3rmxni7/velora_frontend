@@ -7,6 +7,7 @@ import { MeetAva } from "@/components/marketing/meet-ava";
 import { AvaHub } from "@/components/marketing/ava-hub";
 import { HowItWorks } from "@/components/marketing/how-it-works";
 import { Differentiators } from "@/components/marketing/differentiators";
+import { ProductShowcase } from "@/components/marketing/product-showcase";
 import { SignalHub } from "@/components/marketing/signal-hub";
 import { Honesty } from "@/components/marketing/honesty";
 import { Pricing } from "@/components/marketing/pricing";
@@ -41,6 +42,8 @@ export default function Home() {
           the Honesty dark band so dark/light sections keep alternating. */}
       <SignalHub />
       <Differentiators />
+      {/* Show the real product — actual screens from the seeded demo workspace (honest, no mockups). */}
+      <ProductShowcase />
       <Honesty />
       <Pricing />
       <FinalCta />

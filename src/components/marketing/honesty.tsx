@@ -1,6 +1,7 @@
 "use client";
 
-import { Reveal, Parallax } from "@/components/motion";
+import Link from "next/link";
+import { Parallax, Reveal } from "@/components/motion";
 
 // A1b — the honesty manifesto. This is Velora's "social proof" slot, filled honestly: no logos, no
 // testimonials, no metrics — the candor itself is the proof. A dark ink band bookends the hero. The
@@ -35,6 +36,17 @@ export function Honesty() {
             <span className="font-medium text-indigo-300">No tool shortcuts it — including us.</span>{" "}
             We show you the real numbers instead of promising magic.
           </p>
+        </Reveal>
+        <Reveal delay={0.18}>
+          <Link
+            href="/trust"
+            className="group mt-8 inline-flex items-center gap-1.5 rounded-md border border-white/20 px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400"
+          >
+            Read the guardrails
+            <span className="transition-transform duration-200 group-hover:translate-x-0.5" aria-hidden>
+              →
+            </span>
+          </Link>
         </Reveal>
       </div>
     </section>
