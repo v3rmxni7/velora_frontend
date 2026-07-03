@@ -23,9 +23,11 @@ export function Hero() {
         className="pointer-events-none absolute inset-0 bg-grid-faint [mask-image:radial-gradient(75%_55%_at_50%_0%,black,transparent)]"
         aria-hidden
       />
-      {/* Floating indigo depth — a small fixed set in the margins (never behind the headline/card). */}
+      {/* Floating indigo depth — a small fixed set in the margins (never behind the headline/card).
+          Only the largest capsule floats (one ambient loop per viewport, craft law); the rest drift
+          in on entrance and then hold. */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-        <ElegantShape className="left-[-7%] top-[16%]" width={360} height={92} rotate={-12} delay={0.2} />
+        <ElegantShape className="left-[-7%] top-[16%]" width={360} height={92} rotate={-12} delay={0.2} float />
         <ElegantShape className="right-[-5%] top-[26%]" width={300} height={80} rotate={14} delay={0.35} />
         <ElegantShape className="bottom-[8%] left-[6%]" width={220} height={64} rotate={8} delay={0.5} />
       </div>
@@ -41,7 +43,7 @@ export function Hero() {
               </p>
             </FadeIn>
             <FadeIn delay={0.06}>
-              <h1 className="mt-4 bg-gradient-to-b from-white via-white to-white/60 bg-clip-text font-heading text-[2.6rem] font-semibold leading-[1.04] tracking-tight text-transparent sm:text-5xl lg:text-[4rem]">
+              <h1 className="mt-4 bg-gradient-to-b from-white via-white to-white/85 bg-clip-text font-heading text-[2.6rem] font-semibold leading-[1.04] tracking-tight text-transparent sm:text-5xl lg:text-[4rem]">
                 Outbound that <span className="text-indigo-400">earns</span> its replies.
               </h1>
             </FadeIn>
@@ -99,7 +101,7 @@ export function Hero() {
               />
               <FadeIn delay={0.2} y={20} className="relative">
                 <div className="mb-3 flex items-center justify-center gap-2">
-                  <AvaAvatar className="size-7" active uid="avaHero" />
+                  <AvaAvatar className="size-7" uid="avaHero" />
                   <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/60">
                     Ava drafted this · the actual format
                   </p>

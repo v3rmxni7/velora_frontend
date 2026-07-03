@@ -59,7 +59,7 @@ export function GroundedDraftShowcase() {
 
       {/* Honest mechanic — the real safety state, never a fabricated metric. */}
       <div className="mt-4 flex items-center border-t border-border pt-3">
-        <span className="inline-flex items-center gap-1.5 rounded border border-border bg-card px-2 py-1 font-mono text-[11px] text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5 rounded border border-amber-500/30 bg-amber-50 px-2 py-1 font-mono text-[11px] text-amber-700">
           <span className="size-1.5 rounded-full bg-amber-500" aria-hidden />
           status: dry_run — no real email until you flip the switch
         </span>

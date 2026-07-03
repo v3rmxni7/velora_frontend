@@ -45,6 +45,14 @@ export function FinalCta() {
             </Link>
           </div>
         </Reveal>
+        {/* Signature close — the product's honest token (amber = dry-run, consistent with the demo +
+            hero + hub), so the last conversion beat ends on what makes Velora different, not a bare band. */}
+        <Reveal delay={0.18}>
+          <p className="mt-8 inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/[0.06] px-3.5 py-1.5 font-mono text-[11px] text-amber-300/90">
+            <span className="size-1.5 rounded-full bg-amber-400" aria-hidden />
+            status: dry_run — every new workspace starts here
+          </p>
+        </Reveal>
       </div>
     </section>
   );

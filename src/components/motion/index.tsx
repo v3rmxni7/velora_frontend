@@ -129,8 +129,9 @@ export function Parallax({
 
 /**
  * A large, soft, blurred INDIGO capsule for hero/dark-section depth (re-typed + de-chromed from the
- * 21st.dev `ElegantShape` reference — monochrome, our craft law). Entrance drift-in + ONE gentle
- * infinite y-float. Reduced-motion → a static positioned capsule (no animation). Decorative only.
+ * 21st.dev `ElegantShape` reference — monochrome, our craft law). Always drifts IN once on entrance;
+ * `float` adds the gentle infinite y-float. Keep at most ONE floating shape per viewport (craft law:
+ * one ambient loop) — the others get the entrance only. Reduced-motion → a static positioned capsule.
  */
 export function ElegantShape({
   className,
@@ -138,12 +139,14 @@ export function ElegantShape({
   width = 400,
   height = 110,
   rotate = 0,
+  float = false,
 }: {
   className?: string;
   delay?: number;
   width?: number;
   height?: number;
   rotate?: number;
+  float?: boolean;
 }) {
   const reduce = useReducedMotionSafe();
   const capsule = (
@@ -167,12 +170,16 @@ export function ElegantShape({
       animate={{ opacity: 1, y: 0, rotate }}
       transition={{ duration: 2.2, delay, ease: [0.23, 0.86, 0.39, 0.96], opacity: { duration: 1.1 } }}
     >
-      <motion.div
-        animate={{ y: [0, 14, 0] }}
-        transition={{ duration: 12, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-      >
-        {capsule}
-      </motion.div>
+      {float ? (
+        <motion.div
+          animate={{ y: [0, 14, 0] }}
+          transition={{ duration: 12, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+        >
+          {capsule}
+        </motion.div>
+      ) : (
+        capsule
+      )}
     </motion.div>
   );
 }

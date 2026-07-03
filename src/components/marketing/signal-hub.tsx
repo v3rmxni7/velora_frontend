@@ -21,12 +21,14 @@ const SOURCES = [
   { label: "Proof points", y: 400 },
 ];
 
-// Geometry (viewBox 0 0 960 460): sources at x=180 → hub at (480,230) → output at (820,230).
+// Geometry (viewBox 0 0 960 460): sources at x=180 → hub at (480,230) → the output email card
+// (centred at 760,230). The beam ends at the card's left edge (686) so the eye lands ON the payoff.
 const HUB = { x: 480, y: 230 };
-const OUT = { x: 820, y: 230 };
+const OUT = { x: 760, y: 230 };
 const SRC_X = 180;
+const CARD = { x: 686, y: 176, w: 148, h: 108 }; // the grounded-email glyph, left edge = beam target
 const beamPath = (sy: number) => `M${SRC_X} ${sy} C 330 ${sy} 330 ${HUB.y} ${HUB.x} ${HUB.y}`;
-const OUT_PATH = `M${HUB.x} ${HUB.y} C 640 ${HUB.y} 660 ${HUB.y} ${OUT.x} ${OUT.y}`;
+const OUT_PATH = `M${HUB.x} ${HUB.y} C 590 ${HUB.y} 610 ${HUB.y} ${CARD.x} ${HUB.y}`;
 
 // All beams run left→right; the gradient sweeps its bright band across the viewport. Staggered by index.
 function gradAnimate(i: number) {
@@ -67,19 +69,23 @@ function FanInSvg() {
       role="img"
       aria-label="Velora pulls from lists, intent signals, website visits, CRM contacts and your proof points, grounds one draft, and sends a single email held at dry-run."
     >
-      {/* Beams: faint base + (animated or static) bright overlay. */}
-      {allPaths.map((d, i) => (
-        <g key={d}>
-          <path d={d} stroke="#4f46e5" strokeOpacity="0.16" strokeWidth="1" />
-          <path
-            d={d}
-            stroke={reduce ? "#6366f1" : `url(#fanGrad${i})`}
-            strokeOpacity={reduce ? 0.4 : 1}
-            strokeWidth="2"
-            strokeLinecap="round"
-          />
-        </g>
-      ))}
+      {/* Beams: faint base + (animated or static) bright overlay. The outbound beam (last path, into
+          the card) is a touch heavier so the eye completes the journey to the payoff. */}
+      {allPaths.map((d, i) => {
+        const isOutput = i === SOURCES.length;
+        return (
+          <g key={d}>
+            <path d={d} stroke="#4f46e5" strokeOpacity="0.16" strokeWidth="1" />
+            <path
+              d={d}
+              stroke={reduce ? "#6366f1" : `url(#fanGrad${i})`}
+              strokeOpacity={reduce ? 0.4 : 1}
+              strokeWidth={isOutput ? 2.5 : 2}
+              strokeLinecap="round"
+            />
+          </g>
+        );
+      })}
 
       {/* Source nodes + labels (mono = data voice). */}
       {SOURCES.map((s) => (
@@ -113,25 +119,56 @@ function FanInSvg() {
         Velora
       </text>
 
-      {/* Output — one grounded email, dry-run. */}
-      <circle cx={OUT.x} cy={OUT.y} r="6.5" fill="#0b0d12" stroke="#f59e0b" strokeWidth="1.5" />
+      {/* Output — ONE grounded email, held at dry-run. A compact card glyph (not a lone dot) echoing
+          the hero's grounded-draft artifact: subject bar, body lines, and the amber dry-run chip that
+          is the product's signature honest token. This is the payoff the whole fan-in leads to. */}
       <text
         x={OUT.x}
-        y={OUT.y - 18}
+        y={CARD.y - 12}
         textAnchor="middle"
         className="fill-white/85 font-mono"
         fontSize="14"
       >
-        grounded email
+        one grounded email
       </text>
+      <rect
+        x={CARD.x}
+        y={CARD.y}
+        width={CARD.w}
+        height={CARD.h}
+        rx="12"
+        fill="#0b0d12"
+        stroke="#6366f1"
+        strokeWidth="1.5"
+      />
+      {/* subject bar */}
+      <rect x={CARD.x + 16} y={CARD.y + 18} width="96" height="8" rx="4" fill="#c7d2fe" opacity="0.9" />
+      {/* body lines */}
+      <rect x={CARD.x + 16} y={CARD.y + 38} width="116" height="5" rx="2.5" fill="#818cf8" opacity="0.4" />
+      <rect x={CARD.x + 16} y={CARD.y + 50} width="104" height="5" rx="2.5" fill="#818cf8" opacity="0.4" />
+      <rect x={CARD.x + 16} y={CARD.y + 62} width="88" height="5" rx="2.5" fill="#818cf8" opacity="0.4" />
+      {/* amber dry-run chip — the signature honest token */}
+      <rect
+        x={CARD.x + 16}
+        y={CARD.y + 78}
+        width="72"
+        height="16"
+        rx="8"
+        fill="#f59e0b"
+        fillOpacity="0.1"
+        stroke="#f59e0b"
+        strokeOpacity="0.55"
+        strokeWidth="1"
+      />
       <text
-        x={OUT.x}
-        y={OUT.y + 26}
+        x={CARD.x + 52}
+        y={CARD.y + 86}
+        dy="0.32em"
         textAnchor="middle"
         className="fill-amber-400/90 font-mono"
-        fontSize="12"
+        fontSize="10"
       >
-        · dry-run ·
+        dry-run
       </text>
 
       {!reduce && (

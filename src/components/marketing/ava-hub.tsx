@@ -75,8 +75,10 @@ export function AvaHub() {
         {/* Desktop — the orbit */}
         <Reveal delay={0.16} className="mt-20">
           <div className="relative mx-auto hidden aspect-square w-full max-w-[560px] sm:block">
-            <div className="absolute inset-[1%] rounded-full border border-white/[0.09]" aria-hidden />
-            <div className="absolute inset-[20%] rounded-full border border-white/[0.06]" aria-hidden />
+            {/* Outer ring sits AT the pill radius (r≈40) so the pills rest on it; a faint inner ring
+                gives concentric depth. */}
+            <div className="absolute inset-[10%] rounded-full border border-white/[0.09]" aria-hidden />
+            <div className="absolute inset-[26%] rounded-full border border-white/[0.06]" aria-hidden />
             {/* Radial spokes — the mascot at the centre, a faint line out to each capability on the ring. */}
             <svg
               viewBox="0 0 100 100"
@@ -92,8 +94,8 @@ export function AvaHub() {
                     key={c.label}
                     x1={50 + Math.cos(angle) * 14}
                     y1={50 + Math.sin(angle) * 14}
-                    x2={50 + Math.cos(angle) * 37}
-                    y2={50 + Math.sin(angle) * 37}
+                    x2={50 + Math.cos(angle) * 40}
+                    y2={50 + Math.sin(angle) * 40}
                     stroke="#818cf8"
                     strokeOpacity="0.22"
                     strokeWidth="0.3"
