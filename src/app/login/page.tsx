@@ -39,7 +39,12 @@ export default function LoginPage() {
 
   return (
     <AuthShell>
-      <div className="font-heading text-xl font-semibold text-foreground">Velora</div>
+      <Link
+        href="/"
+        className="inline-block rounded-md font-heading text-xl font-semibold text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+      >
+        Velora
+      </Link>
         <div className="mt-1 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
           Sign in · grounded outreach
         </div>
@@ -52,15 +57,21 @@ export default function LoginPage() {
               id="email"
               type="email"
               autoComplete="email"
+              autoFocus
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="space-y-1.5">
-            <label htmlFor="password" className="text-sm font-medium text-foreground">
-              Password
-            </label>
+            <div className="flex items-center justify-between">
+              <label htmlFor="password" className="text-sm font-medium text-foreground">
+                Password
+              </label>
+              <Link href="/forgot-password" className="text-sm text-primary hover:underline">
+                Forgot password?
+              </Link>
+            </div>
             <Input
               id="password"
               type="password"

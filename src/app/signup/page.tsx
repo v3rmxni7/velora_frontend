@@ -80,6 +80,7 @@ export default function SignupPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          <p className="font-mono text-[11px] text-muted-foreground">At least 8 characters.</p>
         </Field>
         {error && <p className="font-mono text-xs text-destructive">{error}</p>}
         <Button type="submit" className="w-full" disabled={pending}>

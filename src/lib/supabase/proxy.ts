@@ -40,6 +40,8 @@ export async function updateSession(request: NextRequest) {
     pathname === "/login" ||
     pathname === "/signup" ||
     pathname === "/accept-invite" ||
+    pathname === "/forgot-password" ||
+    pathname === "/reset-password" ||
     // Public marketing content pages (legal + trust + changelog) — reachable without a session, like
     // the landing. Static server components; they touch no org data and hit no authenticated route.
     pathname === "/privacy" ||

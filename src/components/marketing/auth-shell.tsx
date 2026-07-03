@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { FadeIn } from "@/components/motion";
 import { GroundedDraftShowcase } from "./grounded-draft-showcase";
 
@@ -26,7 +27,12 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
         />
 
         <FadeIn className="relative">
-          <span className="font-heading text-lg font-semibold tracking-tight">Velora</span>
+          <Link
+            href="/"
+            className="rounded-md font-heading text-lg font-semibold tracking-tight focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400"
+          >
+            Velora
+          </Link>
           <p className="mt-1 font-mono text-[11px] uppercase tracking-[0.16em] text-indigo-300">
             Autonomous BDR · grounded in your data
           </p>
