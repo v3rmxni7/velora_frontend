@@ -40,6 +40,12 @@ export async function updateSession(request: NextRequest) {
     pathname === "/login" ||
     pathname === "/signup" ||
     pathname === "/accept-invite" ||
+    // Public marketing content pages (legal + trust + changelog) — reachable without a session, like
+    // the landing. Static server components; they touch no org data and hit no authenticated route.
+    pathname === "/privacy" ||
+    pathname === "/terms" ||
+    pathname === "/trust" ||
+    pathname === "/changelog" ||
     pathname.startsWith("/auth/"); // trailing slash: covers the Supabase callback, never a top-level /auth* app page
 
   if (!user && !isPublic) {

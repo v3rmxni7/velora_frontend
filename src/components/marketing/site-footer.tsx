@@ -1,17 +1,23 @@
 import Link from "next/link";
 
-// S5 — the footer, given real weight: a brand column (wordmark + honest one-liner + dry-run mark) and
-// two link columns (Product / Account), over the kept-VERBATIM compliance + © lines. The compliance
-// line is the factual posture (SPEC §11) — SPF/DKIM/DMARC enforced, suppression honored every send,
-// per-tenant RLS, immutable audit log, and the explicit "we never promise guaranteed inbox delivery
-// or results"; the business address stays a marked placeholder until go-live. A thin indigo hairline
-// tops it. Static (no motion) — it sits at the page foot.
+// S5 — the footer, given real weight: a brand column (wordmark + honest one-liner + dry-run mark) plus
+// three link columns (Product / Trust & Legal / Account), over the factual compliance + © lines. The
+// compliance line is the posture (SPEC §11) — SPF/DKIM/DMARC enforced, suppression honored every send,
+// per-tenant RLS, immutable audit log, and the explicit "we never promise guaranteed inbox delivery or
+// results". Section links are ABSOLUTE (/#id) so they route to the landing from any page (privacy/terms/
+// trust). Labels match the nav's canonical names. A thin indigo hairline tops it. Static (no motion).
 
 const PRODUCT = [
-  { label: "How it works", href: "#how" },
-  { label: "See it draft, live", href: "#demo" },
-  { label: "The hub", href: "#integrations" },
-  { label: "Pricing", href: "#pricing" },
+  { label: "How it works", href: "/#how" },
+  { label: "Live demo", href: "/#demo" },
+  { label: "Integrations", href: "/#integrations" },
+  { label: "Pricing", href: "/#pricing" },
+];
+
+const TRUST = [
+  { label: "Trust & security", href: "/trust" },
+  { label: "Privacy", href: "/privacy" },
+  { label: "Terms", href: "/terms" },
 ];
 
 const ACCOUNT = [
@@ -43,7 +49,7 @@ export function SiteFooter() {
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" aria-hidden />
 
       <div className="mx-auto max-w-5xl px-6 py-14">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr]">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1fr]">
           {/* Brand */}
           <div>
             <span className="font-heading text-lg font-semibold text-foreground">Velora</span>
@@ -58,6 +64,7 @@ export function SiteFooter() {
           </div>
 
           <FooterColumn title="Product" links={PRODUCT} />
+          <FooterColumn title="Trust & legal" links={TRUST} />
           <FooterColumn title="Account" links={ACCOUNT} />
         </div>
 
@@ -67,9 +74,7 @@ export function SiteFooter() {
             row-level isolation, and an immutable audit log. We never promise guaranteed inbox
             delivery or results.
           </p>
-          <p className="mt-3 font-mono text-[11px] text-muted-foreground">
-            © Velora · Privacy · Terms · [business address — added at go-live]
-          </p>
+          <p className="mt-3 font-mono text-[11px] text-muted-foreground">© Velora</p>
         </div>
       </div>
     </footer>
