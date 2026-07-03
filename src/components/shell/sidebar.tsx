@@ -38,6 +38,8 @@ type NavItem = {
   soon?: boolean;
 };
 const GROUPS: { eyebrow: string; items: NavItem[] }[] = [
+  // "Manage" was 9 items deep, mixing agent OPERATIONS with workspace ADMIN (audit IA P2) — split
+  // into two groups. Item labels/routes unchanged; only the grouping (and a new eyebrow) moved.
   {
     eyebrow: "Manage",
     items: [
@@ -46,6 +48,11 @@ const GROUPS: { eyebrow: string; items: NavItem[] }[] = [
       { href: "/analytics", label: "Analytics", icon: BarChart3 },
       { href: "/senders", label: "Senders", icon: AtSign },
       { href: "/deliverability", label: "Deliverability", icon: Activity },
+    ],
+  },
+  {
+    eyebrow: "Workspace",
+    items: [
       { href: "/compliance", label: "Compliance", icon: ShieldCheck },
       { href: "/connections", label: "Connections", icon: Plug },
       { href: "/team", label: "Team", icon: UserCog },
@@ -102,7 +109,7 @@ function NavRow({
   if (item.soon) {
     return (
       <div
-        className="flex cursor-default items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground/50"
+        className="flex cursor-default items-center gap-2.5 rounded-md px-2 py-1 text-sm text-muted-foreground/50"
         aria-disabled
       >
         <item.icon className="size-4" />
@@ -118,7 +125,7 @@ function NavRow({
       href={item.href}
       onClick={onNavigate}
       className={cn(
-        "flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors",
+        "flex items-center gap-2.5 rounded-md px-2 py-1 text-sm transition-colors",
         active
           ? "bg-accent font-medium text-accent-foreground shadow-[inset_3px_0_0_0_var(--primary)]"
           : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
@@ -156,13 +163,15 @@ export function SidebarBody({
           Velora
         </Link>
       </div>
-      <nav className="flex-1 space-y-4 overflow-auto px-3 py-4 [scrollbar-color:var(--border)_transparent] [scrollbar-width:thin]">
+      {/* Rhythm tuned so all FIVE groups (22 rows) fit without scroll at a 900px-tall viewport —
+          the audit's P1 was core destinations hiding behind the fold. */}
+      <nav className="flex-1 space-y-3 overflow-auto px-3 py-3 [scrollbar-color:var(--border)_transparent] [scrollbar-width:thin]">
         {GROUPS.map((group) => (
           <div key={group.eyebrow}>
-            <div className="px-2 pb-2 font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+            <div className="px-2 pb-1.5 font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
               {group.eyebrow}
             </div>
-            <ul className="space-y-0.5">
+            <ul>
               {group.items.map((item) => (
                 <li key={item.href}>
                   <NavRow

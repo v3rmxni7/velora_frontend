@@ -25,7 +25,7 @@ const PRODUCT_LINKS = [
 // on light and dark). Every nav interactive uses it; the global outline-ring/50 was too faint on dark.
 const FOCUS = "rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400";
 
-// Below md the desktop links are hidden, so the mobile menu surfaces the same real anchors + Log in.
+// Below md the desktop links are hidden, so the mobile menu surfaces the same real anchors + Sign in.
 const MOBILE_LINKS = [...PRODUCT_LINKS, { href: "#pricing", label: "Pricing" }, { href: "#honesty", label: "Honesty" }];
 
 function NavLink({ href, children }: { href: string; children: React.ReactNode }) {
@@ -119,7 +119,7 @@ export function MarketingNav() {
             href="/login"
             className={`hidden px-3 py-1.5 text-sm text-white/70 transition-colors hover:text-white md:inline-flex ${FOCUS}`}
           >
-            Log in
+            Sign in
           </Link>
           <Link
             href="/signup"
@@ -140,7 +140,7 @@ export function MarketingNav() {
         </div>
       </nav>
 
-      {/* Mobile menu panel — the same real anchors + Log in, surfaced below the bar. */}
+      {/* Mobile menu panel — the same real anchors + Sign in, surfaced below the bar. */}
       {menuOpen && (
         <div className="border-t border-white/10 bg-[#0b0d12]/95 backdrop-blur-md md:hidden">
           <div className="mx-auto max-w-6xl space-y-1 px-6 py-4">
@@ -159,7 +159,7 @@ export function MarketingNav() {
               onClick={() => setMenuOpen(false)}
               className={`block px-3 py-2 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-white ${FOCUS}`}
             >
-              Log in
+              Sign in
             </Link>
           </div>
         </div>
