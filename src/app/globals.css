@@ -168,6 +168,16 @@
   .animate-rail-draw {
     animation: none;
   }
+  /* tw-animate-css ships NO reduced-motion rules, so its enter/exit utilities (animate-in/out —
+     dialogs, the copilot + mobile-nav drawers, disclosures) would still slide/zoom for reduced-motion
+     users. The attribute-substring selector also catches variant-prefixed tokens like
+     "data-open:animate-in". Near-zero duration (not `none`) keeps end-states + any animationend
+     listeners (Base UI close) correct. */
+  [class*="animate-in"],
+  [class*="animate-out"] {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* --- Visual-upgrade additive utilities (Slice 0) ----------------------------------------------

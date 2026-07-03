@@ -3,7 +3,8 @@
 // Tasteful, reduced-motion-aware motion primitives (Framer Motion). Shared by Tier A (marketing
 // scroll reveals + parallax) and Tier B (subtle app mount motion). When the user prefers reduced
 // motion, every wrapper renders instantly with NO transform/opacity/parallax animation — honoring
-// the app's a11y stance (globals.css already silences the CSS keyframes under prefers-reduced-motion).
+// the app's a11y stance (globals.css silences the custom CSS keyframes AND the tw-animate
+// animate-in/out utilities under prefers-reduced-motion).
 
 import { animate, motion, useScroll, useTransform, type Variants } from "framer-motion";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";

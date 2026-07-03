@@ -50,27 +50,29 @@ const INCLUDED = [
   "Autonomy guardrails: volume caps + anomaly auto-pause",
 ];
 
-// Real answers to the questions a buyer actually has. Everything here is true of the shipped model.
+// Real answers to the questions a buyer actually has. Metering statements match the shipped
+// credit_ledger reasons EXACTLY (lead_search / send / website_visitor_identification; drafting and
+// dry-run review are unmetered; the recurring per-cycle grant activates with billing at go-live).
 const FAQ = [
   {
     q: "What's a credit?",
-    a: "AI and data work is metered in credits. One credit is roughly one sourced-and-verified lead, or one live cold send at current pricing. Your plan's monthly allowance is the credits figure above.",
+    a: "AI and data work is metered in credits: one credit covers one lead search, or one live send, at current pricing. The credits figure on each tier is the allowance that tier represents — the recurring refill activates with billing at launch; today credits arrive as a signup grant and quest rewards.",
   },
   {
     q: "Do dry-runs burn credits?",
-    a: "No. Reviewing grounded drafts in dry-run is free and unlimited — credits are only consumed by lead sourcing/verification and live sends. Every workspace stays in dry-run until you deliberately enable sending.",
+    a: "No. Reviewing grounded drafts in dry-run is free and unlimited — credits are consumed by lead searches, live sends, and website-visitor identifications, nothing else. Every workspace stays in dry-run until you deliberately enable sending.",
   },
   {
     q: "What's metered in credits vs billed in dollars?",
-    a: "AI + data work (sourcing, verification, drafting, sends) is metered in credits. Sending infrastructure — the mailboxes and domains you run through your provider — is billed in dollars. No credit-maze conversions between the two.",
+    a: "Lead searches, live sends, and website-visitor identifications are metered in credits; drafting and dry-run review are free. Sending infrastructure — the mailboxes and domains you run through your provider — is billed in dollars. No credit-maze conversions between the two.",
   },
   {
     q: "What happens when I run low on credits?",
-    a: "You get a low-balance warning first, and live sends then pause with an honest “insufficient credit” state rather than failing silently. Nothing is ever sent without the credits to cover it.",
+    a: "You get a low-balance warning first — and a live send without credits to cover it stops with an honest “insufficient credit” state rather than failing silently. Nothing is ever sent without the credits to cover it.",
   },
   {
     q: "How do the tiers differ?",
-    a: "By volume only. Every tier includes the full product — the capabilities listed above. Higher tiers include more monthly credits and lead capacity; that's the whole difference.",
+    a: "By volume only. Every tier includes the full product — the capabilities listed above. Higher tiers include more credits and lead capacity; that's the whole difference.",
   },
   {
     q: "Can I stay in dry-run forever?",
@@ -138,8 +140,8 @@ export function Pricing() {
 
         <Reveal delay={0.1}>
           <p className="mt-6 text-center font-mono text-[11px] text-muted-foreground">
-            1 credit ≈ one sourced-and-verified lead, or one live send · dry-runs are free · dry-run by
-            default until you go live
+            1 credit ≈ one lead search, or one live send · dry-runs are free · dry-run by default
+            until you go live
           </p>
         </Reveal>
 

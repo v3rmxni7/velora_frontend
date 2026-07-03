@@ -61,8 +61,8 @@ export default function PrivacyPage() {
             <li>Supabase — database, authentication, and per-tenant isolation.</li>
             <li>Railway — the backend API and scheduled jobs.</li>
             <li>Vercel — the web frontend.</li>
-            <li>Your chosen LLM provider — grounded drafting (bring your own key).</li>
-            <li>Your chosen lead-data, email-verification, and sending providers — sourcing, verification, and delivery.</li>
+            <li>An established LLM provider — grounded drafting.</li>
+            <li>Established lead-data, email-verification, and sending providers — sourcing, verification, and delivery.</li>
           </ul>
         </Section>
 
@@ -76,8 +76,8 @@ export default function PrivacyPage() {
 
         <Section title="Your controls">
           <p>
-            You can export or delete your workspace data. Closing your workspace removes its data,
-            including a full erasure path for account-closure requests.
+            Your data stays yours: you can request a copy of your workspace data, and closing your
+            workspace removes its data — including a full erasure path for account-closure requests.
           </p>
           <p>
             You are responsible for having a lawful basis for the lead data you upload or source, and
@@ -87,8 +87,8 @@ export default function PrivacyPage() {
 
         <Section title="Contact">
           <p>
-            Have a question about how your data is handled? Get in touch before you create a
-            workspace — we answer every message. See also our{" "}
+            Questions about how your data is handled are welcome — a public contact address ships
+            with broader availability. See also our{" "}
             <Link href="/trust" className="text-primary underline-offset-2 hover:underline">
               trust &amp; security
             </Link>{" "}

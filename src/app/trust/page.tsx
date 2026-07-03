@@ -36,13 +36,13 @@ const GUARANTEES: { title: string; where: string; body: string }[] = [
   },
   {
     title: "An immutable audit log",
-    where: "for every consequential action",
-    body: "Approvals, sends, suppressions, and configuration changes are recorded to an append-only audit trail scoped to your workspace, so there is always an honest record of what happened and when.",
+    where: "in append-only tables",
+    body: "Suppressions, copilot-confirmed actions, and configuration changes — senders, team, domains, retention — are recorded to an append-only audit trail scoped to your workspace. Autonomous decisions land in their own append-only log, and live sends are metered in an append-only credit ledger.",
   },
   {
     title: "Volume caps + anomaly auto-pause",
-    where: "in the scheduler",
-    body: "Per-workspace and global daily send ceilings are enforced independently of your provider's own caps, and a scheduled monitor auto-pauses a workspace's autonomy the moment bounce or complaint rates breach conservative thresholds.",
+    where: "in the send path",
+    body: "Per-workspace and global daily send ceilings are enforced at the send chokepoint, independently of your provider's own caps — and a scheduled monitor auto-pauses a workspace's autonomy the moment bounce or complaint rates breach conservative thresholds.",
   },
   {
     title: "Email authentication",
@@ -51,8 +51,8 @@ const GUARANTEES: { title: string; where: string; body: string }[] = [
   },
   {
     title: "Your data, and who processes it",
-    where: "bring-your-own-key",
-    body: "You provide the source data and the provider keys. Velora runs on Supabase (database + auth), Railway (backend), and Vercel (frontend); drafting uses the LLM provider whose key you supply; sourcing, verification, and sending use the data/email providers you connect. We do not sell your data, and no message is sent without your deliberate go-live.",
+    where: "named providers",
+    body: "You provide the source data — your lists, knowledge, and proof points. Velora runs on Supabase (database + auth), Railway (backend), and Vercel (frontend), and uses established providers for lead data, email verification, drafting, and delivery. We do not sell your data, and no message is sent without your deliberate go-live.",
   },
 ];
 

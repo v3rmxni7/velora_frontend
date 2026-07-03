@@ -89,7 +89,8 @@ export default function TermsPage() {
 
         <Section title="Contact">
           <p>
-            Questions about these terms? Get in touch before you create a workspace. See also our{" "}
+            Questions about these terms are welcome — a public contact address ships with broader
+            availability. See also our{" "}
             <Link href="/privacy" className="text-primary underline-offset-2 hover:underline">
               privacy
             </Link>{" "}
