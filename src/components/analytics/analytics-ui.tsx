@@ -1,6 +1,6 @@
 "use client";
 
-import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { CountUp } from "@/components/motion";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -126,10 +126,21 @@ export function TrendChart({
               fontFamily: "var(--font-mono, monospace)",
             }}
           />
+          {lines.length > 1 && (
+            <Legend
+              verticalAlign="top"
+              align="right"
+              height={24}
+              iconType="plainline"
+              wrapperStyle={{ fontSize: 11, fontFamily: "var(--font-mono, monospace)" }}
+            />
+          )}
           {lines.map((l) => (
             <Area
               key={l.key}
-              type="monotone"
+              // Straight segments between REAL by-day points — monotone smoothing would bow a curve
+              // through zero-activity days and imply activity that didn't happen (honest-empty stance).
+              type="linear"
               dataKey={l.key}
               name={l.label}
               stroke={COLORS[l.color]}

@@ -216,9 +216,14 @@ export function CopilotChat({
                     type="button"
                     onClick={() => void submit(a.prompt)}
                     disabled={busy}
-                    className="rounded-md border border-border bg-card px-3 py-2 text-left text-sm text-foreground transition-colors hover:border-primary/40 hover:bg-accent disabled:opacity-50"
+                    className="group flex items-center justify-between gap-2 rounded-md border border-border bg-card px-3 py-2 text-left text-sm text-foreground transition-colors hover:border-primary/40 hover:bg-accent disabled:opacity-50"
                   >
                     {a.label}
+                    {/* Run affordance — reads as a sendable prompt, not a second text input. */}
+                    <CornerDownLeft
+                      className="size-3.5 shrink-0 text-muted-foreground/60 transition-colors group-hover:text-primary"
+                      aria-hidden
+                    />
                   </button>
                 ))}
               </div>

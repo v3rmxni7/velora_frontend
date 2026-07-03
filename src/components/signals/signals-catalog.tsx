@@ -96,7 +96,9 @@ export function SignalsCatalog() {
         </p>
       )}
       {signals.isSuccess && filtered.length === 0 && (
-        <p className="text-sm text-muted-foreground">No signals in this category.</p>
+        <div className="flex h-32 flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border bg-card text-center">
+          <p className="text-sm text-muted-foreground">No signals in this category.</p>
+        </div>
       )}
       {signals.isSuccess && filtered.length > 0 && (
         <ul className="space-y-2">

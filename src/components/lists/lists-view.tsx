@@ -1,6 +1,7 @@
 "use client";
 
 import { Plus } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,7 +25,7 @@ export function ListsView() {
     <div className="mx-auto max-w-3xl space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
-          Lists
+          Your lists
         </h2>
         <Button size="sm" onClick={() => setNewOpen(true)}>
           <Plus className="size-4" />
@@ -42,7 +43,11 @@ export function ListsView() {
         <div className="flex flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border bg-card p-6 text-center">
           <p className="text-sm text-muted-foreground">No lists yet.</p>
           <p className="font-mono text-[11px] text-muted-foreground">
-            save leads from Find leads, or create a list
+            save leads from{" "}
+            <Link href="/lead-discovery" className="font-medium text-primary hover:underline">
+              Find leads
+            </Link>
+            , or create a list
           </p>
         </div>
       )}

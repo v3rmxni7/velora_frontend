@@ -51,6 +51,14 @@ function QuestsCard() {
       <p className="mt-1 font-mono text-[11px] text-muted-foreground">
         <CountUp value={creditsEarned} /> credits earned — each quest pays real credits as you complete it
       </p>
+      {/* At-a-glance progress track (same recipe as the deliverability volume bar). */}
+      <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-secondary">
+        <div
+          className="h-full bg-primary"
+          style={{ width: `${total > 0 ? (completed / total) * 100 : 0}%` }}
+          aria-hidden
+        />
+      </div>
       <ul className="mt-3 space-y-1">
         {items.map((q) => (
           <li key={q.key}>

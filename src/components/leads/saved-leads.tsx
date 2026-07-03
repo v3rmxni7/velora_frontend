@@ -107,28 +107,32 @@ export function SavedLeads() {
                         {new Date(p.created_at).toLocaleDateString()}
                       </TableCell>
                       <TableCell>
-                        {existing ? (
-                          <Link
-                            href={`/engage?new=${existing.id}`}
-                            className="text-sm font-medium text-primary hover:underline"
-                          >
-                            View draft →
-                          </Link>
-                        ) : generatingThis ? (
-                          <GeneratingLabel />
-                        ) : (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => generate.mutate(p.id)}
-                            // Single-flight: one generation at a time — each click runs a
-                            // real (paid) LLM pipeline.
-                            disabled={generate.isPending}
-                          >
-                            <Sparkles className="size-3.5" />
-                            Generate draft
-                          </Button>
-                        )}
+                        {/* Fixed-height line box so link rows and button rows render identical row
+                            heights (the mixed treatments made the table rhythm ragged). */}
+                        <div className="flex h-8 items-center">
+                          {existing ? (
+                            <Link
+                              href={`/engage?new=${existing.id}`}
+                              className="text-sm font-medium text-primary hover:underline"
+                            >
+                              View draft →
+                            </Link>
+                          ) : generatingThis ? (
+                            <GeneratingLabel />
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => generate.mutate(p.id)}
+                              // Single-flight: one generation at a time — each click runs a
+                              // real (paid) LLM pipeline.
+                              disabled={generate.isPending}
+                            >
+                              <Sparkles className="size-3.5" />
+                              Generate draft
+                            </Button>
+                          )}
+                        </div>
                       </TableCell>
                     </TableRow>
                   );

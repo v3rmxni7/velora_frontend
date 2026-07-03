@@ -37,7 +37,7 @@ export function DialerView() {
 
       <AddToQueue />
 
-      <div className="flex gap-1">
+      <div className="inline-flex flex-wrap gap-0.5 self-start rounded-lg border border-border bg-secondary/40 p-0.5">
         {TABS.map((t) => (
           <button
             type="button"
@@ -45,7 +45,9 @@ export function DialerView() {
             onClick={() => setTab(t.key)}
             className={cn(
               PILL,
-              t.key === tab ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-accent/50",
+              t.key === tab
+                ? "bg-card text-primary shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {t.label}
@@ -58,9 +60,11 @@ export function DialerView() {
         <p className="font-mono text-xs text-destructive">Couldn’t load the dialer — check the backend.</p>
       )}
       {queue.isSuccess && queue.data.data.length === 0 && (
-        <p className="text-sm text-muted-foreground">
-          {tab === "log" ? "No calls logged yet." : "Nothing queued — add a lead above."}
-        </p>
+        <div className="flex h-32 flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border bg-card text-center">
+          <p className="text-sm text-muted-foreground">
+            {tab === "log" ? "No calls logged yet." : "Nothing queued — add a lead above."}
+          </p>
+        </div>
       )}
       {queue.isSuccess && queue.data.data.length > 0 && (
         <ul className="space-y-2">

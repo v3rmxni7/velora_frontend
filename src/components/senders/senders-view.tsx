@@ -215,6 +215,7 @@ function SenderConfig({ sender, mailboxes }: { sender: SenderRow; mailboxes: Mai
                     onChange={() => setPrimary.mutate({ senderId: sender.id, mailboxId: m.id })}
                     disabled={setPrimary.isPending}
                     aria-label="Set as primary mailbox"
+                    className="accent-primary"
                   />
                   <span className="truncate font-mono text-[12px] text-foreground">{m.email}</span>
                   <WarmthChip status={m.status} />

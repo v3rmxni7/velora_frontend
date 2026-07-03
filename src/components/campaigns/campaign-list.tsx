@@ -185,7 +185,9 @@ export function CampaignList() {
           </p>
         )}
         {campaigns.isSuccess && campaigns.data.data.length === 0 && (
-          <p className="text-sm text-muted-foreground">No campaigns yet.</p>
+          <div className="flex h-32 flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border bg-card text-center">
+            <p className="text-sm text-muted-foreground">No campaigns yet.</p>
+          </div>
         )}
         {campaigns.isSuccess && campaigns.data.data.length > 0 && (
           <ul className="space-y-2">

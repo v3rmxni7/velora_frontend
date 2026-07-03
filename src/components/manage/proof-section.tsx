@@ -66,7 +66,7 @@ export function ProofSection() {
         The verified proof points the grounded-draft pipeline can cite.
       </p>
 
-      <div className="mb-3 flex gap-1">
+      <div className="mb-3 inline-flex flex-wrap gap-0.5 rounded-lg border border-border bg-secondary/40 p-0.5">
         {CATS.map((c) => (
           <button
             type="button"
@@ -75,8 +75,8 @@ export function ProofSection() {
             className={cn(
               "rounded-md px-2 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors",
               c.key === cat
-                ? "bg-accent text-accent-foreground"
-                : "text-muted-foreground hover:bg-accent/50",
+                ? "bg-card text-primary shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {c.label}

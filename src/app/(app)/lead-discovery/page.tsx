@@ -6,9 +6,11 @@ export default function LeadDiscoveryPage() {
   return (
     <>
       <Topbar title="Find leads" />
-      <main className="flex-1 space-y-6 overflow-auto p-6">
-        <SearchSection />
-        <SavedLeads />
+      <main className="flex-1 overflow-auto p-6">
+        <div className="mx-auto max-w-4xl space-y-6">
+          <SearchSection />
+          <SavedLeads />
+        </div>
       </main>
     </>
   );

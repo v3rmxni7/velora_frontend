@@ -121,7 +121,11 @@ export function SearchSection() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="font-heading">Find leads</CardTitle>
+        {/* The Topbar already titles the page "Find leads" ~80px above — this header names the
+            ACTION ZONE instead (mono eyebrow, consistent with sibling section headers). */}
+        <CardTitle className="font-mono text-[11px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+          Search
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <form onSubmit={onSubmit} className="flex gap-2">

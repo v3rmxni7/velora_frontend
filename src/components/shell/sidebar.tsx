@@ -146,6 +146,8 @@ export function SidebarBody({
 
   return (
     <>
+      {/* Wordmark only — the persistent TopBanner already carries the BETA label ~40px above;
+          badging it twice in the same corner read as noise (audit consistency P3). */}
       <div className="flex h-14 shrink-0 items-center gap-2 border-b border-border px-5">
         <Link
           href="/"
@@ -153,9 +155,6 @@ export function SidebarBody({
         >
           Velora
         </Link>
-        <span className="rounded border border-primary/30 bg-accent px-1 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-primary">
-          Beta
-        </span>
       </div>
       <nav className="flex-1 space-y-4 overflow-auto px-3 py-4 [scrollbar-color:var(--border)_transparent] [scrollbar-width:thin]">
         {GROUPS.map((group) => (

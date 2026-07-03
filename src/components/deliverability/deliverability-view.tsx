@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { CountUp } from "@/components/motion";
+import { WarmthChip } from "@/components/senders/senders-ui";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useDeliverability } from "@/lib/hooks/use-deliverability";
 import { cn } from "@/lib/utils";
@@ -115,10 +116,9 @@ export function DeliverabilityView() {
           </p>
         ) : (
           <div className="mt-2 flex flex-wrap gap-1.5">
+            {/* Same tone map as Senders — 'warm' is emerald on both screens (one semantic, one color). */}
             {warmth.map(([status, n]) => (
-              <span key={status} className={CHIP}>
-                {status} {n}
-              </span>
+              <WarmthChip key={status} status={status} count={n} />
             ))}
           </div>
         )}

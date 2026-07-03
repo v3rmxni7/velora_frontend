@@ -20,7 +20,7 @@ export function VisitorTabs() {
   return (
     <section>
       <h2 className={`${EYEBROW} mb-3`}>People &amp; companies</h2>
-      <div className="mb-3 flex gap-1">
+      <div className="mb-3 inline-flex flex-wrap gap-0.5 rounded-lg border border-border bg-secondary/40 p-0.5">
         {(["people", "companies"] as Tab[]).map((t) => (
           <button
             type="button"
@@ -28,7 +28,9 @@ export function VisitorTabs() {
             onClick={() => setTab(t)}
             className={cn(
               PILL,
-              t === tab ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-accent/50",
+              t === tab
+                ? "bg-card text-primary shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             {t === "people" ? "People" : "Companies"}

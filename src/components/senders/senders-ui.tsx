@@ -12,8 +12,16 @@ const WARMTH_TONE: Record<MailboxStatus, string> = {
   pending: MUTED,
   paused: "border-red-200 bg-red-50 text-red-700",
 };
-export function WarmthChip({ status }: { status: MailboxStatus }) {
-  return <span className={cn(CHIP, WARMTH_TONE[status])}>{status}</span>;
+export function WarmthChip({ status, count }: { status: MailboxStatus | string; count?: number }) {
+  // Tolerant of plain-string statuses (e.g. the deliverability roll-up's Record<string, number>)
+  // so 'warm' reads emerald EVERYWHERE, not just on Senders; unknown values fall back to muted.
+  const tone = WARMTH_TONE[status as MailboxStatus] ?? MUTED;
+  return (
+    <span className={cn(CHIP, tone)}>
+      {status}
+      {count != null ? ` ${count}` : ""}
+    </span>
+  );
 }
 
 export function Reputation({ rep }: { rep: MailboxReputation | null }) {

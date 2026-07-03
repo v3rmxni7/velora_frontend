@@ -163,26 +163,29 @@ function LeadsTable({
               {isPerson && (
                 // biome-ignore lint/a11y/noStaticElementInteractions: stop row-open when acting on the draft
                 <TableCell onClick={(e) => e.stopPropagation()}>
-                  {existing ? (
-                    <Link
-                      href={`/engage?new=${existing.id}`}
-                      className="text-sm font-medium text-primary hover:underline"
-                    >
-                      View draft →
-                    </Link>
-                  ) : generatingThis ? (
-                    <GeneratingLabel />
-                  ) : (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => generate.mutate(id)}
-                      disabled={generate.isPending}
-                    >
-                      <Sparkles className="size-3.5" />
-                      Generate draft
-                    </Button>
-                  )}
+                  {/* Fixed-height line box — identical row heights across link/label/button rows. */}
+                  <div className="flex h-8 items-center">
+                    {existing ? (
+                      <Link
+                        href={`/engage?new=${existing.id}`}
+                        className="text-sm font-medium text-primary hover:underline"
+                      >
+                        View draft →
+                      </Link>
+                    ) : generatingThis ? (
+                      <GeneratingLabel />
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => generate.mutate(id)}
+                        disabled={generate.isPending}
+                      >
+                        <Sparkles className="size-3.5" />
+                        Generate draft
+                      </Button>
+                    )}
+                  </div>
                 </TableCell>
               )}
             </TableRow>
@@ -208,7 +211,7 @@ export function LeadsBrowser() {
   return (
     <div className="mx-auto max-w-4xl space-y-4">
       <div className="flex items-center justify-between gap-3">
-        <div className="flex gap-1">
+        <div className="inline-flex flex-wrap gap-0.5 rounded-lg border border-border bg-secondary/40 p-0.5">
           {TABS.map((t) => (
             <button
               type="button"
@@ -221,8 +224,8 @@ export function LeadsBrowser() {
               className={cn(
                 "rounded-md px-2 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors",
                 t.key === tab
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:bg-accent/50",
+                  ? "bg-card text-primary shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {t.label}

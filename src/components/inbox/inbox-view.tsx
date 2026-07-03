@@ -29,7 +29,7 @@ export function InboxView() {
     <div className="flex min-h-0 flex-1 gap-4">
       {/* Left — thread list */}
       <div className="flex w-80 shrink-0 flex-col">
-        <div className="mb-3 flex gap-1">
+        <div className="mb-3 inline-flex flex-wrap gap-0.5 self-start rounded-lg border border-border bg-secondary/40 p-0.5">
           {FILTERS.map((f) => (
             <Link
               key={f.key}
@@ -37,8 +37,8 @@ export function InboxView() {
               className={cn(
                 "rounded-md px-2 py-1 font-mono text-[11px] uppercase tracking-[0.12em] transition-colors",
                 f.key === filter.key
-                  ? "bg-accent text-accent-foreground"
-                  : "text-muted-foreground hover:bg-accent/50",
+                  ? "bg-card text-primary shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {f.label}

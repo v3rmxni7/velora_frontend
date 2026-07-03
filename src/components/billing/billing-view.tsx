@@ -85,7 +85,10 @@ export function BillingView() {
           {tiers.map((t) => {
             const current = t.tier === plan;
             return (
-              <Card key={t.tier} className={cn(current && "border-primary/50 ring-1 ring-primary/20")}>
+              <Card
+                key={t.tier}
+                className={cn("flex flex-col", current && "border-primary/50 ring-1 ring-primary/20")}
+              >
                 <div className="flex items-baseline justify-between">
                   <span className="font-medium text-foreground">{t.name}</span>
                   {current && (
@@ -101,7 +104,8 @@ export function BillingView() {
                 <p className="mt-1 font-mono text-[11px] text-muted-foreground">
                   {t.includedCredits.toLocaleString()} credits · ~{t.leadsPerMonth.toLocaleString()} leads/mo
                 </p>
-                <p className="mt-2 text-[13px] text-muted-foreground">{t.blurb}</p>
+                {/* flex-1 blurb + flex-col Card pin every tier's CTA to the same baseline. */}
+                <p className="mt-2 flex-1 text-[13px] text-muted-foreground">{t.blurb}</p>
                 <button
                   type="button"
                   disabled
