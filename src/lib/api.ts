@@ -355,6 +355,11 @@ export const api = {
       method: "PATCH",
       body: JSON.stringify({ senderId }),
     }),
+  setMailboxWarmupOverride: (mailboxId: string, override: boolean) =>
+    apiFetch<{ data: MailboxRow }>(`/mailboxes/${mailboxId}/warmup-override`, {
+      method: "PATCH",
+      body: JSON.stringify({ override }),
+    }),
 
   // ---- Deliverability (org-scoped metrics) ----
   getDeliverability: () => apiFetch<{ data: DeliverabilityData }>("/deliverability"),

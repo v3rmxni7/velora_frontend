@@ -69,6 +69,23 @@ export function useAssignMailbox() {
       toast.error(err instanceof ApiError ? err.message : "Couldn’t assign the mailbox — try again."),
   });
 }
+export function useSetMailboxWarmupOverride() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ mailboxId, override }: { mailboxId: string; override: boolean }) =>
+      api.setMailboxWarmupOverride(mailboxId, override),
+    onSuccess: (_res, { override }) => {
+      qc.invalidateQueries({ queryKey: ["mailboxes"] });
+      toast.success(
+        override
+          ? "Marked as established — ready to send. Start at low volume and watch deliverability."
+          : "Override cleared — mailbox back to warming.",
+      );
+    },
+    onError: (err) =>
+      toast.error(err instanceof ApiError ? err.message : "Couldn’t update the mailbox — try again."),
+  });
+}
 export function useSetPrimaryMailbox() {
   const qc = useQueryClient();
   return useMutation({

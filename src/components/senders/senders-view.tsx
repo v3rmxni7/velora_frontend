@@ -13,6 +13,7 @@ import {
   useDomains,
   useMailboxes,
   useSenders,
+  useSetMailboxWarmupOverride,
   useSetPrimaryMailbox,
   useSyncMailboxes,
   useUpdateSender,
@@ -31,6 +32,7 @@ function SectionError({ what }: { what: string }) {
 function Mailboxes() {
   const mailboxes = useMailboxes();
   const sync = useSyncMailboxes();
+  const override = useSetMailboxWarmupOverride();
   return (
     <section>
       <div className="mb-3 flex items-center justify-between">
@@ -61,21 +63,45 @@ function Mailboxes() {
           {mailboxes.data.data.map((m) => (
             <li
               key={m.id}
-              className="flex items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3"
+              className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-card px-4 py-3"
             >
               <div className="min-w-0">
                 <p className="truncate text-sm font-medium text-foreground">{m.email}</p>
                 <p className={`${FOOTNOTE} mt-0.5`}>
                   {m.provider} · <Reputation rep={m.reputation} />
+                  {m.warmup_override ? " · established (override)" : ""}
                 </p>
               </div>
-              <WarmthChip status={m.status} />
+              <div className="flex items-center gap-2">
+                {/* Established-mailbox fast lane: attest a real in-use mailbox so it's send-ready
+                    without waiting out the warm-up counter. Only offered while not already warm by
+                    the metric gate. */}
+                {m.status !== "warm" || m.warmup_override ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      override.mutate({ mailboxId: m.id, override: !m.warmup_override })
+                    }
+                    disabled={override.isPending}
+                    className={`rounded-md border px-2 py-1 font-mono text-[11px] transition-colors disabled:opacity-50 ${
+                      m.warmup_override
+                        ? "border-border text-muted-foreground hover:bg-accent/50"
+                        : "border-primary/30 text-primary hover:bg-accent"
+                    }`}
+                  >
+                    {m.warmup_override ? "Clear override" : "Mark established"}
+                  </button>
+                ) : null}
+                <WarmthChip status={m.status} />
+              </div>
             </li>
           ))}
         </ul>
       )}
       <p className={`${FOOTNOTE} mt-2`}>
-        warm = cleared the warmup thresholds — only warm mailboxes can send
+        warm = cleared the warmup thresholds — only warm mailboxes can send. “Mark established” is for
+        a real, in-use mailbox that’s already warm elsewhere; start at low volume and watch
+        deliverability (cold sending can affect the domain’s reputation).
       </p>
     </section>
   );

@@ -323,6 +323,9 @@ export interface MailboxRow {
   daily_cap: number | null;
   reputation: MailboxReputation | null;
   last_synced_at: string | null;
+  // Operator attests this is an established, in-use mailbox → treated as warm without the warm-up
+  // send threshold (still spam-checked). Off by default.
+  warmup_override: boolean;
   created_at: string;
   updated_at: string;
 }
