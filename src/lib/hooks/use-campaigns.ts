@@ -113,6 +113,19 @@ export function useUpdateCampaignSteps(id: string) {
   });
 }
 
+export function useUpdateCampaignSender(id: string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (senderId: string | null) => api.updateCampaignSender(id, senderId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["campaign", id] });
+      toast.success("Sender updated.");
+    },
+    onError: (err) =>
+      toast.error(err instanceof ApiError ? err.message : "Couldn’t update the sender — try again."),
+  });
+}
+
 export function useUpdateCampaignVariants(id: string) {
   const qc = useQueryClient();
   return useMutation({

@@ -9,7 +9,9 @@ import {
   useEnrollments,
   useLaunchCampaign,
   usePauseCampaign,
+  useUpdateCampaignSender,
 } from "@/lib/hooks/use-campaigns";
+import { useSenders } from "@/lib/hooks/use-senders";
 import type { EnrollmentStatus } from "@/lib/api-types";
 import { CampaignStatusChip, EnrollmentCount, ENROLLMENT_ORDER } from "./campaigns-ui";
 import { SequenceBuilder } from "./sequence-builder";
@@ -23,6 +25,8 @@ export function CampaignDetail({ id }: { id: string }) {
   const enrollments = useEnrollments(id);
   const launch = useLaunchCampaign(id);
   const pause = usePauseCampaign(id);
+  const senders = useSenders();
+  const updateSender = useUpdateCampaignSender(id);
 
   if (campaign.isPending) {
     return (
@@ -98,6 +102,43 @@ export function CampaignDetail({ id }: { id: string }) {
           )}
         </div>
       </div>
+
+      {/* Sender picker — the campaign's sending identity. A live campaign with no sender defers
+          (never blasts every warm mailbox); a paused sender's mailbox never sends. */}
+      <section>
+        <h2 className={`${EYEBROW} mb-2`}>Sender</h2>
+        <div className="flex flex-wrap items-center gap-2">
+          <select
+            aria-label="Campaign sender"
+            className="rounded-md border border-border bg-card px-3 py-1.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:opacity-60"
+            value={c.sender_id ?? ""}
+            disabled={updateSender.isPending || senders.isPending}
+            onChange={(e) => updateSender.mutate(e.target.value === "" ? null : e.target.value)}
+          >
+            <option value="">— No sender assigned —</option>
+            {(senders.data?.data ?? []).map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.display_name ?? "(unnamed)"}
+                {s.status !== "active" ? ` · ${s.status}` : ""}
+              </option>
+            ))}
+          </select>
+          {!c.sender_id && (
+            <span className="font-mono text-[11px] text-amber-600">
+              unassigned — live sends wait until you assign a sender
+            </span>
+          )}
+        </div>
+        {senders.isSuccess && (senders.data?.data.length ?? 0) === 0 && (
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            No senders yet — create one on the{" "}
+            <Link href="/senders" className="text-primary hover:underline">
+              Senders
+            </Link>{" "}
+            page first.
+          </p>
+        )}
+      </section>
 
       {/* Sequence — editable while draft, locked once launched (4.3) */}
       <section>

@@ -256,6 +256,11 @@ export const api = {
     }),
   launchCampaign: (id: string) =>
     apiFetch<{ data: LaunchResult }>(`/campaigns/${id}/launch`, { method: "POST" }),
+  updateCampaignSender: (id: string, senderId: string | null) =>
+    apiFetch<{ data: CampaignRow }>(`/campaigns/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ senderId }),
+    }),
   pauseCampaign: (id: string) =>
     apiFetch<{ data: { id: string } }>(`/campaigns/${id}/pause`, { method: "POST" }),
   getEnrollments: (id: string, status?: EnrollmentStatus) =>
