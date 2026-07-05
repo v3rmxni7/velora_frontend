@@ -217,7 +217,14 @@ export interface GenerateDraftRequest {
 }
 
 export interface TaskCounts {
-  pending: { outbound_approval: number; manual: number; platform: number };
+  pending: {
+    outbound_approval: number;
+    manual: number;
+    platform: number;
+    // Pending reply drafts awaiting human approval — the backend returns this; the nav badge must
+    // count it too, or a queued reply-approval is invisible.
+    reply_approval: number;
+  };
 }
 
 // ---- Inbox (GET /inbox, GET /threads/:id) — Phase 2 Slice 2.6 ----

@@ -90,9 +90,13 @@ function TasksBadge() {
   const counts = useTaskCounts();
   if (counts.isPending) return <Skeleton className="ml-auto h-4 w-6 rounded" />;
   if (counts.isError) return null;
+  // Both human-approval queues live under Tasks: cold drafts (outbound_approval) + reply drafts
+  // (reply_approval). The badge must reflect both, or a pending reply approval is invisible.
+  const p = counts.data.pending;
+  const total = p.outbound_approval + p.reply_approval;
   return (
     <span className="ml-auto rounded border border-border bg-card px-1.5 font-mono text-[11px] tabular-nums text-muted-foreground">
-      {counts.data.pending.outbound_approval}
+      {total}
     </span>
   );
 }

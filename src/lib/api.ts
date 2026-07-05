@@ -202,7 +202,9 @@ export const api = {
   getTaskCounts: () => apiFetch<TaskCounts>("/tasks/counts"),
 
   approveTask: (id: string) =>
-    apiFetch<{ data: { id: string } }>(`/tasks/${id}/approve`, { method: "POST" }),
+    // `send` = the executeSend outcome after approval (dry_run/queued = went out; anything else =
+    // approved but NOT sent, e.g. insufficient_credit / sender_unassigned / campaign_paused).
+    apiFetch<{ data: { id: string }; send?: string }>(`/tasks/${id}/approve`, { method: "POST" }),
 
   rejectTask: (id: string, reason?: string) =>
     apiFetch<{ data: { id: string } }>(`/tasks/${id}/reject`, {

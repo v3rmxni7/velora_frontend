@@ -43,11 +43,26 @@ export function useGenerateDraft() {
   });
 }
 
+// A send outcome that means "approved, but the email did NOT go out" — surface it honestly so an
+// approval that silently didn't send (out of credits, campaign/sender paused, no sender, capped)
+// isn't mistaken for a successful send. dry_run/queued = it went out → no warning.
+const NOT_SENT_MESSAGE: Record<string, string> = {
+  insufficient_credit: "Approved, but not sent — insufficient credits. Top up to send.",
+  sender_unassigned: "Approved, but not sent — assign a sender to this campaign first.",
+  sender_paused: "Approved, but not sent — the assigned sender is paused.",
+  campaign_paused: "Approved, but not sent — the campaign is paused.",
+  rate_limited: "Approved, but not sent yet — daily send cap reached; it goes out next window.",
+  suppressed: "Approved, but not sent — the recipient is on your suppression list.",
+  verification_required: "Approved, but not sent — the email couldn't be verified.",
+  error: "Approved, but the send hit an error — it'll be retried.",
+};
+
 // Optimistic status transition shared by approve/reject: flip the card immediately,
 // roll back on error, then re-sync tasks + the sidebar badge.
 function useTaskTransition(
   action: (id: string) => Promise<unknown>,
   status: "approved" | "rejected",
+  onResult?: (result: unknown) => void,
 ) {
   const queryClient = useQueryClient();
   return useMutation({
@@ -62,6 +77,7 @@ function useTaskTransition(
       );
       return { previous };
     },
+    onSuccess: (result) => onResult?.(result),
     onError: (_err, _id, context) => {
       if (context?.previous) queryClient.setQueryData(["tasks"], context.previous);
       toast.error(`Could not ${status === "approved" ? "approve" : "reject"} — try again.`);
@@ -73,7 +89,10 @@ function useTaskTransition(
 }
 
 export function useApproveTask() {
-  return useTaskTransition((id) => api.approveTask(id), "approved");
+  return useTaskTransition((id) => api.approveTask(id), "approved", (result) => {
+    const send = (result as { send?: string } | undefined)?.send;
+    if (send && NOT_SENT_MESSAGE[send]) toast.warning(NOT_SENT_MESSAGE[send]);
+  });
 }
 
 export function useRejectTask() {
