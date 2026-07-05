@@ -46,6 +46,23 @@ export function CampaignDetail({ id }: { id: string }) {
     return acc;
   }, {});
   const total = enrollments.data?.data.length ?? 0;
+  // Honest per-reason tallies from the enrollments' real error codes (E4). Known codes get plain
+  // language; anything else surfaces as its raw code rather than disappearing.
+  const REASON_LABEL: Record<string, string> = {
+    no_email: "no verified email found — enrichment couldn't produce one",
+    enrich_quota: "enrichment deferred — daily quota reached, retries on the next run",
+    enrich_insufficient_credit: "enrichment deferred — needs credits",
+    email_invalid: "undeliverable address (failed verification)",
+    email_disposable: "undeliverable address (disposable domain)",
+  };
+  const reasons = Object.entries(
+    (enrollments.data?.data ?? []).reduce<Record<string, number>>((acc, e) => {
+      if (!e.error) return acc;
+      const label = REASON_LABEL[e.error] ?? e.error.replace(/_/g, " ");
+      acc[label] = (acc[label] ?? 0) + 1;
+      return acc;
+    }, {}),
+  );
   const busy = launch.isPending || pause.isPending;
 
   return (
@@ -107,11 +124,25 @@ export function CampaignDetail({ id }: { id: string }) {
               No one enrolled yet — launch to enroll this campaign’s list.
             </p>
           ) : (
-            <div className="flex flex-wrap gap-1.5">
-              {ENROLLMENT_ORDER.filter((s) => counts[s]).map((s) => (
-                <EnrollmentCount key={s} status={s as EnrollmentStatus} n={counts[s]} />
-              ))}
-            </div>
+            <>
+              <div className="flex flex-wrap gap-1.5">
+                {ENROLLMENT_ORDER.filter((s) => counts[s]).map((s) => (
+                  <EnrollmentCount key={s} status={s as EnrollmentStatus} n={counts[s]} />
+                ))}
+              </div>
+              {/* Honest reason breakdown (E4): the WHY behind failed/deferred enrollments, from the
+                  real error codes — a lead either has a verified address or an honest reason it
+                  doesn't. Unknown codes fall back to the raw code (never hidden). */}
+              {reasons.length > 0 && (
+                <ul className="mt-2 space-y-0.5 font-mono text-[11px] text-muted-foreground">
+                  {reasons.map(([label, n]) => (
+                    <li key={label}>
+                      {n} {label}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </>
           ))}
         <p className="mt-3 font-mono text-[11px] text-muted-foreground">
           launching enrolls the audience and generates drafts in Tasks — sending is dry-run until
