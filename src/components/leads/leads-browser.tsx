@@ -1,9 +1,10 @@
 "use client";
 
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, Search, Sparkles, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -109,16 +110,17 @@ function LeadsTable({
   const rows = leads.data.data as unknown as Record<string, unknown>[];
   if (rows.length === 0) {
     return (
-      <div className="flex h-40 flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border bg-card text-center">
-        <p className="text-sm text-muted-foreground">
-          {search ? "No matches." : "Nothing saved yet."}
-        </p>
-        {!search && (
-          <Link href="/lead-discovery" className="text-sm font-medium text-primary hover:underline">
-            Find leads to save some →
-          </Link>
-        )}
-      </div>
+      <EmptyState
+        icon={search ? Search : UserPlus}
+        title={search ? "No matches." : "Nothing saved yet."}
+        action={
+          !search && (
+            <Link href="/lead-discovery" className="text-sm font-medium text-primary hover:underline">
+              Find leads to save some →
+            </Link>
+          )
+        }
+      />
     );
   }
 
