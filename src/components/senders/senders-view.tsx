@@ -18,6 +18,7 @@ import {
   useSyncMailboxes,
   useUpdateSender,
 } from "@/lib/hooks/use-senders";
+import { useTeamMe } from "@/lib/hooks/use-team";
 import { AuthChip, Reputation, WarmthChip } from "./senders-ui";
 
 const EYEBROW = "font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground";
@@ -33,6 +34,9 @@ function Mailboxes() {
   const mailboxes = useMailboxes();
   const sync = useSyncMailboxes();
   const override = useSetMailboxWarmupOverride();
+  // Marking a mailbox established grants send-eligibility without warm-up proof — an OWNER act
+  // (S2: owner-gated + audited, enforced server-side). Non-owners don't see the control.
+  const isOwner = useTeamMe().data?.data.user.role === "owner";
   return (
     <section>
       <div className="mb-3 flex items-center justify-between">
@@ -76,7 +80,7 @@ function Mailboxes() {
                 {/* Established-mailbox fast lane: attest a real in-use mailbox so it's send-ready
                     without waiting out the warm-up counter. Only offered while not already warm by
                     the metric gate. */}
-                {m.status !== "warm" || m.warmup_override ? (
+                {isOwner && (m.status !== "warm" || m.warmup_override) ? (
                   <button
                     type="button"
                     onClick={() =>
@@ -99,9 +103,9 @@ function Mailboxes() {
         </ul>
       )}
       <p className={`${FOOTNOTE} mt-2`}>
-        warm = cleared the warmup thresholds — only warm mailboxes can send. “Mark established” is for
-        a real, in-use mailbox that’s already warm elsewhere; start at low volume and watch
-        deliverability (cold sending can affect the domain’s reputation).
+        warm = cleared the warmup thresholds — only warm mailboxes can send. “Mark established” (an
+        owner-only action) is for a real, in-use mailbox that’s already warm elsewhere; start at low
+        volume and watch deliverability (cold sending can affect the domain’s reputation).
       </p>
     </section>
   );
