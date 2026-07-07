@@ -1,8 +1,10 @@
 "use client";
 
+import { Banknote, Briefcase, type LucideIcon, Radar } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { CampaignStatus, SignalCatalogRow, SignalCategory } from "@/lib/api-types";
 import { useCampaigns } from "@/lib/hooks/use-campaigns";
@@ -32,6 +34,13 @@ const CATEGORY_LABEL: Record<SignalCategory, string> = {
   funding: "Funding",
   hiring: "Hiring",
   other: "Other",
+};
+// Per-category glyph — PRESENTATION ONLY. Decorative label for the signal's category; changes nothing
+// about the catalog data, subscription state, or which campaign a signal feeds.
+const CATEGORY_ICON: Record<SignalCategory, LucideIcon> = {
+  funding: Banknote,
+  hiring: Briefcase,
+  other: Radar,
 };
 
 /** The minimal campaign shape the picker + the honest "feeding" label need. `status` matters: the
@@ -96,9 +105,7 @@ export function SignalsCatalog() {
         </p>
       )}
       {signals.isSuccess && filtered.length === 0 && (
-        <div className="flex h-32 flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border bg-card text-center">
-          <p className="text-sm text-muted-foreground">No signals in this category.</p>
-        </div>
+        <EmptyState icon={Radar} title="No signals in this category." />
       )}
       {signals.isSuccess && filtered.length > 0 && (
         <ul className="space-y-2">
@@ -134,6 +141,7 @@ function SignalCard({
   const subscribedCampaign = signal.subscribed
     ? intentCampaigns.find((c) => c.id === signal.campaignId)
     : undefined;
+  const CategoryIcon = CATEGORY_ICON[signal.category];
 
   return (
     <div
@@ -147,23 +155,38 @@ function SignalCard({
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <span
-              className={cn(
-                "truncate text-sm font-medium",
-                comingSoon ? "text-muted-foreground" : "text-foreground",
-              )}
-            >
-              {signal.name}
-            </span>
-            <span className="shrink-0 rounded border border-border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
-              {CATEGORY_LABEL[signal.category]}
-            </span>
+        <div className="flex min-w-0 items-start gap-3">
+          <span
+            className={cn(
+              "flex size-9 shrink-0 items-center justify-center rounded-md border",
+              comingSoon
+                ? "border-border bg-secondary/40 text-muted-foreground/70"
+                : signal.subscribed
+                  ? "border-primary/30 bg-card text-primary"
+                  : "border-border bg-secondary/40 text-muted-foreground",
+            )}
+            aria-hidden
+          >
+            <CategoryIcon className="size-4" />
+          </span>
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <span
+                className={cn(
+                  "truncate text-sm font-medium",
+                  comingSoon ? "text-muted-foreground" : "text-foreground",
+                )}
+              >
+                {signal.name}
+              </span>
+              <span className="shrink-0 rounded border border-border px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-muted-foreground">
+                {CATEGORY_LABEL[signal.category]}
+              </span>
+            </div>
+            {signal.description && (
+              <p className="mt-1 text-[13px] text-muted-foreground">{signal.description}</p>
+            )}
           </div>
-          {signal.description && (
-            <p className="mt-1 text-[13px] text-muted-foreground">{signal.description}</p>
-          )}
         </div>
         {signal.subscribed && (
           <span className="shrink-0 rounded border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.1em] text-emerald-700">
