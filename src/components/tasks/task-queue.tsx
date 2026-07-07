@@ -1,9 +1,11 @@
 "use client";
 
+import { Inbox } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { DraftCard } from "@/components/tasks/draft-card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTasks } from "@/lib/hooks/use-tasks";
 
@@ -35,12 +37,15 @@ export function TaskQueue() {
   }
   if (tasks.data.data.length === 0) {
     return (
-      <div className="flex h-48 flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border bg-card">
-        <p className="text-sm text-muted-foreground">No drafts yet.</p>
-        <Link href="/lead-discovery" className="text-sm font-medium text-primary hover:underline">
-          Generate one from your saved leads →
-        </Link>
-      </div>
+      <EmptyState
+        icon={Inbox}
+        title="No drafts yet."
+        action={
+          <Link href="/lead-discovery" className="text-sm font-medium text-primary hover:underline">
+            Generate one from your saved leads →
+          </Link>
+        }
+      />
     );
   }
   return (

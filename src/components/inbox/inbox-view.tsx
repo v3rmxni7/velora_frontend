@@ -1,7 +1,9 @@
 "use client";
 
+import { Inbox, MessagesSquare } from "lucide-react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useInbox } from "@/lib/hooks/use-inbox";
 import type { ThreadStatus } from "@/lib/api-types";
@@ -60,12 +62,16 @@ export function InboxView() {
             </p>
           )}
           {inbox.isSuccess && inbox.data.data.length === 0 && (
-            <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center">
-              <p className="text-sm text-muted-foreground">Nothing here yet.</p>
-              <p className="font-mono text-[11px] text-muted-foreground">
-                replies &amp; bounces appear here once sending is live
-              </p>
-            </div>
+            <EmptyState
+              icon={Inbox}
+              title="Nothing here yet."
+              description={
+                <span className="font-mono text-[11px]">
+                  replies &amp; bounces appear here once sending is live
+                </span>
+              }
+              className="h-full border-0 bg-transparent"
+            />
           )}
           {inbox.isSuccess &&
             inbox.data.data.map((t) => {
@@ -104,9 +110,12 @@ export function InboxView() {
         {selected ? (
           <ThreadDetail id={selected} />
         ) : (
-          <div className="flex h-full items-center justify-center">
-            <p className="text-sm text-muted-foreground">Select a conversation.</p>
-          </div>
+          <EmptyState
+            icon={MessagesSquare}
+            title="Select a conversation."
+            description="Pick a thread on the left to read and reply."
+            className="h-full border-0 bg-transparent"
+          />
         )}
       </div>
     </div>

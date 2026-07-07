@@ -1,9 +1,11 @@
 "use client";
 
+import { Megaphone } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { type CampaignType, SUPPORTED_CAMPAIGN_TYPES } from "@/lib/api-types";
@@ -185,9 +187,7 @@ export function CampaignList() {
           </p>
         )}
         {campaigns.isSuccess && campaigns.data.data.length === 0 && (
-          <div className="flex h-32 flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border bg-card text-center">
-            <p className="text-sm text-muted-foreground">No campaigns yet.</p>
-          </div>
+          <EmptyState icon={Megaphone} title="No campaigns yet." description="Pick a type above to create your first campaign." />
         )}
         {campaigns.isSuccess && campaigns.data.data.length > 0 && (
           <ul className="space-y-2">

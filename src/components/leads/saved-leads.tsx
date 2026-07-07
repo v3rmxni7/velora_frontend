@@ -1,10 +1,11 @@
 "use client";
 
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, Sparkles, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
@@ -66,9 +67,11 @@ export function SavedLeads() {
         )}
         {leads.isSuccess &&
           (leads.data.data.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Nothing saved yet — search above and save your first leads.
-            </p>
+            <EmptyState
+              icon={UserPlus}
+              title="Nothing saved yet"
+              description="Search above and save your first leads."
+            />
           ) : (
             <Table>
               <TableHeader>
