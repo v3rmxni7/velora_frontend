@@ -1,5 +1,6 @@
 "use client";
 
+import { CalendarRange } from "lucide-react";
 import { useMemo, useState } from "react";
 import { DeliverabilityView } from "@/components/deliverability/deliverability-view";
 import { cn } from "@/lib/utils";
@@ -34,6 +35,13 @@ export function AnalyticsHub() {
     const from = new Date(to.getTime() - days * 24 * 60 * 60 * 1000);
     return { from: from.toISOString(), to: to.toISOString() };
   }, [days]);
+  // Human-readable label for the resolved window — purely presentational (derived from `range`, no
+  // new query, no recomputation of any metric). Lets a reviewer see exactly which days are in view.
+  const rangeLabel = useMemo(() => {
+    const fmt = (iso: string) =>
+      new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    return `${fmt(range.from)} – ${fmt(range.to)}`;
+  }, [range]);
 
   return (
     <div className="space-y-5">
@@ -51,7 +59,11 @@ export function AnalyticsHub() {
           ))}
         </div>
         {WINDOWED.includes(tab) && (
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
+            <span className="hidden items-center gap-1.5 font-mono text-[11px] text-muted-foreground sm:inline-flex">
+              <CalendarRange className="size-3.5" aria-hidden />
+              {rangeLabel} · daily
+            </span>
             <div className={SEG_GROUP}>
               {PRESETS.map((d) => (
                 <button
@@ -64,7 +76,6 @@ export function AnalyticsHub() {
                 </button>
               ))}
             </div>
-            <span className="ml-1 font-mono text-[11px] text-muted-foreground">· daily</span>
           </div>
         )}
       </div>
