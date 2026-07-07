@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { GoLiveCard } from "@/components/deliverability/go-live-card";
 import { CountUp } from "@/components/motion";
 import { WarmthChip } from "@/components/senders/senders-ui";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -60,6 +61,9 @@ export function DeliverabilityView() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
+      {/* Productized go-live (S1) — readiness checklist + owner typed-confirm flip / pause. */}
+      <GoLiveCard />
+
       {/* Hero — sends today vs the per-org governor cap */}
       <Card className="relative overflow-hidden pl-6">
         <span className="absolute inset-y-0 left-0 w-[3px] bg-primary" aria-hidden />

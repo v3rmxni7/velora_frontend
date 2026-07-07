@@ -37,6 +37,9 @@ import type {
   KbDocumentRow,
   ProofCategory,
   ProofItemRow,
+  GoLiveReadiness,
+  GoLiveResult,
+  PauseLiveResult,
   SendingModeData,
   SendMessageResponse,
   AnalyticsDialer,
@@ -426,6 +429,15 @@ export const api = {
 
   // ---- Manage Ava: agent status + knowledge (existing endpoints) ----
   getSendingMode: () => apiFetch<{ data: SendingModeData }>("/sending/mode"),
+
+  // ---- Productized go-live (S1) — the flip is owner-only + typed-confirm, enforced server-side. ----
+  getGoLiveReadiness: () => apiFetch<{ data: GoLiveReadiness }>("/sending/readiness"),
+  goLive: (confirm: string) =>
+    apiFetch<{ data: GoLiveResult }>("/sending/go-live", {
+      method: "POST",
+      body: JSON.stringify({ confirm }),
+    }),
+  pauseLive: () => apiFetch<{ data: PauseLiveResult }>("/sending/pause-live", { method: "POST" }),
   getCoachingPoints: () => apiFetch<{ data: CoachingPointRow[] }>("/coaching-points"),
   getProofItems: (category?: ProofCategory) =>
     apiFetch<{ data: ProofItemRow[] }>(`/proof-items${category ? `?category=${category}` : ""}`),

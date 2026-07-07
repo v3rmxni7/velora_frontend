@@ -682,6 +682,32 @@ export interface SendingModeData {
   dryRun: boolean;
 }
 
+// S1 — productized go-live. Readiness is the prereq checklist; the flip itself is owner-only + a typed
+// org-name confirm, re-checked + written server-side (this data never gates the real flip — the server
+// re-runs readiness at flip time).
+export interface GoLiveReadinessItem {
+  key: string;
+  label: string;
+  ok: boolean;
+  blocking: boolean;
+  detail: string;
+}
+export interface GoLiveReadiness {
+  ready: boolean;
+  items: GoLiveReadinessItem[];
+  /** The phrase the owner must type to confirm (the org name), matched server-side. */
+  confirmPhrase: string;
+  mode: SendingModeData;
+}
+export interface GoLiveResult {
+  status: "went_live" | "already_live";
+  mode: SendingModeData;
+}
+export interface PauseLiveResult {
+  status: "paused" | "already_paused";
+  mode: SendingModeData;
+}
+
 export interface CoachingPointRow {
   id: string;
   organization_id: string;
