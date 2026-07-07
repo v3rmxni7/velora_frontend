@@ -60,7 +60,7 @@ const QUEST_META: Record<string, { icon: LucideIcon; desc: string }> = {
   "build-a-sequence": { icon: Workflow, desc: "Set up your campaign steps." },
   "launch-signal-campaign": { icon: Zap, desc: "Target prospects surfaced by a signal." },
   "connect-a-source": { icon: Plug, desc: "Connect a CRM, signal, or pixel lead source." },
-  "turn-on-autopilot": { icon: Gauge, desc: "Let Ava auto-approve qualifying drafts — a deliberate opt-in." },
+  "turn-on-autopilot": { icon: Gauge, desc: "Let Ava auto-approve qualifying drafts — a reviewed step we switch on with you." },
 };
 
 type Quest = {
