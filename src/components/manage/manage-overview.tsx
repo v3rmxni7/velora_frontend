@@ -294,15 +294,34 @@ export function ManageOverview() {
         )}
       </Card>
 
-      {/* Honest deferral — outcome analytics need real sends */}
-      <p className="font-mono text-[11px] text-muted-foreground">
-        Send outcomes (open · reply · meetings) populate in Analytics after go-live. Real send
-        volume &amp; suppression live in{" "}
-        <Link href="/deliverability" className="text-primary hover:underline">
-          Deliverability
-        </Link>
-        .
-      </p>
+      {/* Send outcomes — honest-empty band. These are NOT real numbers: pre-go-live there are no real
+          sends, so each tile is a dashed placeholder (never a fabricated 0/percentage) that reads
+          clearly as "measured after go-live". The real series lives in Analytics; this is a signpost. */}
+      <Card>
+        <h2 className={`${EYEBROW} mb-3`}>Send outcomes</h2>
+        <div className="grid grid-cols-3 gap-3">
+          {(["Opens", "Replies", "Meetings"] as const).map((label) => (
+            <div
+              key={label}
+              className="flex flex-col items-center justify-center gap-1 rounded-md border border-dashed border-border bg-muted/30 p-4 text-center dark:border-muted-foreground/30"
+            >
+              <span className="font-mono text-lg tabular-nums text-muted-foreground">—</span>
+              <span className="text-[13px] text-muted-foreground">{label}</span>
+            </div>
+          ))}
+        </div>
+        <p className="mt-3 font-mono text-[11px] text-muted-foreground">
+          Outcomes (open · reply · meetings) populate in{" "}
+          <Link href="/analytics" className="text-primary hover:underline">
+            Analytics
+          </Link>{" "}
+          after go-live. Real send volume &amp; suppression live in{" "}
+          <Link href="/deliverability" className="text-primary hover:underline">
+            Deliverability
+          </Link>
+          .
+        </p>
+      </Card>
     </div>
   );
 }
