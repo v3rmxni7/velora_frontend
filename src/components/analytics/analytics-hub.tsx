@@ -1,7 +1,7 @@
 "use client";
 
 import { CalendarRange } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import { DeliverabilityView } from "@/components/deliverability/deliverability-view";
 import { cn } from "@/lib/utils";
 import { CreditsTab } from "./credits-tab";
@@ -42,6 +42,15 @@ export function AnalyticsHub() {
       new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric" });
     return `${fmt(range.from)} – ${fmt(range.to)}`;
   }, [range]);
+  // The label is derived from the current time + the viewer's locale, so it differs between the SSR
+  // pass (server TZ/locale) and the browser. useSyncExternalStore yields `false` on the server and
+  // first hydration render, then `true` on the client — so the label mounts client-side only, with
+  // no hydration mismatch and no setState-in-effect.
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
 
   return (
     <div className="space-y-5">
@@ -62,7 +71,7 @@ export function AnalyticsHub() {
           <div className="flex items-center gap-2">
             <span className="hidden items-center gap-1.5 font-mono text-[11px] text-muted-foreground sm:inline-flex">
               <CalendarRange className="size-3.5" aria-hidden />
-              {rangeLabel} · daily
+              {mounted ? `${rangeLabel} · daily` : "daily"}
             </span>
             <div className={SEG_GROUP}>
               {PRESETS.map((d) => (
