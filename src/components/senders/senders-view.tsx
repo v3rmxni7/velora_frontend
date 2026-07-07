@@ -1,6 +1,6 @@
 "use client";
 
-import { RefreshCw } from "lucide-react";
+import { PenLine, RefreshCw } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -203,7 +203,10 @@ function SenderConfig({ sender, mailboxes }: { sender: SenderRow; mailboxes: Mai
 
       {/* Email signature (4.10) — real sending identity; completes the "email signature" quest. */}
       <div className="border-t border-border/60 pt-3">
-        <span className={`${FOOTNOTE} mb-1 block`}>Email signature</span>
+        <span className={`${FOOTNOTE} mb-1 flex items-center gap-1.5`}>
+          <PenLine className="size-3.5" aria-hidden />
+          Email signature
+        </span>
         <textarea
           value={sig}
           onChange={(e) => setSig(e.target.value)}
@@ -211,6 +214,16 @@ function SenderConfig({ sender, mailboxes }: { sender: SenderRow; mailboxes: Mai
           placeholder="e.g. — Ava, Velora · ava@yourco.com"
           className="w-full rounded-md border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         />
+        {/* Live preview — renders the current draft signature exactly as it appends below an email.
+            Purely presentational: reads the existing `sig` state, no new fetch/mutation. */}
+        <div className="mt-2 rounded-md border border-dashed border-border bg-muted/30 px-3 py-2">
+          <span className={`${FOOTNOTE} mb-1 block`}>Preview</span>
+          {sig.trim() ? (
+            <p className="whitespace-pre-wrap text-sm text-foreground">{sig}</p>
+          ) : (
+            <p className="text-sm text-muted-foreground/70">Your signature appears here.</p>
+          )}
+        </div>
         <div className="mt-1.5 flex justify-end">
           <Button
             type="button"
