@@ -1,6 +1,14 @@
 "use client";
 
-import { Megaphone } from "lucide-react";
+import {
+  Flame,
+  type LucideIcon,
+  Megaphone,
+  MousePointerClick,
+  Radar,
+  Repeat2,
+  Snowflake,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -20,12 +28,12 @@ const SELECT_CLASS =
 
 // The 5 campaign types (SPEC §3.2). `source` is the honest "connect X" copy for types whose audience
 // source isn't connected yet (everything but cold). One engine; the lead source differs.
-const TYPE_META: { type: CampaignType; label: string; desc: string; source: string }[] = [
-  { type: "cold_outbound", label: "Cold outbound", desc: "Net-new prospects from a saved list.", source: "" },
-  { type: "warm_outbound", label: "Warm outbound", desc: "Existing contacts in your CRM.", source: "a CRM (HubSpot or Salesforce)" },
-  { type: "cross_sell", label: "Cross-sell / upsell", desc: "Existing customers — expansion.", source: "a CRM (HubSpot or Salesforce)" },
-  { type: "website_visitor", label: "Website visitor", desc: "De-anonymized site visitors.", source: "website-visitor tracking" },
-  { type: "intent_signals", label: "Intent signals", desc: "Prospects surfaced by a signal.", source: "an intent signal" },
+const TYPE_META: { type: CampaignType; label: string; desc: string; source: string; icon: LucideIcon }[] = [
+  { type: "cold_outbound", label: "Cold outbound", desc: "Net-new prospects from a saved list.", source: "", icon: Snowflake },
+  { type: "warm_outbound", label: "Warm outbound", desc: "Existing contacts in your CRM.", source: "a CRM (HubSpot or Salesforce)", icon: Flame },
+  { type: "cross_sell", label: "Cross-sell / upsell", desc: "Existing customers — expansion.", source: "a CRM (HubSpot or Salesforce)", icon: Repeat2 },
+  { type: "website_visitor", label: "Website visitor", desc: "De-anonymized site visitors.", source: "website-visitor tracking", icon: MousePointerClick },
+  { type: "intent_signals", label: "Intent signals", desc: "Prospects surfaced by a signal.", source: "an intent signal", icon: Radar },
 ];
 
 function NewCampaign() {
@@ -59,6 +67,7 @@ function NewCampaign() {
         {TYPE_META.map((m) => {
           const active = m.type === type;
           const ready = SUPPORTED_CAMPAIGN_TYPES.includes(m.type);
+          const Icon = m.icon;
           return (
             <button
               type="button"
@@ -72,13 +81,24 @@ function NewCampaign() {
               )}
             >
               <div className="flex items-center justify-between gap-1">
-                <span className="text-sm font-medium text-foreground">{m.label}</span>
+                <span
+                  className={cn(
+                    "flex size-6 items-center justify-center rounded-md border",
+                    active
+                      ? "border-primary/30 bg-card text-primary"
+                      : "border-border bg-secondary/40 text-muted-foreground",
+                  )}
+                  aria-hidden
+                >
+                  <Icon className="size-3.5" />
+                </span>
                 {!ready && (
                   <span className="rounded border border-border px-1 font-mono text-[9px] uppercase tracking-[0.1em] text-muted-foreground/70">
                     soon
                   </span>
                 )}
               </div>
+              <p className="mt-1.5 text-sm font-medium text-foreground">{m.label}</p>
               <p className="mt-0.5 text-[11px] text-muted-foreground">{m.desc}</p>
             </button>
           );
