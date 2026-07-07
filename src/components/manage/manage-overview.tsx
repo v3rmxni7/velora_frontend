@@ -1,7 +1,26 @@
 "use client";
 
-import { Check } from "lucide-react";
+import {
+  Award,
+  BookOpen,
+  Check,
+  ChevronDown,
+  Gauge,
+  Globe,
+  Inbox,
+  ListChecks,
+  type LucideIcon,
+  Mail,
+  MessageSquare,
+  PenLine,
+  Plug,
+  Target,
+  UserPlus,
+  Workflow,
+  Zap,
+} from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 import { CountUp } from "@/components/motion";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCampaigns } from "@/lib/hooks/use-campaigns";
@@ -23,11 +42,96 @@ function Card({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Per-quest icon + one-line description — PRESENTATION ONLY, keyed by the real quest keys from the
+// backend catalog (billing/quests.ts). Purely decorative: it changes nothing about which quests exist,
+// their completion, or their (real, idempotent) credit payout. Descriptions are honest about what each
+// step does and imply no capability we don't have (e.g. autopilot stays a deliberate opt-in, not 1-click).
+const QUEST_META: Record<string, { icon: LucideIcon; desc: string }> = {
+  "connect-primary-mailbox": { icon: Mail, desc: "Attach the inbox Ava sends from." },
+  "email-signature": { icon: PenLine, desc: "Add your sign-off to every email." },
+  "add-sending-domain": { icon: Globe, desc: "Register the domain you send from." },
+  "secondary-mailboxes": { icon: Inbox, desc: "Add more warm inboxes to raise daily volume." },
+  "add-coaching": { icon: MessageSquare, desc: "Teach Ava your tone and angle." },
+  "add-proof": { icon: Award, desc: "Give Ava verifiable results to cite." },
+  "add-knowledge-source": { icon: BookOpen, desc: "Feed Ava a page to ground on." },
+  "define-icp": { icon: Target, desc: "Describe who you sell to." },
+  "save-leads": { icon: UserPlus, desc: "Save your first prospects." },
+  "create-a-list": { icon: ListChecks, desc: "Group leads into a target list." },
+  "build-a-sequence": { icon: Workflow, desc: "Set up your campaign steps." },
+  "launch-signal-campaign": { icon: Zap, desc: "Target prospects surfaced by a signal." },
+  "connect-a-source": { icon: Plug, desc: "Connect a CRM, signal, or pixel lead source." },
+  "turn-on-autopilot": { icon: Gauge, desc: "Let Ava auto-approve qualifying drafts — a deliberate opt-in." },
+};
+
+type Quest = {
+  key: string;
+  label: string;
+  href: string;
+  done: boolean;
+  reward: number;
+  awarded: boolean;
+};
+
+function QuestRow({ q, isNext, compact }: { q: Quest; isNext: boolean; compact?: boolean }) {
+  const Icon = QUEST_META[q.key]?.icon ?? Target;
+  const desc = QUEST_META[q.key]?.desc;
+  return (
+    <Link
+      href={q.href}
+      className="group flex items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-accent/50"
+    >
+      <span
+        className={cn(
+          "flex size-7 shrink-0 items-center justify-center rounded-md border",
+          q.done
+            ? "border-primary/30 bg-accent text-primary"
+            : "border-border bg-secondary/40 text-muted-foreground group-hover:text-foreground",
+        )}
+        aria-hidden
+      >
+        {q.done ? <Check className="size-3.5" /> : <Icon className="size-3.5" />}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="flex items-center gap-2">
+          <span
+            className={cn(
+              "truncate text-sm",
+              q.done ? "text-muted-foreground line-through" : "font-medium text-foreground",
+            )}
+          >
+            {q.label}
+          </span>
+          {isNext && (
+            <span className="shrink-0 rounded-full border border-primary/30 bg-accent px-1.5 font-mono text-[10px] uppercase tracking-[0.12em] text-primary">
+              Next
+            </span>
+          )}
+        </span>
+        {!compact && desc && (
+          <span className="mt-0.5 block truncate text-[13px] leading-snug text-muted-foreground">{desc}</span>
+        )}
+      </span>
+      <span
+        className={cn(
+          "shrink-0 font-mono text-[11px] tabular-nums",
+          q.awarded ? "text-emerald-700" : "text-muted-foreground",
+        )}
+      >
+        {q.awarded ? `+${q.reward.toLocaleString()} earned` : `+${q.reward.toLocaleString()}`}
+      </span>
+    </Link>
+  );
+}
+
 // The 14-quest onboarding card (Slice 4.10). Completion + credit rewards are REAL: each quest is
 // derived from real org state and pays its credits exactly once (idempotent, backend-side). `awarded`
-// reflects credits actually posted to the ledger — never a fabricated number.
+// reflects credits actually posted to the ledger — never a fabricated number. This pass enriches the
+// PRESENTATION only (icons, descriptions, a Next cue, hide + remaining/completed grouping); the quest
+// data, hrefs, and payout are byte-unchanged.
 function QuestsCard() {
   const quests = useQuests();
+  const [hidden, setHidden] = useState(false);
+  const [showDone, setShowDone] = useState(false);
 
   if (quests.isPending) return <Skeleton className="h-72 w-full rounded-md" />;
   if (quests.isError)
@@ -39,14 +143,26 @@ function QuestsCard() {
     );
 
   const { quests: items, completed, total, creditsEarned } = quests.data.data;
+  const remaining = items.filter((q) => !q.done);
+  const done = items.filter((q) => q.done);
+  const nextKey = remaining[0]?.key;
 
   return (
     <Card>
       <div className="flex items-baseline justify-between gap-2">
         <h2 className={EYEBROW}>Onboarding quests</h2>
-        <span className="font-mono text-sm tabular-nums text-foreground">
-          {completed} of {total} complete
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="font-mono text-sm tabular-nums text-foreground">
+            {completed} of {total} complete
+          </span>
+          <button
+            type="button"
+            onClick={() => setHidden((h) => !h)}
+            className="font-mono text-[11px] text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+          >
+            {hidden ? "Show" : "Hide"}
+          </button>
+        </div>
       </div>
       <p className="mt-1 font-mono text-[11px] text-muted-foreground">
         <CountUp value={creditsEarned} /> credits earned — each quest pays real credits as you complete it
@@ -54,42 +170,50 @@ function QuestsCard() {
       {/* At-a-glance progress track (same recipe as the deliverability volume bar). */}
       <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-secondary">
         <div
-          className="h-full bg-primary"
+          className="h-full bg-primary transition-[width] duration-500"
           style={{ width: `${total > 0 ? (completed / total) * 100 : 0}%` }}
           aria-hidden
         />
       </div>
-      <ul className="mt-3 space-y-1">
-        {items.map((q) => (
-          <li key={q.key}>
-            <Link
-              href={q.href}
-              className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition-colors hover:bg-accent/50"
-            >
-              <span
-                className={cn(
-                  "flex size-4 shrink-0 items-center justify-center rounded-full border",
-                  q.done ? "border-primary bg-primary text-primary-foreground" : "border-border",
-                )}
-                aria-hidden
+
+      {!hidden && (
+        <>
+          {/* Remaining — the active work, with the single recommended next step flagged. */}
+          <ul className="mt-3 space-y-0.5">
+            {remaining.map((q) => (
+              <li key={q.key}>
+                <QuestRow q={q} isNext={q.key === nextKey} />
+              </li>
+            ))}
+          </ul>
+          {remaining.length === 0 && (
+            <p className="mt-3 text-sm text-muted-foreground">All set — every onboarding quest is complete. 🎉</p>
+          )}
+
+          {/* Completed — collapsed by default so the remaining work stays front and center. */}
+          {done.length > 0 && (
+            <div className="mt-2 border-t border-border/60 pt-2">
+              <button
+                type="button"
+                onClick={() => setShowDone((s) => !s)}
+                className="flex w-full items-center gap-1.5 px-2 py-1 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground hover:text-foreground"
               >
-                {q.done && <Check className="size-3" />}
-              </span>
-              <span className={cn("flex-1", q.done ? "text-muted-foreground line-through" : "text-foreground")}>
-                {q.label}
-              </span>
-              <span
-                className={cn(
-                  "shrink-0 font-mono text-[11px] tabular-nums",
-                  q.awarded ? "text-emerald-700" : "text-muted-foreground",
-                )}
-              >
-                {q.awarded ? `+${q.reward.toLocaleString()} earned` : `+${q.reward.toLocaleString()}`}
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+                <ChevronDown className={cn("size-3.5 transition-transform", showDone && "rotate-180")} aria-hidden />
+                Completed · {done.length}
+              </button>
+              {showDone && (
+                <ul className="space-y-0.5">
+                  {done.map((q) => (
+                    <li key={q.key}>
+                      <QuestRow q={q} isNext={false} compact />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+        </>
+      )}
     </Card>
   );
 }
