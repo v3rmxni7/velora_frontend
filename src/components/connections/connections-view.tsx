@@ -1,6 +1,7 @@
 "use client";
 
 import { useQueryClient } from "@tanstack/react-query";
+import { Building2, Radio } from "lucide-react";
 import { useEffect } from "react";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -61,7 +62,11 @@ export function ConnectionsView() {
         </p>
       )}
       {integrations.isSuccess && (
-        <div className="space-y-2">
+        <section className="space-y-2">
+          <h2 className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+            <Building2 className="size-3.5" aria-hidden />
+            CRM
+          </h2>
           {CRM_PROVIDERS.map((p) => (
             <CrmConnectionCard
               key={p.id}
@@ -72,13 +77,14 @@ export function ConnectionsView() {
               campaignsPending={campaigns.isPending}
             />
           ))}
-        </div>
+        </section>
       )}
 
       {/* Outreach channels — honest 🔌 placeholder (4.14). Email is live; LinkedIn automation is
           deferred (SPEC §14) and NOT connected. No backend, no fake connection or activity counts. */}
       <div className="rounded-md border border-border bg-card p-4 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]">
-        <h2 className="font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+        <h2 className="flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground">
+          <Radio className="size-3.5" aria-hidden />
           Outreach channels
         </h2>
         <div className="mt-2 flex flex-wrap items-center gap-2">
