@@ -46,6 +46,7 @@ import type {
   CallBrief,
   CallOutcome,
   CallRow,
+  ConnectMailboxInput,
   IntegrationsSummary,
   InviteResult,
   OrgRole,
@@ -362,6 +363,13 @@ export const api = {
     apiFetch<{ data: MailboxRow }>(`/mailboxes/${mailboxId}/warmup-override`, {
       method: "PATCH",
       body: JSON.stringify({ override }),
+    }),
+  // S3 — connect an SMTP mailbox. The password is sent once to the backend (which passes it through to
+  // Smartlead and never stores it) over HTTPS.
+  connectMailbox: (input: ConnectMailboxInput) =>
+    apiFetch<{ data: MailboxRow }>("/mailboxes/connect", {
+      method: "POST",
+      body: JSON.stringify(input),
     }),
 
   // ---- Deliverability (org-scoped metrics) ----

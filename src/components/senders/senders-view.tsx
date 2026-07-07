@@ -8,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { MailboxRow, SenderRow } from "@/lib/api-types";
 import {
   useAssignMailbox,
+  useConnectMailbox,
   useCreateDomain,
   useCreateSender,
   useDomains,
@@ -30,27 +31,123 @@ function SectionError({ what }: { what: string }) {
   return <p className="font-mono text-xs text-destructive">Couldn’t load {what}.</p>;
 }
 
+// S3 — connect an SMTP mailbox. Owner/admin only. The password is sent to Smartlead (pass-through)
+// and never stored by Velora; the mailbox enters WARMING and can't send until warm-up completes.
+// Honest onboarding copy: sets the Workspace/M365/Gmail-app-password expectation up front so a
+// customer doesn't hit a cryptic auth failure.
+function ConnectMailboxForm({ onDone }: { onDone: () => void }) {
+  const connect = useConnectMailbox();
+  const [f, setF] = useState({
+    fromName: "",
+    fromEmail: "",
+    userName: "",
+    password: "",
+    smtpHost: "",
+    smtpPort: "587",
+    imapHost: "",
+    imapPort: "993",
+  });
+  const set = (k: keyof typeof f) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setF((prev) => ({ ...prev, [k]: e.target.value }));
+  const canSubmit =
+    !!f.fromName.trim() &&
+    !!f.fromEmail.trim() &&
+    !!f.password &&
+    !!f.smtpHost.trim() &&
+    !!f.imapHost.trim();
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!canSubmit) return;
+    connect.mutate(
+      {
+        fromName: f.fromName.trim(),
+        fromEmail: f.fromEmail.trim(),
+        userName: (f.userName.trim() || f.fromEmail).trim(), // default the SMTP login to the address
+        password: f.password,
+        smtpHost: f.smtpHost.trim(),
+        smtpPort: Number(f.smtpPort) || 587,
+        imapHost: f.imapHost.trim(),
+        imapPort: Number(f.imapPort) || 993,
+      },
+      {
+        onSuccess: () => {
+          setF((prev) => ({ ...prev, password: "" })); // don't keep the secret in component state
+          onDone();
+        },
+      },
+    );
+  };
+
+  const INPUT =
+    "h-8 w-full rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
+  return (
+    <form
+      onSubmit={submit}
+      className="mt-3 space-y-3 rounded-md border border-border bg-card p-4 shadow-[0_1px_2px_0_rgba(16,24,40,0.04)]"
+    >
+      <div>
+        <h3 className="text-sm font-medium text-foreground">Connect a mailbox (SMTP)</h3>
+        <p className={`${FOOTNOTE} mt-1`}>
+          Google Workspace, Microsoft 365, Gmail (needs an app password + 2-Step Verification), or a
+          custom-domain mailbox. Personal Outlook.com/Hotmail need Microsoft sign-in (coming soon).
+          Your password goes straight to Smartlead — Velora never stores it. The mailbox warms up
+          before it can send.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <Input placeholder="From name (e.g. Jordan Lee)" value={f.fromName} onChange={set("fromName")} />
+        <Input placeholder="From email (you@yourco.com)" value={f.fromEmail} onChange={set("fromEmail")} />
+        <Input placeholder="SMTP username (defaults to the email)" value={f.userName} onChange={set("userName")} />
+        <Input type="password" placeholder="App password" value={f.password} onChange={set("password")} autoComplete="off" />
+        <Input placeholder="SMTP host (smtp.yourco.com)" value={f.smtpHost} onChange={set("smtpHost")} />
+        <input className={INPUT} placeholder="SMTP port (587)" value={f.smtpPort} onChange={set("smtpPort")} inputMode="numeric" />
+        <Input placeholder="IMAP host (imap.yourco.com)" value={f.imapHost} onChange={set("imapHost")} />
+        <input className={INPUT} placeholder="IMAP port (993)" value={f.imapPort} onChange={set("imapPort")} inputMode="numeric" />
+      </div>
+      <div className="flex items-center justify-end gap-2">
+        <Button type="button" size="sm" variant="ghost" onClick={onDone}>
+          Cancel
+        </Button>
+        <Button type="submit" size="sm" disabled={!canSubmit || connect.isPending}>
+          {connect.isPending ? "Connecting…" : "Connect"}
+        </Button>
+      </div>
+    </form>
+  );
+}
+
 function Mailboxes() {
   const mailboxes = useMailboxes();
   const sync = useSyncMailboxes();
   const override = useSetMailboxWarmupOverride();
   // Marking a mailbox established grants send-eligibility without warm-up proof — an OWNER act
   // (S2: owner-gated + audited, enforced server-side). Non-owners don't see the control.
-  const isOwner = useTeamMe().data?.data.user.role === "owner";
+  const role = useTeamMe().data?.data.user.role;
+  const isOwner = role === "owner";
+  const canConnect = role === "owner" || role === "admin"; // S3 connect is owner/admin
+  const [connectOpen, setConnectOpen] = useState(false);
   return (
     <section>
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-3 flex items-center justify-between gap-2">
         <h2 className={EYEBROW}>Mailboxes</h2>
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={() => sync.mutate()}
-          disabled={sync.isPending}
-        >
-          <RefreshCw className="size-4" />
-          Sync from Smartlead
-        </Button>
+        <div className="flex items-center gap-2">
+          {canConnect ? (
+            <Button size="sm" variant="outline" onClick={() => setConnectOpen((o) => !o)}>
+              Connect a mailbox
+            </Button>
+          ) : null}
+          <Button size="sm" variant="outline" onClick={() => sync.mutate()} disabled={sync.isPending}>
+            <RefreshCw className="size-4" />
+            Sync from Smartlead
+          </Button>
+        </div>
       </div>
+
+      {canConnect && connectOpen ? (
+        <div className="mb-3">
+          <ConnectMailboxForm onDone={() => setConnectOpen(false)} />
+        </div>
+      ) : null}
 
       {mailboxes.isPending && <Skeleton className="h-20 w-full rounded-md" />}
       {mailboxes.isError && <SectionError what="mailboxes" />}

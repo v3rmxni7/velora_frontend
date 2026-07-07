@@ -330,6 +330,18 @@ export interface MailboxRow {
   updated_at: string;
 }
 
+// S3 — SMTP mailbox connect. `password` is pass-through to Smartlead (never stored/logged by Velora).
+export interface ConnectMailboxInput {
+  fromName: string;
+  fromEmail: string;
+  userName: string;
+  password: string;
+  smtpHost: string;
+  smtpPort: number;
+  imapHost: string;
+  imapPort: number;
+}
+
 export type DomainAuthStatus = "unknown" | "pass" | "fail";
 export interface DomainRow {
   id: string;

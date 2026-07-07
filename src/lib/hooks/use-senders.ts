@@ -3,6 +3,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { api, ApiError } from "@/lib/api";
+import type { ConnectMailboxInput } from "@/lib/api-types";
 
 const noAuthRetry = (count: number, err: unknown) =>
   !(err instanceof ApiError && err.status === 401) && count < 1;
@@ -84,6 +85,31 @@ export function useSetMailboxWarmupOverride() {
     },
     onError: (err) =>
       toast.error(err instanceof ApiError ? err.message : "Couldn’t update the mailbox — try again."),
+  });
+}
+// S3 — connect an SMTP mailbox (owner/admin). Honest error mapping: 422 = SMTP/IMAP didn't validate,
+// 503 = Smartlead not connected yet, 403 = owner/admin only.
+export function useConnectMailbox() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (input: ConnectMailboxInput) => api.connectMailbox(input),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["mailboxes"] });
+      toast.success("Mailbox connected — warming up. It can't send until warm-up completes.");
+    },
+    onError: (err) => {
+      const msg =
+        err instanceof ApiError
+          ? err.status === 422
+            ? "Couldn’t sign in to that mailbox — check the host/port and use an app password (not your normal password)."
+            : err.status === 503
+              ? "Mailbox connect activates at go-live — Smartlead isn’t connected yet."
+              : err.status === 403
+                ? "Only an owner or admin can connect a mailbox."
+                : err.message
+          : "Couldn’t connect the mailbox — try again.";
+      toast.error(msg);
+    },
   });
 }
 export function useSetPrimaryMailbox() {
