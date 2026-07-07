@@ -1,10 +1,16 @@
 "use client";
 
 import { Loader2 } from "lucide-react";
+import { useState } from "react";
 import { AuthChip } from "@/components/senders/senders-ui";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAuditLog, useCompliance, useVerifyDomain } from "@/lib/hooks/use-compliance";
+import {
+  useAuditLog,
+  useCompliance,
+  useUpdatePostalAddress,
+  useVerifyDomain,
+} from "@/lib/hooks/use-compliance";
 import { cn } from "@/lib/utils";
 
 const EYEBROW = "font-mono text-[11px] uppercase tracking-[0.12em] text-muted-foreground";
@@ -38,6 +44,63 @@ function when(iso: string): string {
   return `${Math.round(s / 86_400)}d ago`;
 }
 
+// Sending identity — the CAN-SPAM physical postal address. This is a REAL live-send prerequisite:
+// the backend fail-closed guard blocks a live send when it's unset, so the copy says exactly that
+// (no overclaim). Keyed on the server value by the parent so it re-inits after a save. Owner/admin
+// only — a member's save 403s (surfaced as a toast by the hook).
+function PostalAddressCard({ current }: { current: string | null }) {
+  const [value, setValue] = useState(current ?? "");
+  const update = useUpdatePostalAddress();
+  const set = !!current?.trim();
+  const dirty = value.trim() !== (current ?? "").trim();
+
+  return (
+    <Card>
+      <div className="flex items-baseline justify-between gap-2">
+        <h2 className={EYEBROW}>Sending identity</h2>
+        <span
+          className={cn(
+            CHIP,
+            set
+              ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+              : "border-amber-200 bg-amber-50 text-amber-700",
+          )}
+        >
+          {set ? "set" : "required for live sending"}
+        </span>
+      </div>
+      <p className="mt-2 text-sm text-muted-foreground">
+        CAN-SPAM requires a valid physical postal address in every commercial email. It’s appended to
+        every send’s footer alongside the unsubscribe link.
+      </p>
+      <textarea
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+        rows={2}
+        placeholder="e.g. HelloAgentic, 123 Example St, Bengaluru 560001, India"
+        className="mt-3 w-full rounded-md border border-input bg-transparent px-2.5 py-1.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+      />
+      <div className="mt-1.5 flex items-center justify-between gap-3">
+        <p className={FOOTNOTE}>
+          {set
+            ? "Set — live sends carry it. Clearing it blocks live sending again."
+            : "Until this is set, live sending is blocked (fail-closed) — nothing goes out."}
+        </p>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          disabled={update.isPending || !dirty}
+          onClick={() => update.mutate(value.trim())}
+        >
+          {update.isPending ? <Loader2 className="size-3.5 animate-spin" /> : null}
+          Save
+        </Button>
+      </div>
+    </Card>
+  );
+}
+
 export function ComplianceView() {
   const c = useCompliance();
   const audit = useAuditLog();
@@ -52,11 +115,15 @@ export function ComplianceView() {
       </p>
     );
 
-  const { domains, retention, suppression } = c.data.data;
+  const { domains, retention, suppression, postalAddress } = c.data.data;
   const anyDkimUnknown = domains.some((d) => d.dkim_status === "unknown");
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
+      {/* Sending identity — CAN-SPAM postal address (a real live-send prerequisite). Keyed on the
+          server value so it re-inits after a save / external change. */}
+      <PostalAddressCard key={postalAddress ?? "unset"} current={postalAddress} />
+
       {/* Domain authentication — REAL DNS SPF/DKIM/DMARC. */}
       <Card>
         <div className="flex items-baseline justify-between">

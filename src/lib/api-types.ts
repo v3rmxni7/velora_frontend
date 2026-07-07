@@ -352,6 +352,8 @@ export interface ComplianceData {
   domains: DomainRow[];
   retention: { websiteVisitsDays: number; signalEventsDays: number; dryRun: boolean };
   suppression: { total: number; byReason: Record<string, number> };
+  // CAN-SPAM physical postal address injected into every live send; null → live sends are blocked.
+  postalAddress: string | null;
 }
 
 export type AuditKind =
@@ -361,6 +363,7 @@ export type AuditKind =
   | "suppression_added"
   | "copilot_action_confirmed"
   | "domain_verified"
+  | "postal_address_updated"
   | "retention_reported"
   | "retention_purged";
 

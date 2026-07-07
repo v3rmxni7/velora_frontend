@@ -370,6 +370,12 @@ export const api = {
     apiFetch<{ data: AuditLogsData }>(`/compliance/audit?limit=${limit}`),
   verifyDomain: (domainId: string) =>
     apiFetch<{ data: DomainRow }>(`/domains/${domainId}/verify`, { method: "POST" }),
+  // Owner/admin only (backend requireRole); a blank value clears it. Trimmed server-side.
+  updatePostalAddress: (postalAddress: string) =>
+    apiFetch<{ data: { postalAddress: string | null } }>("/compliance/postal-address", {
+      method: "PATCH",
+      body: JSON.stringify({ postalAddress }),
+    }),
 
   // ---- Credits (org-scoped ledger balance) ----
   getCredits: () => apiFetch<{ data: CreditsData }>("/credits"),

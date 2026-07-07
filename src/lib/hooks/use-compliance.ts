@@ -21,6 +21,27 @@ export function useAuditLog(limit = 50) {
   });
 }
 
+// Set (or clear) the org's physical postal address (CAN-SPAM). Owner/admin only (backend gate).
+// Refreshes compliance (the address + the "live blocked" state) + the audit timeline.
+export function useUpdatePostalAddress() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (postalAddress: string) => api.updatePostalAddress(postalAddress),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["compliance"] });
+      qc.invalidateQueries({ queryKey: ["audit-log"] });
+    },
+    onError: (err) =>
+      toast.error(
+        err instanceof ApiError
+          ? err.status === 403
+            ? "Only an owner or admin can set the postal address."
+            : err.message
+          : "Couldn’t save the postal address — try again.",
+      ),
+  });
+}
+
 // Run a REAL DNS SPF/DKIM/DMARC check for a domain. Refreshes compliance (the domain rows) + the
 // audit timeline (the verify writes a domain_verified row) + the senders view (shares ["domains"]).
 export function useVerifyDomain() {
