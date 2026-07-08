@@ -90,8 +90,8 @@ function ConnectMailboxForm({ onDone }: { onDone: () => void }) {
         <p className={`${FOOTNOTE} mt-1`}>
           Google Workspace, Microsoft 365, Gmail (needs an app password + 2-Step Verification), or a
           custom-domain mailbox. Personal Outlook.com/Hotmail need Microsoft sign-in (coming soon).
-          Your password goes straight to Smartlead — Velora never stores it. The mailbox warms up
-          before it can send.
+          Your password is used only to connect the mailbox and is never stored by Velora. The mailbox
+          warms up before it can send.
         </p>
       </div>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
@@ -138,7 +138,7 @@ function Mailboxes() {
           ) : null}
           <Button size="sm" variant="outline" onClick={() => sync.mutate()} disabled={sync.isPending}>
             <RefreshCw className="size-4" />
-            Sync from Smartlead
+            Sync mailboxes
           </Button>
         </div>
       </div>
@@ -155,7 +155,7 @@ function Mailboxes() {
         <div className="flex flex-col items-center justify-center gap-2 rounded-md border border-dashed border-border bg-card p-6 text-center">
           <p className="text-sm text-muted-foreground">No mailboxes yet.</p>
           <p className={FOOTNOTE}>
-            connect mailboxes in Smartlead during warmup, then sync — they appear here
+            Connect a mailbox above — it warms up first, then appears here ready to send.
           </p>
         </div>
       )}

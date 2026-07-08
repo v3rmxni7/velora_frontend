@@ -86,7 +86,7 @@ export function CampaignDetail({ id }: { id: string }) {
             <CampaignStatusChip status={c.status} />
             <span className={CHIP}>{c.campaign_type.replace(/_/g, " ")}</span>
             <span className={CHIP}>
-              smartlead: {c.smartlead_campaign_id ? "provisioned" : "not provisioned"}
+              sending: {c.smartlead_campaign_id ? "ready" : "setting up"}
             </span>
           </div>
         </div>

@@ -103,10 +103,10 @@ export function useConnectMailbox() {
           ? err.status === 422
             ? "Couldn’t sign in to that mailbox — check the host/port and use an app password (not your normal password)."
             : err.status === 503
-              ? "Mailbox connect activates at go-live — Smartlead isn’t connected yet."
+              ? "Mailbox connect activates at go-live — sending isn’t set up yet."
               : err.status === 403
                 ? "Only an owner or admin can connect a mailbox."
-                : err.message
+                : "Couldn’t connect the mailbox — please try again in a moment."
           : "Couldn’t connect the mailbox — try again.";
       toast.error(msg);
     },
@@ -135,13 +135,13 @@ export function useSyncMailboxes() {
       toast.success(`Synced ${res.data.synced} mailbox${res.data.synced === 1 ? "" : "es"}.`);
     },
     onError: (err) => {
-      if (err instanceof ApiError && (err.status === 503 || err.code === "smartlead_unconfigured")) {
+      if (err instanceof ApiError && err.status === 503) {
         toast("Mailbox sync activates at go-live", {
-          description: "Smartlead isn’t connected yet — connect mailboxes there during warmup.",
+          description: "Sending isn’t set up yet — this activates at go-live.",
         });
         return;
       }
-      toast.error(err instanceof ApiError ? err.message : "Sync failed — try again.");
+      toast.error("Sync failed — please try again.");
     },
   });
 }
